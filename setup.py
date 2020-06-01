@@ -8,4 +8,5 @@ setup(name='watchoptical',
       author_email='dave.richard.hadley@gmail.com',
       license='MIT',
       packages=['watchoptical'],
-      zip_safe=False)
+      zip_safe=False,
+      )
