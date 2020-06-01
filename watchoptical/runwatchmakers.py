@@ -3,13 +3,19 @@ import os
 import subprocess
 import tempfile
 from dataclasses import dataclass
-from typing import Iterable, Tuple
+from typing import Tuple, Optional
+
+
+@dataclass(frozen=True)
+class WatchMakersConfig:
+    numevents: int = 10
+    directory: Optional[str] = None
 
 
 @dataclass(frozen=True)
 class WatchMakersScripts:
     scripts: Tuple[str]
-
+    directory: str
 
 def path_to_watchmakers_script() -> str:
     return os.sep.join((os.environ['WATCHENV'],
@@ -17,14 +23,15 @@ def path_to_watchmakers_script() -> str:
                         ))
 
 
-def generatejobscripts(directory: str = None) -> WatchMakersScripts:
-    if directory is None:
-        directory = tempfile.mkdtemp(prefix="watchoptical_runwatchmakers")
+def generatejobscripts(config: WatchMakersConfig=None) -> WatchMakersScripts:
+    if config is None:
+        config = WatchMakersConfig()
+    directory = tempfile.mkdtemp(prefix="watchoptical_runwatchmakers", dir=config.directory)
     _run_watchmakers_script(directory=directory)
     scripts = tuple(glob.glob(os.path.sep.join((directory,
                                                 os.path.sep.join(["job", "script_*.sh"])
                                                 ))))
-    return WatchMakersScripts(scripts=scripts)
+    return WatchMakersScripts(scripts=scripts, directory=directory)
 
 
 def _run_watchmakers_script(directory: str = None):
