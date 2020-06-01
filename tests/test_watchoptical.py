@@ -1,7 +1,7 @@
 import unittest
 
 
-class TestWatchOpticalModule(unittest.TestCase):
+class TestWatchOpticalPackage(unittest.TestCase):
     def test_watchoptical_imports_without_error(self):
         import watchoptical
         self.assertTrue(watchoptical)
