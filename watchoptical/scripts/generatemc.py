@@ -16,7 +16,7 @@ def _parsecml() -> Namespace:
     parser.add_argument("--directory", "-d", type=str, default=os.getcwd(),
                         help="Directory to store generated files. It will be created if it does not exist."
                         )
-    parser.add_argument("--target", "-t", choices=ClientType,
+    parser.add_argument("--target", "-t", type=ClientType, choices=list(ClientType),
                         default=ClientType.LOCAL,
                         help="Where to run jobs."
                         )
