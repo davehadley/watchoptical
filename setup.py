@@ -1,0 +1,12 @@
+from setuptools import setup
+
+setup(name='watchoptical',
+      version='0.1',
+      description='WATCHMAN Optical Calibration Analysis Software',
+      url='https://github.com/davehadley/watchoptical',
+      author='David Hadley',
+      author_email='dave.richard.hadley@gmail.com',
+      license='MIT',
+      packages=['watchoptical'],
+      zip_safe=False,
+      )
