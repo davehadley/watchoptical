@@ -20,7 +20,9 @@ def _parsecml() -> Namespace:
                         default=ClientType.LOCAL,
                         help="Where to run jobs."
                         )
-    parser.add_argument("--num-events", "-n", type=int, default=1)
+    parser.add_argument("--num-events", "-n", type=int, default=1000,
+                        help="Number of events to generate for each source of signal/background type."
+                        )
     return parser.parse_args()
 
 
