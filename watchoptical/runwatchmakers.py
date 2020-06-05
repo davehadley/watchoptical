@@ -8,7 +8,7 @@ from typing import Tuple, Optional
 
 @dataclass(frozen=True)
 class WatchMakersConfig:
-    numevents: int = 10
+    numevents: int = 1000
     directory: Optional[str] = None
 
 

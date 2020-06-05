@@ -50,3 +50,4 @@ def generatemc(config: GenerateMCConfig) -> Bag:
             .flatten()
             .map(_runbonsai)
             )
+
