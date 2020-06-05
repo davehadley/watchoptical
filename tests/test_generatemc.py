@@ -1,8 +1,8 @@
+import random
 import re
 import unittest
 
 import dask.distributed
-from dask.bag import random
 from toolz import pipe, curry
 
 from watchoptical.generatemc import generatemc, GenerateMCConfig

@@ -7,6 +7,7 @@ from itertools import zip_longest
 from typing import Tuple, List, Optional, Callable
 
 import dask.bag
+from dask.bag import Bag
 from dask.delayed import Delayed
 
 from watchoptical.runwatchmakers import generatejobscripts, WatchMakersConfig
@@ -38,7 +39,7 @@ def _runbonsai(g4file: str) -> str:
     return bonsai_name
 
 
-def generatemc(config: GenerateMCConfig) -> List[Delayed]:
+def generatemc(config: GenerateMCConfig) -> Bag:
     scripts = generatejobscripts(config.watchmakersconfig)
     cwd = scripts.directory
     return (dask.bag.from_sequence(((s, cwd, config.filenamefilter) for s in scripts.scripts),
