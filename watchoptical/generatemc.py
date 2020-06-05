@@ -4,13 +4,17 @@ import re
 import subprocess
 from dataclasses import dataclass
 from itertools import zip_longest
-from typing import Tuple, List, Optional, Callable
+from typing import Tuple, List, Optional, Callable, NamedTuple
 
 import dask.bag
 from dask.bag import Bag
 from dask.delayed import Delayed
 
 from watchoptical.runwatchmakers import generatejobscripts, WatchMakersConfig
+
+class RatPacBonsaiPair(NamedTuple):
+    g4file: str
+    bonsaifile: str
 
 
 @dataclass(frozen=True)
@@ -23,10 +27,12 @@ class GenerateMCConfig:
 
 def _rungeant4(watchmakersscript: str, cwd: str, filenamefilter: Optional[Callable[[str], bool]] = None) -> Tuple[str]:
     with open(watchmakersscript) as script:
-        filename = (re.search(r".* -o (root_.*\$TMPNAME.root) .*", script.read())
-                    .group(1)
-                    .replace("$TMPNAME", "*")
-                    )
+        filename = os.sep.join((cwd,
+                                (re.search(r".* -o (root_.*\$TMPNAME.root) .*", script.read())
+                                 .group(1)
+                                 .replace("$TMPNAME", "*")
+                                 )
+                                ))
     if filenamefilter is None or filenamefilter(filename):
         subprocess.check_call([watchmakersscript], cwd=cwd)
     return tuple(glob.glob(filename))
@@ -48,6 +54,5 @@ def generatemc(config: GenerateMCConfig) -> Bag:
                                    )
             .starmap(_rungeant4)
             .flatten()
-            .map(_runbonsai)
+            .map(lambda g4file: RatPacBonsaiPair(g4file, _runbonsai(g4file)))
             )
-

@@ -27,7 +27,7 @@ def path_to_watchmakers_script() -> str:
 def generatejobscripts(config: WatchMakersConfig = None) -> WatchMakersScripts:
     if config is None:
         config = WatchMakersConfig()
-    directory = tempfile.mkdtemp(prefix="watchoptical_runwatchmakers", dir=config.directory)
+    directory = config.directory if config.directory is not None else tempfile.mkdtemp(prefix="watchoptical_runwatchmakers")
     _run_watchmakers_script(directory=directory, numevents=config.numevents)
     scripts = tuple(glob.glob(os.path.sep.join((directory,
                                                 os.path.sep.join(["job", "script_*.sh"])

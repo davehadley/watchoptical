@@ -1,3 +1,4 @@
+import os
 import random
 import re
 import unittest
@@ -16,7 +17,8 @@ class TestGenerateMC(unittest.TestCase):
                                      memory_limit='4GB'):
             jobs = generatemc(GenerateMCConfig(WatchMakersConfig(numevents=1)))
             # it is slow to run all so just pick one
-            random.choice(jobs.to_delayed()).compute()
+            results = random.choice(jobs.to_delayed()).compute()
+            self.assertTrue(all(os.path.exists(f) for r in results for f in r))
 
 
 if __name__ == '__main__':
