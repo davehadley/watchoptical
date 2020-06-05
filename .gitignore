@@ -1,6 +1,12 @@
 # Compiled python modules.
 *.pyc
 
+# files gneerated by WATCHMAKERS
+*.root
+*.sh
+*.mac
+*.log
+
 # Setuptools distribution folder.
 /dist/
 
