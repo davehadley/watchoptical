@@ -18,6 +18,7 @@ class TestGenerateMC(unittest.TestCase):
             jobs = generatemc(GenerateMCConfig(WatchMakersConfig(numevents=1)))
             # it is slow to run all so just pick one
             results = random.choice(jobs.to_delayed()).compute()
+            self.assertTrue(len(results)>0)
             self.assertTrue(all(os.path.exists(f) for r in results for f in r))
 
 

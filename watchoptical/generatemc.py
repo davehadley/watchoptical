@@ -39,8 +39,8 @@ def _rungeant4(watchmakersscript: str, cwd: str, filenamefilter: Optional[Callab
 
 
 def _runbonsai(g4file: str) -> str:
-    bonsai_name = f"{os.path.dirname(g4file)}{os.sep}bonsai_{os.path.basename(g4file)}"
-    if not os.path.exists(bonsai_name):
+    bonsai_name = f"{g4file.replace('root_files', 'bonsai_root_files')}"
+    if (not os.path.exists(bonsai_name)) and (g4file != bonsai_name):
         subprocess.check_call(["bonsai", g4file, bonsai_name])
     return bonsai_name
 
