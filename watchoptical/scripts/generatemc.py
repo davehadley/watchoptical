@@ -6,9 +6,9 @@ from dask.distributed import LocalCluster, Client
 from dask.system import cpu_count
 from distributed.system import memory_limit
 
-from watchoptical.client import ClientType, client
-from watchoptical.generatemc import generatemc, GenerateMCConfig
-from watchoptical.runwatchmakers import WatchMakersConfig
+from watchoptical.internal.client import ClientType, client
+from watchoptical.internal.generatemc import generatemc, GenerateMCConfig
+from watchoptical.internal.runwatchmakers import WatchMakersConfig
 
 
 def _parsecml() -> Namespace:

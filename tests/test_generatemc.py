@@ -6,8 +6,8 @@ import unittest
 import dask.distributed
 from toolz import pipe, curry
 
-from watchoptical.generatemc import generatemc, GenerateMCConfig
-from watchoptical.runwatchmakers import WatchMakersConfig
+from watchoptical.internal.generatemc import generatemc, GenerateMCConfig
+from watchoptical.internal.runwatchmakers import WatchMakersConfig
 
 
 class TestGenerateMC(unittest.TestCase):
