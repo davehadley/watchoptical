@@ -10,7 +10,7 @@ import dask.bag
 from dask.bag import Bag
 from dask.delayed import Delayed
 
-from watchoptical.runwatchmakers import generatejobscripts, WatchMakersConfig
+from watchoptical.internal.runwatchmakers import generatejobscripts, WatchMakersConfig
 
 class RatPacBonsaiPair(NamedTuple):
     g4file: str
