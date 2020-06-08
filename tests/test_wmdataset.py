@@ -16,6 +16,6 @@ class TestWMDataset(unittest.TestCase):
 
         dataset = WatchmanDataset([f"{directory}{os.sep}*root_files_*{os.sep}*{os.sep}*.root"])
 
-        self.assertEqual(len(jobdirs) / 2, len(dataset.files))
-        self.assertTrue(len(dataset.files) > 0)
+        self.assertEqual(len(jobdirs) / 2, len(dataset))
+        self.assertTrue(len(dataset) > 0)
         return
