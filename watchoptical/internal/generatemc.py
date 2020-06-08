@@ -3,18 +3,13 @@ import os
 import re
 import subprocess
 from dataclasses import dataclass
-from itertools import zip_longest
-from typing import Tuple, List, Optional, Callable, NamedTuple
+from typing import Tuple, Optional, Callable
 
 import dask.bag
 from dask.bag import Bag
-from dask.delayed import Delayed
 
 from watchoptical.internal.runwatchmakers import generatejobscripts, WatchMakersConfig
-
-class RatPacBonsaiPair(NamedTuple):
-    g4file: str
-    bonsaifile: str
+from watchoptical.internal.wmdataset import RatPacBonsaiPair
 
 
 @dataclass(frozen=True)

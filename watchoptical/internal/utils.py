@@ -1,9 +1,10 @@
 import glob
 from os.path import expanduser, expandvars, abspath
-from typing import Iterable, List
+from pathlib import Path
+from typing import Iterable, List, Callable, Any, Tuple
 
 from toolz import pipe
-from toolz import mapcat
+from toolz import mapcat, curry
 
 
 def _matchfilepattern(pattern: str) -> List[str]:
@@ -12,3 +13,6 @@ def _matchfilepattern(pattern: str) -> List[str]:
 
 def findfiles(patterns: Iterable[str]) -> List[str]:
     return list(sorted(mapcat(_matchfilepattern, patterns)))
+
+def touchfile(path:str)->None:
+    return Path(path).touch()
