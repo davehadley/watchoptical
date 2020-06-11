@@ -12,7 +12,7 @@ def parsecml() -> Namespace:
 
 
 def plot():
-    watchopticalcpp.hello("?")
+    print(watchopticalcpp.add(1, 2))
     return
 
 
