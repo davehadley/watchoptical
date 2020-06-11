@@ -1,6 +1,10 @@
 # Compiled python modules.
 *.pyc
 
+# sci-kit build
+*.so
+_skbuild/
+
 # files gneerated by WATCHMAKERS
 *.root
 *.sh
