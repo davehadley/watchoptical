@@ -19,7 +19,11 @@ def main():
     args = parsecml()
     dataset = WatchmanDataset(args.inputfiles)
     for f in dataset:
-        print(watchopticalcpp.open(f.bonsaifile))
+        import ROOT
+        #ROOT.gSystem.Load("$RATROOT/lib/libRATEvent")
+        #ROOT.gSystem.AddIncludePath(" -I$RATROOT/include")
+        print(watchopticalcpp.open(f.g4file))
+        break
     plot()
     return
 
