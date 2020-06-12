@@ -11,13 +11,12 @@ int add(int i, int j) {
 }
 
 void open(std::string filename) {
-    TFile(filename.c_str()).Print();
-    ROOT::RDataFrame rdf("T", filename);
-    rdf.Range(0, 10).Foreach(
-        [](RAT::DS::EV* event){ std::cout << event->GetID() << std::endl; },
-        {"ds.ev"}
-    );
-
+    ROOT::RDataFrame rdf("T", filename, {"ev"});
+    rdf
+    .Filter([](std::vector<RAT::DS::EV>& events){ return events.size() > 0; })
+    .Range(0, 10)
+    .Foreach(
+        [](std::vector<RAT::DS::EV>& events){ std::cout << "EventID:" << events.at(0).GetID() << ", totalQ:" << events.at(0).GetTotalCharge() << std::endl; });
 }
 
 PYBIND11_MODULE(_watchopticalcpp, m) {
