@@ -1,7 +1,7 @@
 import os
 from argparse import ArgumentParser, Namespace
 
-from watchoptical import watchopticalcpp
+from watchoptical.internal import watchopticalcpp
 from watchoptical.internal.mctoanalysis import mctoanalysis
 from watchoptical.internal.utils import findfiles
 from watchoptical.internal.wmdataset import WatchmanDataset
