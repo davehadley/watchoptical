@@ -27,6 +27,6 @@ pybind11_add_module(_watchopticalcpp watchoptical/watchopticalcpp/_watchopticalc
 target_link_libraries(_watchopticalcpp PRIVATE ${ROOT_LIBRARIES})
 target_link_libraries(_watchopticalcpp PRIVATE ${RATROOT}/lib/libRATEvent.so)
 target_include_directories(_watchopticalcpp PRIVATE ${RATROOT}/include)
-
+target_link_options(_watchopticalcpp PRIVATE -Wl,--no-as-needed)
 
 install(TARGETS _watchopticalcpp LIBRARY DESTINATION watchoptical/watchopticalcpp)
