@@ -12,13 +12,14 @@ def parsecml() -> Namespace:
 
 
 def plot():
-    print(watchopticalcpp.add(1, 2))
     return
 
 
 def main():
     args = parsecml()
     dataset = WatchmanDataset(args.inputfiles)
+    for f in dataset:
+        print(watchopticalcpp.open(f.bonsaifile))
     plot()
     return
 
