@@ -1,1 +1,1 @@
-from ._watchopticalcpp import add, open # noqa
+from ._watchopticalcpp import add, open, convert_ratpacbonsai_to_analysis # noqa
