@@ -7,6 +7,6 @@ setup(name='watchoptical',
       author='David Hadley',
       author_email='dave.richard.hadley@gmail.com',
       license='MIT',
-      packages=['watchoptical', 'watchoptical.watchopticalcpp'],
+      packages=['watchoptical'],
       zip_safe=False,
       )

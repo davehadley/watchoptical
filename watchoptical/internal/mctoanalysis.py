@@ -7,7 +7,7 @@ import dask
 from dask.bag import Bag
 
 from watchoptical.internal.wmdataset import WatchmanDataset, RatPacBonsaiPair
-from watchoptical.watchopticalcpp import convert_ratpacbonsai_to_analysis
+from watchoptical.internal.watchopticalcpp import convert_ratpacbonsai_to_analysis
 
 @dataclass(frozen=True)
 class MCToAnalysisConfig:
