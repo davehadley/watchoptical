@@ -1,1 +1,1 @@
-from ._watchopticalcpp import add # noqa
+from ._watchopticalcpp import add, open # noqa
