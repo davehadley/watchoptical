@@ -15,12 +15,12 @@ void open(std::string filename) {
     ROOT::RDataFrame rdf("T", filename, {"ev"});
     rdf
     .Filter([](std::vector<RAT::DS::EV>& events){ return events.size() > 0; })
-    .Range(0, 10)
     .Foreach(
         [](std::vector<RAT::DS::EV>& events){ std::cout << "EventID:" << events.at(0).GetID() << ", totalQ:" << events.at(0).GetTotalCharge() << std::endl; });
 }
 
 void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, std::string analysisfile) {
+    ROOT::RDataFrame
     return;
 }
 
