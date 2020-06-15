@@ -7,7 +7,7 @@ import unittest
 import dask.distributed
 
 from watchoptical.internal.generatemc import GenerateMCConfig, generatemc
-from watchoptical.internal.mctoanalysis import mctoanalysis
+from watchoptical.internal.mctoanalysis import mctoanalysis, MCToAnalysisConfig
 from watchoptical.internal.runwatchmakers import WatchMakersConfig
 from watchoptical.internal.wmdataset import WatchmanDataset
 
@@ -29,14 +29,14 @@ class TestMCToAnalysis(unittest.TestCase):
                            ).compute()
 
     def test_mctoanalysis(self):
-        os.chdir(tempfile.mkdtemp())
         with dask.distributed.Client(n_workers=1,
                                      threads_per_worker=1,
                                      memory_limit='1GB'):
             dataset = WatchmanDataset([self.filenamepattern])
-            results = mctoanalysis(dataset).compute()
+            config = MCToAnalysisConfig(directory=tempfile.mkdtemp())
+            results = mctoanalysis(dataset, config).compute()
             self.assertTrue(len(results) > 0)
-            self.assertTrue(all(os.path.exists(f) for r in results for f in r))
+            self.assertTrue(all(os.path.exists(f) for f in results))
 
 
 if __name__ == '__main__':

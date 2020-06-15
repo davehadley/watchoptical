@@ -7,6 +7,34 @@
 #include "TFile.h"
 #include "ROOT/RDataFrame.hxx"
 
+
+class TFileTreeCollection {
+
+public:
+    explicit TFileTreeCollection(const std::map<std::string, std::string>& fileNameToTreeName) {
+        if(fileNameToTreeName.size()==0) { throw std::runtime_error("no files/trees provided."); }
+        for(auto& p: fileNameToTreeName) {
+            auto tfile = TFile::Open(p.first.c_str());
+            rawfile.emplace_back(tfile);
+            if(tfile->IsOpen()) {
+                auto tree = tfile->Get<TTree>(p.second.c_str());
+                if(!tree) {
+                    throw std::runtime_error("file " + p.first + " has no tree" + p.second);
+                }
+                rawtree.emplace_back(tree);
+            }
+        }
+        for(int index = 0; index < rawtree.size(); ++index) {
+            rawtree.at(0)->AddFriend(rawtree.at(index));
+        }
+    }
+
+    TTree& tree() { return *rawtree.at(0); }
+private:
+    std::vector<std::unique_ptr<TFile>> rawfile;
+    std::vector<TTree*> rawtree;
+};
+
 int add(int i, int j) {
     return i + j;
 }
@@ -20,7 +48,18 @@ void open(std::string filename) {
 }
 
 void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, std::string analysisfile) {
-    ROOT::RDataFrame
+    TFileTreeCollection dataset({{ratpac,"T"}, {bonsai,"data"}});
+    ROOT::RDataFrame rdf(dataset.tree());
+    auto pipeline = rdf
+    .Define("total_charge", [](const std::vector<RAT::DS::EV>& ev){
+        std::vector<double> result;
+        std::transform(ev.begin(), ev.end(), std::back_inserter(result),
+                [](const RAT::DS::EV& e) {
+            return e.GetTotalCharge();
+        });
+        return result;
+        }, {"ev"});
+    pipeline.Snapshot("watchopticalanalysis", analysisfile, {"total_charge"});
     return;
 }
 
