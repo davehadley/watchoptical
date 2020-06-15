@@ -28,7 +28,8 @@ class TestMCToAnalysis(unittest.TestCase):
                                             filenamefilter=lambda name: "IBD_LIQUID_pn" in name)
                            ).compute()
 
-    def test_generatemc(self):
+    def test_mctoanalysis(self):
+        os.chdir(tempfile.mkdtemp())
         with dask.distributed.Client(n_workers=1,
                                      threads_per_worker=1,
                                      memory_limit='1GB'):
