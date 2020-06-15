@@ -19,7 +19,7 @@ def parsecml() -> Namespace:
 def main():
     args = parsecml()
     dataset = WatchmanDataset(args.inputfiles)
-    mctoanalysis(dataset)
+    mctoanalysis(dataset).compute()
     return
 
 
