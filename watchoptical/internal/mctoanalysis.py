@@ -30,13 +30,14 @@ def _outputfileexists(files: RatPacBonsaiPair, config: MCToAnalysisConfig):
 
 def _run(files: RatPacBonsaiPair, config: MCToAnalysisConfig) -> AnalysisFile:
     outname = _outputfilename(files, config)
-    convert_ratpacbonsai_to_analysis(files.g4file, files.bonsaifile, outname)
+    if not os.path.exists(outname):
+        convert_ratpacbonsai_to_analysis(files.g4file, files.bonsaifile, outname)
     return AnalysisFile(outname, files)
 
 
 def mctoanalysis(dataset: WatchmanDataset, config: Optional[MCToAnalysisConfig] = None) -> Bag:
     config = config if config is not None else MCToAnalysisConfig()
     return (dask.bag.from_sequence(dataset)
-           .filter(curry(complement(_outputfileexists))(config=config))
+           #.filter(curry(complement(_outputfileexists))(config=config))
            .map(_run, config=config)
            )
