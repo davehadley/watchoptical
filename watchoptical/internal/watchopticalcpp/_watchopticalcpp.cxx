@@ -19,7 +19,7 @@ void open(std::string filename) {
 }
 
 void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, std::string analysisfile) {
-    FriendTreeCollection dataset({{ratpac, "T"}});
+    watchoptical::FriendTreeCollection dataset({{ratpac, "T"}});
     ROOT::RDataFrame rdf(dataset.tree());
     auto pipeline = rdf
     .Define("total_charge", [](const std::vector<RAT::DS::EV>& ev){
