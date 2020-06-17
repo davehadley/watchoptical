@@ -33,6 +33,6 @@ def _run(files: RatPacBonsaiPair, config: MCToAnalysisConfig) -> str:
 def mctoanalysis(dataset: WatchmanDataset, config: Optional[MCToAnalysisConfig] = None) -> Bag:
     config = config if config is not None else MCToAnalysisConfig()
     return (dask.bag.from_sequence(dataset)
-            .filter(curry(complement(_outputfileexists))(config=config))
-            .map(_run, config=config)
-            )
+           .filter(curry(complement(_outputfileexists))(config=config))
+           .map(_run, config=config)
+           )

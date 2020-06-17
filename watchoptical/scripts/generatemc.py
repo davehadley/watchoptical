@@ -17,7 +17,7 @@ def _parsecml() -> Namespace:
                         help="Directory to store generated files. It will be created if it does not exist."
                         )
     parser.add_argument("--target", "-t", type=ClientType, choices=list(ClientType),
-                        default=ClientType.LOCAL,
+                        default=ClientType.SINGLE,
                         help="Where to run jobs."
                         )
     parser.add_argument("--num-events", "-n", type=int, default=1000,
