@@ -29,10 +29,9 @@ class TestMCToAnalysis(unittest.TestCase):
                            ).compute()
 
     def test_mctoanalysis(self):
-        #with dask.distributed.Client(n_workers=1,
-        #                             threads_per_worker=1,
-        #                             memory_limit='1GB'):
-        with dask.config.set(scheduler="single-threaded"):
+        with dask.distributed.Client(n_workers=1,
+                                     threads_per_worker=1,
+                                     memory_limit='1GB'):
             dataset = WatchmanDataset([self.filenamepattern])
             config = MCToAnalysisConfig(directory=tempfile.mkdtemp())
             results = mctoanalysis(dataset, config).compute()
