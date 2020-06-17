@@ -3,7 +3,6 @@ import tempfile
 from dataclasses import dataclass, field
 from typing import Optional
 
-import ROOT
 import dask
 from dask.bag import Bag
 from toolz import complement, curry
@@ -27,24 +26,13 @@ def _outputfileexists(files: RatPacBonsaiPair, config: MCToAnalysisConfig):
 
 def _run(files: RatPacBonsaiPair, config: MCToAnalysisConfig) -> str:
     outname = _outputfilename(files, config)
-    #convert_ratpacbonsai_to_analysis(files.g4file, files.bonsaifile, outname)
-    ROOT.gSystem.Load("libRATEvent")
-    tfile = ROOT.TFile(files.g4file)
-    tree = tfile.Get("T")
-    for event in tree:
-        print(event)
-        print(event.ds.ev)
-        for ev in event.ev:
-            print(ev)
-            for index in range(ev.GetPMTCount()):
-                print(index, ev.GetPMT(index))
+    convert_ratpacbonsai_to_analysis(files.g4file, files.bonsaifile, outname)
     return outname
 
 
 def mctoanalysis(dataset: WatchmanDataset, config: Optional[MCToAnalysisConfig] = None) -> Bag:
     config = config if config is not None else MCToAnalysisConfig()
-    #return (dask.bag.from_sequence(dataset)
-    #        .filter(curry(complement(_outputfileexists))(config=config))
-    #        .map(_run, config=config)
-    #        )
-    return [_run(f, config=config) for f in dataset]
+    return (dask.bag.from_sequence(dataset)
+            .filter(curry(complement(_outputfileexists))(config=config))
+            .map(_run, config=config)
+            )
