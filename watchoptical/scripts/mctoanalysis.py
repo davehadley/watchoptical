@@ -3,7 +3,7 @@ from argparse import ArgumentParser, Namespace
 
 from watchoptical.internal import watchopticalcpp
 from watchoptical.internal.client import ClientType, client
-from watchoptical.internal.mctoanalysis import mctoanalysis
+from watchoptical.internal.mctoanalysis import mctoanalysis, MCToAnalysisConfig
 from watchoptical.internal.utils import findfiles
 from watchoptical.internal.wmdataset import WatchmanDataset
 
@@ -25,7 +25,7 @@ def main():
     args = parsecml()
     dataset = WatchmanDataset(args.inputfiles)
     with client(args.target):
-        mctoanalysis(dataset).compute()
+        mctoanalysis(dataset, config=MCToAnalysisConfig(directory=args.directory)).compute()
     return
 
 
