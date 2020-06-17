@@ -7,7 +7,7 @@
 #include "TFile.h"
 #include "ROOT/RDataFrame.hxx"
 
-#include "watchoptical/FriendTreeCollection.hxx"
+#include "watchoptical/IterEvents.hxx"
 
 
 void open(std::string filename) {
@@ -19,18 +19,10 @@ void open(std::string filename) {
 }
 
 void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, std::string analysisfile) {
-    watchoptical::FriendTreeCollection dataset({{ratpac, "T"}});
-    ROOT::RDataFrame rdf(dataset.tree());
-    auto pipeline = rdf
-    .Define("total_charge", [](const std::vector<RAT::DS::EV>& ev){
-        std::vector<double> result;
-        std::transform(ev.begin(), ev.end(), std::back_inserter(result),
-                [](const RAT::DS::EV& e) {
-            return e.GetTotalCharge();
-        });
-        return result;
-        }, {"ev"});
-    pipeline.Snapshot("watchopticalanalysis", analysisfile, {"total_charge"});
+    watchoptical::IterEvents iterevents(ratpac, bonsai);
+    while(iterevents.next()) {
+        iterevents.bonsai_n9
+    }
     return;
 }
 
