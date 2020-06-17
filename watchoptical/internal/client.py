@@ -1,5 +1,7 @@
 from enum import Enum
+from typing import Union
 
+import dask
 from dask.distributed import Client, LocalCluster
 from dask.system import cpu_count
 from dask_jobqueue import SLURMCluster
@@ -8,12 +10,15 @@ import dask_jobqueue
 
 
 class ClientType(Enum):
+    SINGLE = "single"
     LOCAL = "local"
     CLUSTER = "cluster"
 
 
 def client(clienttype: ClientType, memory: int = 4 * 1e9) -> Client:
-    if (clienttype == ClientType.LOCAL):
+    if (clienttype == ClientType.SINGLE):
+        return _singleclient()
+    elif (clienttype == ClientType.LOCAL):
         return _localclient(memory=memory)
     elif (clienttype == ClientType.CLUSTER):
         return _slurmclient(memory=memory)
@@ -34,3 +39,7 @@ def _slurmclient(memory: int, partition="epp,taskfarm", account="epp") -> Client
     cluster = SLURMCluster(queue=partition, memory=memory, project=account, cores=1)
     cluster.adapt(maximum_jobs=100)
     return Client(address=cluster)
+
+
+def _singleclient():
+    return Client(processes=False)
