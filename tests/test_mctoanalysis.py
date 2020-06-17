@@ -36,7 +36,7 @@ class TestMCToAnalysis(unittest.TestCase):
             config = MCToAnalysisConfig(directory=tempfile.mkdtemp())
             results = mctoanalysis(dataset, config).compute()
             self.assertTrue(len(results) > 0)
-            self.assertTrue(all(os.path.exists(f) for f in results))
+            self.assertTrue(all(os.path.exists(f.filename) for f in results))
 
 
 if __name__ == '__main__':
