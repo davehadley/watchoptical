@@ -36,13 +36,13 @@ class TreeTuple(NamedTuple):
     bonsai: dict
 
 def load(analysisfile: AnalysisFile) -> TreeTuple:
-    anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].arrays()
-    bonsai = uproot.open(analysisfile.producedfrom.bonsaifile)["data"].arrays()
+    anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].lazyarrays()
+    bonsai = uproot.open(analysisfile.producedfrom.bonsaifile)["data"].lazyarrays()
     return TreeTuple(anal, bonsai)
 
 def analysis(tree: TreeTuple) -> bh.Histogram:
     histo = bh.Histogram(bh.axis.Regular(100, 0.0, 60.0))
-    histo.fill(tree.bonsai[b"n9"])
+    histo.fill(tree.bonsai["n9"])
     return histo
 
 def sumhistograms(iterable: Iterable[bh.Histogram]) -> bh.Histogram:
