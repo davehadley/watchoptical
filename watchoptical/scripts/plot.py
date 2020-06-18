@@ -1,11 +1,15 @@
+import functools
+import operator
 import os
 from argparse import ArgumentParser, Namespace
-from typing import NamedTuple, Any
+from typing import NamedTuple, Any, Iterable
 
 from IPython import embed
 
 import uproot
 from uproot.write.objects import TTree
+import boost_histogram as bh
+import mplhep as hep
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,25 +28,35 @@ def parsecml() -> Namespace:
                         help="Where to run jobs."
                         )
     parser.add_argument("--inputfiles", nargs="+", type=str, default=[
-        "~/work/wm/data/testwatchoptical/attempt01/*_files_default/*IBD_LIQUID_pn_ibd*/*.root"])
+        "~/work/wm/data/testwatchoptical/attempt01/*_files_default/*/*.root"])
     return parser.parse_args()
 
 class TreeTuple(NamedTuple):
     anal: dict
     bonsai: dict
 
-def load(analysisfile: AnalysisFile):
+def load(analysisfile: AnalysisFile) -> TreeTuple:
     anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].arrays()
     bonsai = uproot.open(analysisfile.producedfrom.bonsaifile)["data"].arrays()
     return TreeTuple(anal, bonsai)
 
+def analysis(tree: TreeTuple) -> bh.Histogram:
+    histo = bh.Histogram(bh.axis.Regular(100, 0.0, 60.0))
+    histo.fill(tree.bonsai[b"n9"])
+    return histo
+
+def sumhistograms(iterable: Iterable[bh.Histogram]) -> bh.Histogram:
+    return functools.reduce(operator.add, iterable)
 
 def plot(dataset: WatchmanDataset):
     analfiles = mctoanalysis(dataset)
-    data = analfiles.map(load).compute()
+    data = (analfiles.map(load)
+            .map(analysis)
+            .reduction(sumhistograms, sumhistograms)
+            ).compute()
     #embed()
     #plt.hist(data[0].anal[b"total_charge"], label="q")
-    plt.hist(data[0].bonsai[b"n9"], label="n9")
+    hep.histplot(data)
     plt.legend()
     plt.show()
     input("wait")
