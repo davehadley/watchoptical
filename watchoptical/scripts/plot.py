@@ -1,6 +1,7 @@
 import functools
 import operator
 import os
+import re
 from argparse import ArgumentParser, Namespace
 from typing import NamedTuple, Any, Iterable
 
@@ -15,6 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from watchoptical.internal.client import ClientType, client
+from watchoptical.internal.histoutils import CategoryHistogram, categoryhistplot
 from watchoptical.internal.mctoanalysis import mctoanalysis, AnalysisFile
 from watchoptical.internal.wmdataset import WatchmanDataset
 
@@ -31,22 +33,38 @@ def parsecml() -> Namespace:
         "~/work/wm/data/testwatchoptical/attempt01/*_files_default/*/*.root"])
     return parser.parse_args()
 
+
 class TreeTuple(NamedTuple):
     anal: dict
     bonsai: dict
+    analysisfile: AnalysisFile
+
 
 def load(analysisfile: AnalysisFile) -> TreeTuple:
     anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].lazyarrays()
     bonsai = uproot.open(analysisfile.producedfrom.bonsaifile)["data"].lazyarrays()
-    return TreeTuple(anal, bonsai)
+    return TreeTuple(anal, bonsai, analysisfile)
+
+
+def categoryfromfile(file: AnalysisFile) -> str:
+    fname = file.producedfrom.g4file
+    try:
+        result = re.match(".*/Watchman_(.*)/.*", fname).group(1)
+    except AttributeError:
+        result = "unknown"
+    return result
+
 
 def analysis(tree: TreeTuple) -> bh.Histogram:
-    histo = bh.Histogram(bh.axis.Regular(100, 0.0, 60.0))
-    histo.fill(tree.bonsai["n9"])
+    histo = CategoryHistogram(bh.axis.Regular(100, 0.0, 60.0))
+    category = categoryfromfile(tree.analysisfile)
+    histo.fill(category, tree.bonsai["n9"])
     return histo
+
 
 def sumhistograms(iterable: Iterable[bh.Histogram]) -> bh.Histogram:
     return functools.reduce(operator.add, iterable)
+
 
 def plot(dataset: WatchmanDataset):
     analfiles = mctoanalysis(dataset)
@@ -54,9 +72,9 @@ def plot(dataset: WatchmanDataset):
             .map(analysis)
             .reduction(sumhistograms, sumhistograms)
             ).compute()
-    #embed()
-    #plt.hist(data[0].anal[b"total_charge"], label="q")
-    hep.histplot(data)
+    # embed()
+    # plt.hist(data[0].anal[b"total_charge"], label="q")
+    categoryhistplot(data)
     plt.legend()
     plt.show()
     input("wait")
