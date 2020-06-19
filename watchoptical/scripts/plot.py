@@ -46,7 +46,7 @@ def load(analysisfile: AnalysisFile) -> TreeTuple:
     return TreeTuple(anal, bonsai, analysisfile)
 
 
-def categoryfromfile(file: AnalysisFile) -> str:
+def eventtypefromfile(file: AnalysisFile) -> str:
     fname = file.producedfrom.g4file
     try:
         result = re.match(".*/Watchman_(.*)/.*", fname).group(1)
@@ -54,6 +54,11 @@ def categoryfromfile(file: AnalysisFile) -> str:
         result = "unknown"
     return result
 
+
+def categoryfromfile(file: AnalysisFile) -> str:
+    et = eventtypefromfile(file)
+    result = "IBD" if "IBD" in et else "Background"
+    return result
 
 def analysis(tree: TreeTuple) -> bh.Histogram:
     histo = CategoryHistogram(bh.axis.Regular(100, 0.0, 60.0))
