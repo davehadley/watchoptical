@@ -13,30 +13,34 @@ class CategoryHistogram(Collection):
         histogram: bh.Histogram
 
     def __init__(self, *axes: bh.axis.Axis, **kwargs: Any):
-        axes = list(axes) + [bh.axis.StrCategory([], growth=True)]
-        self._hist = bh.Histogram(*axes, **kwargs)
+        self._args = axes
+        self._kwargs = kwargs
+        self._hist = dict()
 
     def fill(self, category: str, *args: np.ndarray, weight: Optional[np.ndarray] = None):
-        self._hist.fill(*args, category, weight=weight)
+        if category not in self._hist:
+            self._hist[category] = bh.Histogram(*self._args, **self._kwargs)
+        self._hist[category].fill(*args, weight=weight)
 
     def __iter__(self):
-        for index in sorted(self._categoryaxis):
-            yield CategoryHistogram.Item(index, self._hist[..., bh.loc(index)])
+        for index, hist in sorted(self._hist.items()):
+            yield CategoryHistogram.Item(index, hist)
 
     def __len__(self) -> int:
-        return len(self._categoryaxis)
+        return len(self._hist)
 
     def __contains__(self, __x: object) -> bool:
-        return __x in set(self._categoryaxis)
+        return __x in self._hist
 
     def __add__(self, other) -> "CategoryHistogram":
         result = deepcopy(self)
-        result._hist += other._hist
+        for key, value in other._hist.items():
+            try:
+                result._hist[key] += value
+            except KeyError:
+                result._hist[key] = deepcopy(value)
         return result
 
-    @property
-    def _categoryaxis(self):
-        return self._hist.axes[-1]
 
 
 def categoryhistplot(hist: CategoryHistogram,
