@@ -46,8 +46,8 @@ class TreeTuple(NamedTuple):
 
 
 def load(analysisfile: AnalysisFile) -> TreeTuple:
-    anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].lazyarrays()
-    bonsai = uproot.open(analysisfile.producedfrom.bonsaifile)["data"].lazyarrays()
+    anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].pandas.df(flatten=False)
+    bonsai = uproot.open(analysisfile.producedfrom.bonsaifile)["data"].pandas.df(flatten=False)
     return TreeTuple(anal, bonsai, analysisfile)
 
 
@@ -76,10 +76,26 @@ def categoryfromfile(file: AnalysisFile) -> str:
     return result
 
 
+def selection(data):
+    # watchmakers efficiency is based on:
+    #             cond = "closestPMT/1000.>%f"%(_d)
+    #             cond += "&& good_pos>%f " %(_posGood)
+    #             cond += "&& inner_hit > 4 &&  veto_hit < 4"
+    #             cond += "&& n9 > %f" %(_n9)
+    # with _distance2pmt=1,_n9=8,_dist=30.0,\
+    # _posGood=0.1,_dirGood=0.1,_pe=8,_nhit=8,_itr = 1.5
+    return data[(data.closestPMT/1000.0 > 4.0)
+                & (data.good_pos > 0.1)
+                & (data.inner_hit > 4)
+                & (data.veto_hit < 4)
+                ]
+
+
 def analysis(tree: TreeTuple) -> bh.Histogram:
     histo = ExposureWeightedHistogram(bh.axis.Regular(100, 0.0, 60.0))
     category = categoryfromfile(tree.analysisfile)
-    histo.fill(category, tree.exposure, tree.bonsai["n9"])
+    #histo.fill(category, tree.exposure, tree.bonsai["n9"])
+    histo.fill(category, tree.exposure, selection(tree.bonsai).n9.array)
     return histo
 
 
@@ -93,9 +109,8 @@ def plot(dataset: WatchmanDataset):
             .map(analysis)
             .reduction(sumhistograms, sumhistograms)
             ).compute()
-    # embed()
-    # plt.hist(data[0].anal[b"total_charge"], label="q")
     categoryhistplot(data)
+    plt.yscale("log")
     plt.legend()
     plt.show()
     return
