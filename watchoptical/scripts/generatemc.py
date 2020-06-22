@@ -20,8 +20,11 @@ def _parsecml() -> Namespace:
                         default=ClientType.SINGLE,
                         help="Where to run jobs."
                         )
-    parser.add_argument("--num-events", "-n", type=int, default=1000,
-                        help="Number of events to generate for each source of signal/background type."
+    parser.add_argument("--num-events-per-jobs", "-n", type=int, default=10000,
+                        help="Number of events per sub-job to generate for each source of signal/background type."
+                        )
+    parser.add_argument("--num-jobs", "-j", type=int, default=100,
+                        help="Number of sub-jobs to generate for each source of signal/background type."
                         )
     return parser.parse_args()
 
@@ -30,7 +33,9 @@ def main():
     args = _parsecml()
     if not os.path.exists(args.directory):
         os.makedirs(args.directory, exist_ok=True)
-    config = GenerateMCConfig(WatchMakersConfig(directory=args.directory, numevents=args.num_events))
+    config = GenerateMCConfig(WatchMakersConfig(directory=args.directory, numevents=args.num_events),
+                              numjobs=args.num_jobs,
+                              )
     with client(args.target):
         generatemc(config).compute()
     return

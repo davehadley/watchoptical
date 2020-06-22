@@ -18,6 +18,7 @@ class GenerateMCConfig:
     filenamefilter: Optional[Callable[[str], bool]] = None
     npartitions: Optional[int] = None
     partition_size: Optional[int] = None
+    numjobs: int = 1
 
 
 def _rungeant4(watchmakersscript: str, cwd: str, filenamefilter: Optional[Callable[[str], bool]] = None) -> Tuple[str]:
@@ -43,7 +44,7 @@ def _runbonsai(g4file: str) -> str:
 def generatemc(config: GenerateMCConfig) -> Bag:
     scripts = generatejobscripts(config.watchmakersconfig)
     cwd = scripts.directory
-    return (dask.bag.from_sequence(((s, cwd, config.filenamefilter) for s in scripts.scripts),
+    return (dask.bag.from_sequence(((s, cwd, config.filenamefilter) for _ in range(config.numjobs) for s in scripts.scripts),
                                    npartitions=config.npartitions,
                                    partition_size=config.partition_size
                                    )
