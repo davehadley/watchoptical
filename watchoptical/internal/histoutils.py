@@ -55,3 +55,41 @@ def categoryhistplot(hist: CategoryHistogram,
         histogram = transformhistogram(item)
         ax = mplhep.histplot(histogram, label=formatlabel(item), **kwargs)
     return ax
+
+
+class ExposureWeightedHistogram(Collection):
+
+    class Item(NamedTuple):
+        category: str
+        histogram :bh.Histogram
+        exposure: float
+
+    def __init__(self, *axes: bh.axis, **kwargs: Any):
+        self._hist = CategoryHistogram(*axes, **kwargs)
+        self._exposure = defaultdict(bh.accumulators.WeightedSum)
+
+    def fill(self, category: str, exposure: float, *args: np.ndarray, weight: Optional[np.ndarray] = None):
+        self._hist.fill(category, *args, weight=weight)
+        self._exposure[category].fill(exposure)
+        return
+
+    def __len__(self) -> int:
+        return len(self._hist)
+
+    def __iter__(self) -> Iterator[Item]:
+        for k, v in self._hist:
+            yield ExposureWeightedHistogram.Item(k, (1.0 / self._exposure[k].value) * v, self._exposure[k])
+
+    def __contains__(self, __x: object) -> bool:
+        return __x in self._hist
+
+    def __add__(self, other: "ExposureWeightedHistogram") -> "ExposureWeightedHistogram":
+        result = deepcopy(self)
+        for key, histogram, exposure in other:
+            try:
+                result._hist._hist[key] += histogram
+                result._exposure[key] += exposure
+            except KeyError:
+                result._hist._hist[key] = deepcopy(histogram)
+                result._exposure[key] = deepcopy(exposure)
+        return result
