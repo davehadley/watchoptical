@@ -1,3 +1,4 @@
+from collections import defaultdict
 from copy import deepcopy
 from typing import NamedTuple, Iterator, Collection, Union, Optional, Any, Callable
 
@@ -22,7 +23,7 @@ class CategoryHistogram(Collection):
             self._hist[category] = bh.Histogram(*self._args, **self._kwargs)
         self._hist[category].fill(*args, weight=weight)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Item]:
         for index, hist in sorted(self._hist.items()):
             yield CategoryHistogram.Item(index, hist)
 
