@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 from watchoptical.internal.client import ClientType, client
 from watchoptical.internal.histoutils import CategoryHistogram, categoryhistplot, ExposureWeightedHistogram
 from watchoptical.internal.mctoanalysis import mctoanalysis, AnalysisFile
+from watchoptical.internal.utils import findfiles
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 
@@ -84,7 +85,7 @@ def selection(data):
     #             cond += "&& n9 > %f" %(_n9)
     # with _distance2pmt=1,_n9=8,_dist=30.0,\
     # _posGood=0.1,_dirGood=0.1,_pe=8,_nhit=8,_itr = 1.5
-    return data[(data.closestPMT/1000.0 > 4.0)
+    return data[(data.closestPMT/1000.0 > 2.0)
                 & (data.good_pos > 0.1)
                 & (data.inner_hit > 4)
                 & (data.veto_hit < 4)
@@ -94,8 +95,8 @@ def selection(data):
 def analysis(tree: TreeTuple) -> bh.Histogram:
     histo = ExposureWeightedHistogram(bh.axis.Regular(100, 0.0, 60.0))
     category = categoryfromfile(tree.analysisfile)
-    #histo.fill(category, tree.exposure, tree.bonsai["n9"])
-    histo.fill(category, tree.exposure, selection(tree.bonsai).n9.array)
+    histo.fill(category, tree.exposure, tree.bonsai.n9.array)
+    #histo.fill(category, tree.exposure, selection(tree.bonsai).closestPMT.array)
     return histo
 
 
@@ -118,7 +119,9 @@ def plot(dataset: WatchmanDataset):
 
 def main():
     args = parsecml()
-    dataset = WatchmanDataset(args.inputfiles)
+    dataset = WatchmanDataset(f for f in findfiles(args.inputfiles)
+                              if not ("IBDNeutron" in f or "IBDPosition" in f)
+                              )
     with client(args.target):
         plot(dataset)
     return
