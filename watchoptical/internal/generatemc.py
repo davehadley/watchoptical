@@ -2,6 +2,7 @@ import glob
 import os
 import re
 import subprocess
+import uuid
 from dataclasses import dataclass
 from typing import Tuple, Optional, Callable
 
@@ -23,14 +24,17 @@ class GenerateMCConfig:
 
 def _rungeant4(watchmakersscript: str, cwd: str, filenamefilter: Optional[Callable[[str], bool]] = None) -> Tuple[str]:
     with open(watchmakersscript) as script:
+        scripttext = script.read()
+        uid = str(uuid.uuid1())
+        scripttext = scripttext.replace("run$TMPNAME.root", f"run{uid}.root")
+        scripttext = scripttext.replace("run$TMPNAME.log", f"run{uid}.log")
         filename = os.sep.join((cwd,
-                                (re.search(r".* -o (root_.*\$TMPNAME.root) .*", script.read())
+                                (re.search(f".* -o (root_.*{uid}.root) .*", scripttext)
                                  .group(1)
-                                 .replace("$TMPNAME", "*")
                                  )
                                 ))
-    if filenamefilter is None or filenamefilter(filename):
-        subprocess.check_call([watchmakersscript], cwd=cwd)
+        if filenamefilter is None or filenamefilter(filename):
+            subprocess.check_call(scripttext, shell=True, cwd=cwd)
     return tuple(glob.glob(filename))
 
 
