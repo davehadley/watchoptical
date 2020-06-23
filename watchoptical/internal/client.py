@@ -36,8 +36,8 @@ def _localclient(memory: int) -> Client:
 
 def _slurmclient(memory: int, partition="epp,taskfarm", account="epp") -> Client:
     # For slurm usage instructions see: https://wiki.csc.warwick.ac.uk/twiki/bin/view/Desktop2018/CowUserGuide
-    cluster = SLURMCluster(queue=partition, memory=memory, project=account, cores=1)
-    cluster.adapt(minimum_jobs=40, maximum_jobs=200)
+    cluster = SLURMCluster(queue=partition, memory=memory, project=account, cores=1, walltime='24:00:00')
+    cluster.adapt(minimum_jobs=100, maximum_jobs=200)
     return Client(address=cluster)
 
 
