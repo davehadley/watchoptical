@@ -53,7 +53,7 @@ def _run(args):
     config = GenerateMCConfig(WatchMakersConfig(directory=args.directory, numevents=args.num_events_per_job),
                               numjobs=args.num_jobs,
                               bonsaiexecutable=expandpath(args.bonsai),
-                              bonsailikelihood=expandpath(args.bonsailikelihood)
+                              bonsailikelihood=expandpath(args.bonsai_likelihood)
                               )
     with client(args.target):
         generatemc(config).compute()
