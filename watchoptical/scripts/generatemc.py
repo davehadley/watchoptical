@@ -41,7 +41,7 @@ def _validatearguments(args):
     if not os.path.exists(expandpath(args.bonsai)):
         print(f"Cannot find bonsai executable {args.bonsai}")
         sys.exit(1)
-    if not os.path.exists(expandpath(args.bonsailikelihood)):
+    if not os.path.exists(expandpath(args.bonsail_ikelihood)):
         print(f"Cannot find bonsai likelihood {args.bonsai_likelihood}")
         sys.exit(1)
     return
