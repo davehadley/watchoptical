@@ -6,9 +6,9 @@ from dask.distributed import LocalCluster, Client
 from dask.system import cpu_count
 from distributed.system import memory_limit
 
-from watchoptical.client import ClientType, client
-from watchoptical.generatemc import generatemc, GenerateMCConfig
-from watchoptical.runwatchmakers import WatchMakersConfig
+from watchoptical.internal.client import ClientType, client
+from watchoptical.internal.generatemc import generatemc, GenerateMCConfig
+from watchoptical.internal.runwatchmakers import WatchMakersConfig
 
 
 def _parsecml() -> Namespace:
@@ -17,11 +17,14 @@ def _parsecml() -> Namespace:
                         help="Directory to store generated files. It will be created if it does not exist."
                         )
     parser.add_argument("--target", "-t", type=ClientType, choices=list(ClientType),
-                        default=ClientType.LOCAL,
+                        default=ClientType.SINGLE,
                         help="Where to run jobs."
                         )
-    parser.add_argument("--num-events", "-n", type=int, default=1000,
-                        help="Number of events to generate for each source of signal/background type."
+    parser.add_argument("--num-events-per-job", "-n", type=int, default=10000,
+                        help="Number of events per sub-job to generate for each source of signal/background type."
+                        )
+    parser.add_argument("--num-jobs", "-j", type=int, default=100,
+                        help="Number of sub-jobs to generate for each source of signal/background type."
                         )
     return parser.parse_args()
 
@@ -30,7 +33,9 @@ def main():
     args = _parsecml()
     if not os.path.exists(args.directory):
         os.makedirs(args.directory, exist_ok=True)
-    config = GenerateMCConfig(WatchMakersConfig(directory=args.directory, numevents=args.num_events))
+    config = GenerateMCConfig(WatchMakersConfig(directory=args.directory, numevents=args.num_events_per_job),
+                              numjobs=args.num_jobs,
+                              )
     with client(args.target):
         generatemc(config).compute()
     return

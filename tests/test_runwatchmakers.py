@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from watchoptical import runwatchmakers
+from watchoptical.internal import runwatchmakers
 
 
 class TestRunWatchMakers(unittest.TestCase):

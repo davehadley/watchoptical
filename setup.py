@@ -1,4 +1,4 @@
-from setuptools import setup
+from skbuild import setup
 
 setup(name='watchoptical',
       version='0.1',
