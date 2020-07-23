@@ -10,6 +10,7 @@ import dask.bag
 from dask.bag import Bag
 
 from watchoptical.internal.runwatchmakers import generatejobscripts, WatchMakersConfig
+from watchoptical.internal.utils import expandpath, temporaryworkingdirectory
 from watchoptical.internal.wmdataset import RatPacBonsaiPair
 
 
@@ -20,6 +21,14 @@ class GenerateMCConfig:
     npartitions: Optional[int] = None
     partition_size: Optional[int] = None
     numjobs: int = 1
+    bonsaiexecutable: str = "${BONSAIDIR}/bonsai"
+    bonsailikelihood: str = "${BONSAIDIR}/like.bin"
+
+    def __post_init__(self):
+        if not os.path.exists(expandpath(self.bonsaiexecutable)):
+            raise ValueError("cannot find bonsai executable", self.bonsaiexecutable)
+        if not os.path.exists(expandpath(self.bonsailikelihood)):
+            raise ValueError("cannot find bonsai likelihood", self.bonsailikelihood)
 
 
 def _rungeant4(watchmakersscript: str, cwd: str, filenamefilter: Optional[Callable[[str], bool]] = None) -> Tuple[str]:
@@ -38,10 +47,12 @@ def _rungeant4(watchmakersscript: str, cwd: str, filenamefilter: Optional[Callab
     return tuple(glob.glob(filename))
 
 
-def _runbonsai(g4file: str) -> str:
+def _runbonsai(g4file: str, config: GenerateMCConfig) -> str:
     bonsai_name = f"{g4file.replace('root_files', 'bonsai_root_files')}"
-    if (not os.path.exists(bonsai_name)) and (g4file != bonsai_name):
-        subprocess.check_call(["bonsai", g4file, bonsai_name])
+    with temporaryworkingdirectory():
+        os.symlink(expandpath(config.bonsailikelihood), f"{os.getcwd()}{os.sep}like.bin")
+        if (not os.path.exists(bonsai_name)) and (g4file != bonsai_name):
+            subprocess.check_call([expandpath(config.bonsaiexecutable), g4file, bonsai_name])
     return bonsai_name
 
 
@@ -54,5 +65,5 @@ def generatemc(config: GenerateMCConfig) -> Bag:
                                    )
             .starmap(_rungeant4)
             .flatten()
-            .map(lambda g4file: RatPacBonsaiPair(g4file, _runbonsai(g4file)))
+            .map(lambda g4file: RatPacBonsaiPair(g4file, _runbonsai(g4file, config=config)))
             )
