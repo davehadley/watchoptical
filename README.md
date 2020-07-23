@@ -6,6 +6,9 @@ Install the WATCHMAN software following the instructions at:
     
 1. WMUtils https://github.com/AIT-WATCHMAN/WMUtils 
 2. watchmakers https://github.com/AIT-WATCHMAN/watchmakers/
+3. Standalone BONSAI https://github.com/AIT-WATCHMAN/bonsai/
+    1. watchoptical requires a ${BONSAIDIR} environment variable to find
+    the correct BONSAI version. You should set this in your environment setup. 
 
 Check out this package:
 
