@@ -93,7 +93,7 @@ def selection(data):
 
 
 def analysis(tree: TreeTuple) -> bh.Histogram:
-    histo = ExposureWeightedHistogram(bh.axis.Regular(100, 0.0, 60.0))
+    histo = ExposureWeightedHistogram(bh.axis.Regular(25, 0.0, 60.0))
     category = categoryfromfile(tree.analysisfile)
     histo.fill(category, tree.exposure, tree.bonsai.n9.array)
     #histo.fill(category, tree.exposure, selection(tree.bonsai).closestPMT.array)
@@ -111,8 +111,11 @@ def plot(dataset: WatchmanDataset):
             .reduction(sumhistograms, sumhistograms)
             ).compute()
     categoryhistplot(data)
+    plt.ylabel("events per second")
     plt.yscale("log")
+    plt.xlabel("num PMT hits in 9 ns (n9)")
     plt.legend()
+    plt.savefig("n9.png")
     plt.show()
     return
 
