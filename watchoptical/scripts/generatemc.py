@@ -2,6 +2,8 @@ import os
 import sys
 from argparse import ArgumentParser, Namespace
 from enum import Enum
+from typing import Optional
+from collections import OrderedDict
 
 from dask.distributed import LocalCluster, Client
 from dask.system import cpu_count
@@ -9,6 +11,7 @@ from distributed.system import memory_limit
 
 from watchoptical.internal.client import ClientType, client
 from watchoptical.internal.generatemc import generatemc, GenerateMCConfig
+from watchoptical.internal.ratmacro import ratmacro
 from watchoptical.internal.runwatchmakers import WatchMakersConfig
 from watchoptical.internal.utils import expandpath
 
@@ -22,6 +25,7 @@ def _parsecml() -> Namespace:
                         default=ClientType.SINGLE,
                         help="Where to run jobs."
                         )
+    parser.add_argument("--signal-only", action="store_true")
     parser.add_argument("--num-events-per-job", "-n", type=int, default=10000,
                         help="Number of events per sub-job to generate for each source of signal/background type."
                         )
@@ -34,6 +38,16 @@ def _parsecml() -> Namespace:
     parser.add_argument("--bonsai-likelihood",
                         help="Path to the bonsai likelihood. Environment variable ${BONSAIDIR}/like.bin is used if not set.",
                         default="${BONSAIDIR}/like.bin")
+    parser.add_argument("--attenuation",
+                        help="Set attenuation length.",
+                        type=float,
+                        default=None
+                        )
+    parser.add_argument("--scattering",
+                        help="Set scattering length.",
+                        type=float,
+                        default=None
+                        )
     return parser.parse_args()
 
 
@@ -41,19 +55,30 @@ def _validatearguments(args):
     if not os.path.exists(expandpath(args.bonsai)):
         print(f"Cannot find bonsai executable {args.bonsai}")
         sys.exit(1)
-    if not os.path.exists(expandpath(args.bonsail_ikelihood)):
+    if not os.path.exists(expandpath(args.bonsai_likelihood)):
         print(f"Cannot find bonsai likelihood {args.bonsai_likelihood}")
         sys.exit(1)
     return
 
 
+def _wrapmacroindict(key: str, macro: Optional[str]):
+    if (macro is not None):
+        return OrderedDict({key: macro})
+    else:
+        return None
+
+
 def _run(args):
     if not os.path.exists(args.directory):
         os.makedirs(args.directory, exist_ok=True)
+    filenamefilter = None if args.signal_only is None else lambda f: "IBD_LIQUID_pn" in f
+    injectmacros = _wrapmacroindict(f"attenuation_{args.attenuation}", ratmacro(attenuation=args.attenuation, scattering=args.scattering))
     config = GenerateMCConfig(WatchMakersConfig(directory=args.directory, numevents=args.num_events_per_job),
                               numjobs=args.num_jobs,
                               bonsaiexecutable=expandpath(args.bonsai),
-                              bonsailikelihood=expandpath(args.bonsai_likelihood)
+                              bonsailikelihood=expandpath(args.bonsai_likelihood),
+                              injectmacros=injectmacros,
+                              filenamefilter=filenamefilter
                               )
     with client(args.target):
         generatemc(config).compute()
