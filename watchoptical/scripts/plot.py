@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from watchoptical.internal.client import ClientType, client
 from watchoptical.internal.histoutils import CategoryHistogram, categoryhistplot, ExposureWeightedHistogram
 from watchoptical.internal.mctoanalysis import mctoanalysis, AnalysisFile
-from watchoptical.internal.utils import findfiles
+from watchoptical.internal.utils import findfiles, searchdirectories
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 
@@ -25,8 +25,7 @@ def parsecml() -> Namespace:
                         default=ClientType.SINGLE,
                         help="Where to run jobs."
                         )
-    parser.add_argument("--inputfiles", nargs="+", type=str, default=[
-        "~/work/wm/data/testwatchoptical/attempt01/*_files_default/*/*.root"])
+    parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])
     return parser.parse_args()
 
 
@@ -122,7 +121,7 @@ def plot(dataset: WatchmanDataset):
 
 def main():
     args = parsecml()
-    dataset = WatchmanDataset(f for f in findfiles(args.inputfiles)
+    dataset = WatchmanDataset(f for f in searchdirectories(r"^(?!watchopticalanalysis).*.root$", args.inputfiles)
                               if not ("IBDNeutron" in f or "IBDPosition" in f)
                               )
     with client(args.target):
