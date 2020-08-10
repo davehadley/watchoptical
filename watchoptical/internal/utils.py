@@ -42,6 +42,10 @@ def searchdirectories(filepattern: str, directories: Iterable[str]) -> List[str]
     return list(sorted(mapcat(_crawldirectoryforfilesmatching(filepattern), findfiles(directories))))
 
 
+def searchforrootfilesexcludinganalysisfiles(directories: Iterable[str]):
+    return searchdirectories(r"^(?!watchopticalanalysis).*.root$", directories)
+
+
 def touchfile(path: str) -> None:
     return Path(path).touch()
 
