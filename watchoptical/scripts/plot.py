@@ -10,6 +10,7 @@ import boost_histogram as bh
 
 import matplotlib.pyplot as plt
 
+from watchoptical.internal import timeconstants
 from watchoptical.internal.client import ClientType, client
 from watchoptical.internal.histoutils import CategoryHistogram, categoryhistplot, ExposureWeightedHistogram
 from watchoptical.internal.mctoanalysis import mctoanalysis, AnalysisFile
@@ -49,7 +50,7 @@ def load(analysisfile: AnalysisFile) -> TreeTuple:
     anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].pandas.df(flatten=False)
     bonsai = (uproot.open(analysisfile.producedfrom.bonsaifile)["data"]
               .pandas.df(flatten=False)
-              .set_index(["mcid", "subid"])
+              # .set_index(["mcid", "subid"])
               )
     return TreeTuple(anal, bonsai, analysisfile)
 
@@ -105,8 +106,12 @@ def selection(data):
 def analysis(tree: TreeTuple) -> bh.Histogram:
     histo = ExposureWeightedHistogram(bh.axis.Regular(25, 0.0, 60.0))
     category = categoryfromfile(tree.analysisfile)
-    #histo.fill(category, tree.exposure, tree.bonsai.n9.array)
-    histo.fill(category, tree.exposure, selection(tree.bonsai).n9.array)
+    # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
+    n9 = (selection(tree.bonsai)
+          .groupby("mcid")
+          .nth(0)
+          .n9)
+    histo.fill(category, tree.exposure, n9.array)
     return histo
 
 
@@ -120,8 +125,8 @@ def plot(dataset: WatchmanDataset):
             .map(analysis)
             .reduction(sumhistograms, sumhistograms)
             ).compute()
-    categoryhistplot(data)
-    plt.ylabel("events per second")
+    categoryhistplot(data, lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
+    plt.ylabel("events per week")
     plt.yscale("log")
     plt.xlabel("num PMT hits in 9 ns (n9)")
     plt.legend()
