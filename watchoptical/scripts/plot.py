@@ -26,6 +26,8 @@ def parsecml() -> Namespace:
 
 def plot(data: OpticsAnalysisResult):
     _plothist(data)
+    _plotattenuation(data)
+    return
 
 
 def _xlabel(key: str) -> str:
@@ -50,6 +52,22 @@ def _plothist(data: OpticsAnalysisResult, dest="plots"):
         fig.tight_layout()
         os.makedirs(dest, exist_ok=True)
         fig.savefig(f"{dest}{os.sep}{k}.png")
+    return
+
+
+def _plotattenuation(data: OpticsAnalysisResult, dest="plots"):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    key = "idb_total_charge_by_attenuation_mean"
+    points = data.scatter[key]
+    points = [(a, q) for a, q in points.items()]
+    X, Y = zip(*points)
+    ax.scatter(X, Y)
+    os.makedirs(dest, exist_ok=True)
+    ax.set_ylabel("mean charge per event")
+    # ax.set_yscale("log")
+    ax.set_xlabel("attenuation length [m]")
+    fig.savefig(f"{dest}{os.sep}{key}.png")
     return
 
 
