@@ -3,14 +3,15 @@ import operator
 import os
 import re
 from argparse import ArgumentParser, Namespace
-from typing import NamedTuple, Iterable, Mapping, Callable
+from typing import NamedTuple, Iterable, Mapping, Callable, Any, Optional
 
 import uproot
 import boost_histogram as bh
+import numpy as np
 
 import matplotlib.pyplot as plt
 from pandas import DataFrame, Series
-from toolz import merge_with, first
+from toolz import merge_with, first, identity
 
 from watchoptical.internal import timeconstants
 from watchoptical.internal.client import ClientType, client
@@ -104,10 +105,10 @@ def selection(data):
                 & _hascoincidence(data)
                 ]
 
-
 def _makebonsaihistogram(tree: TreeTuple,
-                         datamapper: Callable[[DataFrame], Series],
                          binning: bh.axis.Axis,
+                         x: Callable[[DataFrame], Any],
+                         w: Optional[Callable[[DataFrame], Any]] = None,
                          selection: Callable[[DataFrame], DataFrame] = selection,
                          subevent: int = 0
                          ) -> ExposureWeightedHistogram:
@@ -116,8 +117,9 @@ def _makebonsaihistogram(tree: TreeTuple,
     data = (selection(tree.bonsai)
             .groupby("mcid")
             .nth(subevent))
-    d = datamapper(data)
-    histo.fill(category, tree.exposure, d.array)
+    xv = np.asarray(x(data))
+    wv = None if not w else np.asarray(w(data))
+    histo.fill(category, tree.exposure, xv, weight=wv)
     return histo
 
 
@@ -125,7 +127,12 @@ def analysis(tree: TreeTuple) -> Mapping[str, bh.Histogram]:
     category = categoryfromfile(tree.analysisfile)
     # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
     result = {}
-    result["n9"] = _makebonsaihistogram(tree, lambda d: d.n9, bh.axis.Regular(26, 0., 60.0))
+    result["events_withatleastonesubevent"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
+                                                lambda x: np.zeros(len(x)), selection=identity)
+    result["events_selected"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
+                                                lambda x: np.zeros(len(x)), selection=selection)
+    result["n9"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
+                                        lambda x: x.n9)
     return result
 
 
@@ -136,12 +143,12 @@ def sumhistograms(iterable: Iterable[Mapping[str, bh.Histogram]]) -> Mapping[str
 
 def plot(dataset: WatchmanDataset):
     analfiles = mctoanalysis(dataset)
-    data = (analfiles.map(load)
+    hist = (analfiles.map(load)
             .map(analysis)
             .reduction(sumhistograms, sumhistograms)
             ).compute()
-    hist = first(data.values())
-    categoryhistplot(hist, lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
+    #categoryhistplot(hist["events_selected"], lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
+    categoryhistplot(hist["n9"], lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
     #categoryhistplot()
     plt.ylabel("events per week")
     plt.yscale("log")
