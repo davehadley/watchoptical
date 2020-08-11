@@ -9,7 +9,7 @@ import shelve
 from os.path import expanduser, expandvars, abspath
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Iterable, List, Callable, Any, Tuple, Mapping
+from typing import Iterable, List, Callable, Any, Tuple, Mapping, MutableMapping
 
 from toolz import pipe
 from toolz import mapcat, curry, merge_with
@@ -96,6 +96,6 @@ def sumlist(iterable: Iterable[Any]):
     return functools.reduce(operator.add, iterable)
 
 
-def summap(iterable: Iterable[Mapping[Any, Any]]) -> Mapping[Any, Any]:
+def summap(iterable: Iterable[MutableMapping[Any, Any]]) -> MutableMapping[Any, Any]:
     sum = functools.partial(functools.reduce, operator.add)
     return functools.reduce(functools.partial(merge_with, sum), iterable)

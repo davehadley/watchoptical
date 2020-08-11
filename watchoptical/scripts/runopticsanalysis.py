@@ -2,7 +2,7 @@ import os
 from argparse import ArgumentParser, Namespace
 
 from watchoptical.internal.client import ClientType, client
-from watchoptical.internal.runopticsanalysis import shelvedopticsanalysis
+from watchoptical.internal.opticsanalysis.runopticsanalysis import shelvedopticsanalysis
 from watchoptical.internal.utils import searchforrootfilesexcludinganalysisfiles
 from watchoptical.internal.wmdataset import WatchmanDataset
 
