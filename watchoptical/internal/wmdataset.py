@@ -1,7 +1,8 @@
 import itertools
 import os
 import re
-from typing import Iterable, NamedTuple, Iterator, Tuple
+from hashlib import md5
+from typing import Iterable, NamedTuple, Iterator, Tuple, Optional, Collection
 
 from toolz import pipe, groupby
 
@@ -18,12 +19,16 @@ class RatPacBonsaiPair(NamedTuple):
 
 
 class WatchmanDataset:
-    def __init__(self, filepatterns: Iterable[str]):
+    def __init__(self, filepatterns: Iterable[str], name: Optional[str] = None):
         self._files: Tuple[RatPacBonsaiPair] = pipe(filepatterns,
-                          findfiles,
-                          self._match_bonsai_and_ratpac,
-                          tuple
-                          )
+                                                    findfiles,
+                                                    self._match_bonsai_and_ratpac,
+                                                    tuple
+                                                    )
+        if name is None:
+            # automatically generate unique name from input files
+            self._name = self._id
+        self.name = name
 
     def __iter__(self) -> Iterator[RatPacBonsaiPair]:
         for f in self._files:
@@ -42,3 +47,14 @@ class WatchmanDataset:
 
     def _isbonsai(self, filename: str) -> bool:
         return bool(re.match(f".*bonsai_root.*$", filename))
+
+    @property
+    def _id(self):
+        return _hashfromstrcol(s for p in self for s in p)
+
+
+def _hashfromstrcol(values: Iterable[str]) -> str:
+    h = md5()
+    for s in values:
+        h.update(s.encode())
+    return h.hexdigest()
