@@ -1,7 +1,9 @@
 import contextlib
 import glob
+import hashlib
 import os
 import re
+import shelve
 from os.path import expanduser, expandvars, abspath
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -59,3 +61,19 @@ def temporaryworkingdirectory() -> str:
             yield d
     finally:
         os.chdir(cwd)
+
+def hashfromstrcol(values: Iterable[str]) -> str:
+    h = hashlib.md5()
+    for s in values:
+        h.update(s.encode())
+    return h.hexdigest()
+
+
+def shelvedcall(key: str, f: Callable, dbname: str="watchoptical.shelve.db", forcecall: bool=False):
+    with shelve.open(dbname) as db:
+        if key in db and not forcecall:
+            return db[key]
+        else:
+            result = f()
+            db[key] = result
+            return result
