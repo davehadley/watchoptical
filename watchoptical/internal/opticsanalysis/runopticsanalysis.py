@@ -1,8 +1,10 @@
+import re
 from dataclasses import dataclass, field
 from typing import Iterable, Mapping, Callable, Any, Optional, MutableMapping
 
 import boost_histogram as bh
 import numpy as np
+import uproot
 from dask.bag import Bag
 from pandas import DataFrame
 from toolz import identity
@@ -14,14 +16,16 @@ from watchoptical.internal.mctoanalysis import AnalysisFile, mctoanalysis
 from watchoptical.internal.utils import summap, shelveddecorator, sumlist
 from watchoptical.internal.wmdataset import WatchmanDataset
 
+
 @dataclass
 class OpticsAnalysisResult:
     hist: MutableMapping[str, ExposureWeightedHistogram] = field(default_factory=dict)
-
+    scatter: dict = field(default_factory=dict)
 
     def __add__(self, other):
         return OpticsAnalysisResult(
-            hist=summap([self.hist, other.hist])
+            hist=summap([self.hist, other.hist]),
+            scatter=summap([self.scatter, other.scatter]),
         )
 
 
@@ -71,6 +75,7 @@ def _makebonsaihistogram(tree: AnalysisEventTuple,
     histo.fill(category, tree.exposure, xv, weight=wv)
     return histo
 
+
 def _makebasichistograms(tree: AnalysisEventTuple, hist: MutableMapping[str, ExposureWeightedHistogram]):
     hist["events_withatleastonesubevent"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
                                                                  lambda x: np.zeros(len(x)), selection=identity)
@@ -84,10 +89,31 @@ def _makebasichistograms(tree: AnalysisEventTuple, hist: MutableMapping[str, Exp
     return
 
 
+def _attenuationfromtree(tree: AnalysisEventTuple) -> float:
+    # this should return the expect rate for this process in number of events per second
+    lines = str(tree.macro).split("\n")
+    for l in lines:
+        match = re.search("^/rat/db/set OPTICS\[water\] ABSLENGTH_value2 (.*?) ", l)
+        if match:
+            return float(match.group(1))
+    raise ValueError("failed to parse macro", lines)
+
+
+def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: dict):
+    category = _categoryfromfile(tree.analysisfile)
+    if category == "IBD":
+        attenuation = _attenuationfromtree(tree)
+        store["ibd_total_charge_by_attenuation"] = (ExposureWeightedHistogram(bh.axis.Regular(300, 0.0, 150.0))
+                                     .fill(f"{attenuation:0.5e}", tree.exposure, tree.anal.pmt_q.groupby("entry").sum().array)
+                                     )
+    return
+
+
 def _analysis(tree: AnalysisEventTuple) -> OpticsAnalysisResult:
     # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
     result = OpticsAnalysisResult()
     _makebasichistograms(tree, result.hist)
+    _makebasicattenuationscatter(tree, result.hist)
     return result
 
 

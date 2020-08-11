@@ -22,10 +22,11 @@ class CategoryHistogram(Collection):
         self._kwargs = kwargs
         self._hist = dict()
 
-    def fill(self, category: str, *args: np.ndarray, weight: Optional[np.ndarray] = None):
+    def fill(self, category: str, *args: np.ndarray, weight: Optional[np.ndarray] = None) ->  "CategoryHistogram":
         if category not in self._hist:
             self._hist[category] = bh.Histogram(*self._args, **self._kwargs)
         self._hist[category].fill(*args, weight=weight)
+        return self
 
     def __iter__(self) -> Iterator[Item]:
         for index, hist in sorted(self._hist.items()):
@@ -72,10 +73,10 @@ class ExposureWeightedHistogram(Collection):
         self._hist = CategoryHistogram(*axes, **kwargs)
         self._exposure = defaultdict(bh.accumulators.WeightedSum)
 
-    def fill(self, category: str, exposure: float, *args: np.ndarray, weight: Optional[np.ndarray] = None):
+    def fill(self, category: str, exposure: float, *args: np.ndarray, weight: Optional[np.ndarray] = None) -> "ExposureWeightedHistogram":
         self._hist.fill(category, *args, weight=weight)
         self._exposure[category].fill(exposure)
-        return
+        return self
 
     def __len__(self) -> int:
         return len(self._hist)
