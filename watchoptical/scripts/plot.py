@@ -25,15 +25,31 @@ def parsecml() -> Namespace:
 
 
 def plot(data: OpticsAnalysisResult):
-    # categoryhistplot(hist["events_selected"], lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
-    categoryhistplot(data.hist["n9_1"], lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
-    # categoryhistplot()
-    plt.ylabel("events per week")
-    plt.yscale("log")
-    plt.xlabel("num PMT hits in 9 ns (n9)")
-    plt.legend()
-    plt.savefig("n9.png")
-    plt.show()
+    _plothist(data)
+
+
+def _xlabel(key: str) -> str:
+    try:
+        return {
+            "n9_0" : "num PMT hits in 9 ns",
+            "n9_1": "num PMT hits in 9 ns",
+                }[key]
+    except KeyError:
+        return key
+
+
+def _plothist(data: OpticsAnalysisResult, dest="plots"):
+    for k, h in data.hist.items():
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax = categoryhistplot(h, lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK, ax=ax)
+        ax.set_ylabel("events per week")
+        ax.set_yscale("log")
+        ax.set_xlabel(_xlabel(k))
+        ax.legend()
+        fig.tight_layout()
+        os.makedirs(dest, exist_ok=True)
+        fig.savefig(f"{dest}{os.sep}{k}.png")
     return
 
 
@@ -43,7 +59,7 @@ def main():
                               if not ("IBDNeutron" in f or "IBDPosition" in f)
                               )
     with client(args.target):
-        result = shelvedopticsanalysis(dataset, forcecall=True)
+        result = shelvedopticsanalysis(dataset, forcecall=args.force)
     plot(result)
     return
 
