@@ -20,6 +20,7 @@ class AnalysisFile:
     filename: str
     producedfrom :RatPacBonsaiPair
 
+
 def _outputfilename(files: RatPacBonsaiPair, config: MCToAnalysisConfig) -> str:
     return f"{config.directory}{os.sep}watchopticalanalysis_{os.path.basename(files.g4file)}"
 

@@ -1,11 +1,15 @@
+import operator
 from collections import defaultdict
 from copy import deepcopy
-from typing import NamedTuple, Iterator, Collection, Union, Optional, Any, Callable
+from typing import NamedTuple, Iterator, Collection, Union, Optional, Any, Callable, Iterable, Mapping
 
 import boost_histogram as bh
 import numpy as np
 import mplhep
-from matplotlib.axes import Axes
+from matplotlib.axes import Axes, functools
+from toolz import merge_with
+
+from watchoptical.internal.utils import summap
 
 
 class CategoryHistogram(Collection):
@@ -100,3 +104,7 @@ class ExposureWeightedHistogram(Collection):
                 result._hist._hist[key] = deepcopy(histogram)
                 result._exposure[key] = deepcopy(exposure)
         return result
+
+
+def sumhistogrammap(iterable: Iterable[Mapping[str, bh.Histogram]]) -> Mapping[str, bh.Histogram]:
+    return summap(iterable)
