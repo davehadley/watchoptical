@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Iterable, Mapping, Callable, Any, Optional
 
 import boost_histogram as bh
@@ -10,10 +11,17 @@ from watchoptical.internal.analysiseventtuple import AnalysisEventTuple
 from watchoptical.internal.eventtype import eventtypefromfile
 from watchoptical.internal.histoutils import ExposureWeightedHistogram, sumhistogrammap
 from watchoptical.internal.mctoanalysis import AnalysisFile, mctoanalysis
-from watchoptical.internal.utils import summap, shelveddecorator
+from watchoptical.internal.utils import summap, shelveddecorator, sumlist
 from watchoptical.internal.wmdataset import WatchmanDataset
 
-AnalysisResult = Mapping[str, ExposureWeightedHistogram]
+@dataclass
+class OpticsAnalysisResult:
+    hist: Mapping[str, ExposureWeightedHistogram] = field(default_factory=dict)
+
+    def __add__(self, other):
+        return OpticsAnalysisResult(
+            hist=summap([self.hist, other.hist])
+        )
 
 
 def _categoryfromfile(file: AnalysisFile) -> str:
@@ -29,7 +37,7 @@ def _hascoincidence(data):
     return (count >= 2) & (dt.abs() < 50.0)
 
 
-def selection(data):
+def _selection(data):
     # watchmakers efficiency is based on:
     #             cond = "closestPMT/1000.>%f"%(_d)
     #             cond += "&& good_pos>%f " %(_posGood)
@@ -49,7 +57,7 @@ def _makebonsaihistogram(tree: AnalysisEventTuple,
                          binning: bh.axis.Axis,
                          x: Callable[[DataFrame], Any],
                          w: Optional[Callable[[DataFrame], Any]] = None,
-                         selection: Callable[[DataFrame], DataFrame] = selection,
+                         selection: Callable[[DataFrame], DataFrame] = _selection,
                          subevent: int = 0
                          ) -> ExposureWeightedHistogram:
     histo = ExposureWeightedHistogram(binning)
@@ -63,30 +71,31 @@ def _makebonsaihistogram(tree: AnalysisEventTuple,
     return histo
 
 
-def analysis(tree: AnalysisEventTuple) -> AnalysisResult:
+def _analysis(tree: AnalysisEventTuple) -> OpticsAnalysisResult:
     # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
-    result = {}
-    result["events_withatleastonesubevent"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
+    result = OpticsAnalysisResult()
+    hist = result.hist
+    hist["events_withatleastonesubevent"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
                                                                    lambda x: np.zeros(len(x)), selection=identity)
-    result["events_selected"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
-                                                     lambda x: np.zeros(len(x)), selection=selection)
-    result["n9_0"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
+    hist["events_selected"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
+                                                     lambda x: np.zeros(len(x)), selection=_selection)
+    hist["n9_0"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
                                           lambda x: x.n9)
-    result["n9_1"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
+    hist["n9_1"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
                                           lambda x: x.n9,
                                           subevent=1)
     return result
 
 
-def runanalysis(dataset: WatchmanDataset) -> Bag:
+def runopticsanalysis(dataset: WatchmanDataset) -> Bag:
     analfiles = mctoanalysis(dataset)
     hist = (analfiles.map(AnalysisEventTuple.load)
-            .map(analysis)
-            .reduction(summap, summap)
+            .map(_analysis)
+            .reduction(sumlist, sumlist)
             )
     return hist
 
 
-@shelveddecorator(lambda d: f"analysis/{d.name}")
-def shelvedanalysis(dataset: WatchmanDataset) -> AnalysisResult:
-    return runanalysis(dataset).compute()
+@shelveddecorator(lambda d: f"opticsanalysis/{d.name}")
+def shelvedopticsanalysis(dataset: WatchmanDataset) -> OpticsAnalysisResult:
+    return runopticsanalysis(dataset).compute()
