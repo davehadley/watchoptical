@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Iterable, Mapping, Callable, Any, Optional, MutableMapping
 
@@ -99,13 +100,20 @@ def _attenuationfromtree(tree: AnalysisEventTuple) -> float:
     raise ValueError("failed to parse macro", lines)
 
 
-def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: dict):
+def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
     category = _categoryfromfile(tree.analysisfile)
     if category == "IBD":
         attenuation = _attenuationfromtree(tree)
-        store["ibd_total_charge_by_attenuation"] = (ExposureWeightedHistogram(bh.axis.Regular(300, 0.0, 150.0))
-                                     .fill(f"{attenuation:0.5e}", tree.exposure, tree.anal.pmt_q.groupby("entry").sum().array)
-                                     )
+        category = f"{attenuation:0.5e}"
+        totalq = tree.anal.pmt_q.groupby("entry").sum().array
+        # histogram total Q
+        store.hist["ibd_total_charge_by_attenuation"] = (ExposureWeightedHistogram(bh.axis.Regular(300, 0.0, 150.0))
+                                                         .fill(category, tree.exposure, totalq)
+                                                         )
+        # calculate mean Q
+        meanq = defaultdict(bh.accumulators.WeightedMean)
+        meanq[category].fill(totalq)
+        store.scatter["idb_total_charge_by_attenuation_mean"] = meanq
     return
 
 
