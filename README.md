@@ -41,7 +41,15 @@ For more options see:
 python3 -m watchoptical.scripts.generatemc --help
 ```
 
-## Making Plots
+## Analyzing WATCHMAN Data 
+
+First run the analysis script on the files that you generated in the previous step:
+
+```bash
+python3 -m watchoptical.scripts.runanalysis path/to/input/files/*.root
+```
+
+Make plots from the output with:
 
 ```bash
 python3 -m watchoptical.scripts.plot path/to/input/files/*.root
