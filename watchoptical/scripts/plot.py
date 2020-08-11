@@ -2,6 +2,7 @@ import functools
 import operator
 import os
 import re
+import shelve
 from argparse import ArgumentParser, Namespace
 from typing import NamedTuple, Iterable, Mapping, Callable, Any, Optional
 
@@ -20,6 +21,8 @@ from watchoptical.internal.mctoanalysis import mctoanalysis, AnalysisFile
 from watchoptical.internal.utils import findfiles, searchdirectories, searchforrootfilesexcludinganalysisfiles
 from watchoptical.internal.wmdataset import WatchmanDataset
 
+AnalysisResult = Mapping[str, bh.Histogram]
+
 
 def parsecml() -> Namespace:
     parser = ArgumentParser(description="Process WATHCMAN MC files to the watchoptical analysis file format.")
@@ -30,6 +33,7 @@ def parsecml() -> Namespace:
                         help="Where to run jobs."
                         )
     parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])
+    parser.add_argument("force", action="store_true", type=str, default=[])
     return parser.parse_args()
 
 
@@ -98,12 +102,13 @@ def selection(data):
     #             cond += "&& n9 > %f" %(_n9)
     # with _distance2pmt=1,_n9=8,_dist=30.0,\
     # _posGood=0.1,_dirGood=0.1,_pe=8,_nhit=8,_itr = 1.5
-    return data[((data.closestPMT / 1000.0) > 1.0)
+    return data[((data.closestPMT / 1500.0) > 1.0)
                 & (data.good_pos > 0.1)
                 & (data.inner_hit > 4)
                 & (data.veto_hit < 4)
                 & _hascoincidence(data)
                 ]
+
 
 def _makebonsaihistogram(tree: TreeTuple,
                          binning: bh.axis.Axis,
@@ -123,16 +128,19 @@ def _makebonsaihistogram(tree: TreeTuple,
     return histo
 
 
-def analysis(tree: TreeTuple) -> Mapping[str, bh.Histogram]:
+def analysis(tree: TreeTuple) -> AnalysisResult:
     category = categoryfromfile(tree.analysisfile)
     # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
     result = {}
     result["events_withatleastonesubevent"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
-                                                lambda x: np.zeros(len(x)), selection=identity)
+                                                                   lambda x: np.zeros(len(x)), selection=identity)
     result["events_selected"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
-                                                lambda x: np.zeros(len(x)), selection=selection)
-    result["n9"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
-                                        lambda x: x.n9)
+                                                     lambda x: np.zeros(len(x)), selection=selection)
+    result["n9_0"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
+                                          lambda x: x.n9)
+    result["n9_1"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
+                                          lambda x: x.n9,
+                                          subevent=1)
     return result
 
 
@@ -141,15 +149,29 @@ def sumhistograms(iterable: Iterable[Mapping[str, bh.Histogram]]) -> Mapping[str
     return functools.reduce(functools.partial(merge_with, sum), iterable)
 
 
-def plot(dataset: WatchmanDataset):
+def getorcompute(key: str, f: Callable, dbname: str="watchoptical.shelve.db", forcecompute: bool=False):
+    with shelve.open(dbname) as db:
+        if key in db and not forcecompute:
+            return db[key]
+        else:
+            result = f()
+            db[key] = result
+            return result
+
+
+def runanalysis(dataset: WatchmanDataset) -> AnalysisResult:
     analfiles = mctoanalysis(dataset)
     hist = (analfiles.map(load)
             .map(analysis)
             .reduction(sumhistograms, sumhistograms)
-            ).compute()
-    #categoryhistplot(hist["events_selected"], lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
-    categoryhistplot(hist["n9"], lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
-    #categoryhistplot()
+            )
+    return hist
+
+
+def plot(data: AnalysisResult):
+    # categoryhistplot(hist["events_selected"], lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
+    categoryhistplot(data["n9_1"], lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
+    # categoryhistplot()
     plt.ylabel("events per week")
     plt.yscale("log")
     plt.xlabel("num PMT hits in 9 ns (n9)")
@@ -165,7 +187,8 @@ def main():
                               if not ("IBDNeutron" in f or "IBDPosition" in f)
                               )
     with client(args.target):
-        plot(dataset)
+        result = getorcompute("analysis", runanalysis(dataset).compute)
+    plot(result)
     return
 
 
