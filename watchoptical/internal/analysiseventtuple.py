@@ -24,17 +24,21 @@ class AnalysisEventTuple(NamedTuple):
 
     @classmethod
     def load(cls, analysisfile: AnalysisFile) -> "AnalysisEventTuple":
-        anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].pandas.df(flatten=False)
+        anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].pandas.df(["pmt_*"])
         bonsai = (uproot.open(analysisfile.producedfrom.bonsaifile)["data"]
                   .pandas.df(flatten=False)
                   # .set_index(["mcid", "subid"])
                   )
         return AnalysisEventTuple(anal, bonsai, analysisfile)
 
+    @property
+    def macro(self) -> str:
+        return str(uproot.open(self.analysisfile.producedfrom.g4file)["macro"])
+
 
 def _ratefromtree(tree: AnalysisEventTuple) -> float:
     # this should return the expect rate for this process in number of events per second
-    lines = str(uproot.open(tree.analysisfile.producedfrom.g4file)["macro"]).split("\n")
+    lines = str(tree.macro).split("\n")
     for l in lines:
         match = re.search("^/generator/rate/set (.*)", l)
         if match:
