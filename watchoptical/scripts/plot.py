@@ -3,12 +3,14 @@ import operator
 import os
 import re
 from argparse import ArgumentParser, Namespace
-from typing import NamedTuple, Iterable
+from typing import NamedTuple, Iterable, Mapping, Callable
 
 import uproot
 import boost_histogram as bh
 
 import matplotlib.pyplot as plt
+from pandas import DataFrame, Series
+from toolz import merge_with, first
 
 from watchoptical.internal import timeconstants
 from watchoptical.internal.client import ClientType, client
@@ -31,8 +33,8 @@ def parsecml() -> Namespace:
 
 
 class TreeTuple(NamedTuple):
-    anal: dict
-    bonsai: dict
+    anal: DataFrame
+    bonsai: DataFrame
     analysisfile: AnalysisFile
 
     @property
@@ -95,7 +97,7 @@ def selection(data):
     #             cond += "&& n9 > %f" %(_n9)
     # with _distance2pmt=1,_n9=8,_dist=30.0,\
     # _posGood=0.1,_dirGood=0.1,_pe=8,_nhit=8,_itr = 1.5
-    return data[(data.closestPMT / 1000.0 > 2.0)
+    return data[((data.closestPMT / 1000.0) > 1.0)
                 & (data.good_pos > 0.1)
                 & (data.inner_hit > 4)
                 & (data.veto_hit < 4)
@@ -103,20 +105,33 @@ def selection(data):
                 ]
 
 
-def analysis(tree: TreeTuple) -> bh.Histogram:
-    histo = ExposureWeightedHistogram(bh.axis.Regular(25, 0.0, 60.0))
+def _makebonsaihistogram(tree: TreeTuple,
+                         datamapper: Callable[[DataFrame], Series],
+                         binning: bh.axis.Axis,
+                         selection: Callable[[DataFrame], DataFrame] = selection,
+                         subevent: int = 0
+                         ) -> ExposureWeightedHistogram:
+    histo = ExposureWeightedHistogram(binning)
     category = categoryfromfile(tree.analysisfile)
-    # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
-    n9 = (selection(tree.bonsai)
-          .groupby("mcid")
-          .nth(0)
-          .n9)
-    histo.fill(category, tree.exposure, n9.array)
+    data = (selection(tree.bonsai)
+            .groupby("mcid")
+            .nth(subevent))
+    d = datamapper(data)
+    histo.fill(category, tree.exposure, d.array)
     return histo
 
 
-def sumhistograms(iterable: Iterable[bh.Histogram]) -> bh.Histogram:
-    return functools.reduce(operator.add, iterable)
+def analysis(tree: TreeTuple) -> Mapping[str, bh.Histogram]:
+    category = categoryfromfile(tree.analysisfile)
+    # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
+    result = {}
+    result["n9"] = _makebonsaihistogram(tree, lambda d: d.n9, bh.axis.Regular(26, 0., 60.0))
+    return result
+
+
+def sumhistograms(iterable: Iterable[Mapping[str, bh.Histogram]]) -> Mapping[str, bh.Histogram]:
+    sum = functools.partial(functools.reduce, operator.add)
+    return functools.reduce(functools.partial(merge_with, sum), iterable)
 
 
 def plot(dataset: WatchmanDataset):
@@ -125,7 +140,8 @@ def plot(dataset: WatchmanDataset):
             .map(analysis)
             .reduction(sumhistograms, sumhistograms)
             ).compute()
-    categoryhistplot(data, lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
+    # categoryhistplot(data, lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
+    categoryhistplot(first(data.values()))
     plt.ylabel("events per week")
     plt.yscale("log")
     plt.xlabel("num PMT hits in 9 ns (n9)")
