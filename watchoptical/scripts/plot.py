@@ -18,7 +18,8 @@ from watchoptical.internal import timeconstants
 from watchoptical.internal.client import ClientType, client
 from watchoptical.internal.histoutils import CategoryHistogram, categoryhistplot, ExposureWeightedHistogram
 from watchoptical.internal.mctoanalysis import mctoanalysis, AnalysisFile
-from watchoptical.internal.utils import findfiles, searchdirectories, searchforrootfilesexcludinganalysisfiles
+from watchoptical.internal.utils import findfiles, searchdirectories, searchforrootfilesexcludinganalysisfiles, \
+    shelvedcall
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 AnalysisResult = Mapping[str, bh.Histogram]
@@ -33,7 +34,7 @@ def parsecml() -> Namespace:
                         help="Where to run jobs."
                         )
     parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])
-    parser.add_argument("force", action="store_true")
+    parser.add_argument("--force", action="store_true")
     return parser.parse_args()
 
 
@@ -149,16 +150,6 @@ def sumhistograms(iterable: Iterable[Mapping[str, bh.Histogram]]) -> Mapping[str
     return functools.reduce(functools.partial(merge_with, sum), iterable)
 
 
-def getorcompute(key: str, f: Callable, dbname: str="watchoptical.shelve.db", forcecompute: bool=False):
-    with shelve.open(dbname) as db:
-        if key in db and not forcecompute:
-            return db[key]
-        else:
-            result = f()
-            db[key] = result
-            return result
-
-
 def runanalysis(dataset: WatchmanDataset) -> AnalysisResult:
     analfiles = mctoanalysis(dataset)
     hist = (analfiles.map(load)
@@ -187,7 +178,7 @@ def main():
                               if not ("IBDNeutron" in f or "IBDPosition" in f)
                               )
     with client(args.target):
-        result = getorcompute(f"analysis/{dataset.name}", runanalysis(dataset).compute, forcecompute=args.force)
+        result = shelvedcall(f"analysis/{dataset.name}", runanalysis(dataset).compute, forcecall=args.force)
     plot(result)
     return
 

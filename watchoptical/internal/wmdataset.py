@@ -6,7 +6,7 @@ from typing import Iterable, NamedTuple, Iterator, Tuple, Optional, Collection
 
 from toolz import pipe, groupby
 
-from watchoptical.internal.utils import findfiles
+from watchoptical.internal.utils import findfiles, hashfromstrcol
 
 
 class RatPacBonsaiPair(NamedTuple):
@@ -27,7 +27,7 @@ class WatchmanDataset:
                                                     )
         if name is None:
             # automatically generate unique name from input files
-            self._name = self._id
+            name = self._id
         self.name = name
 
     def __iter__(self) -> Iterator[RatPacBonsaiPair]:
@@ -50,11 +50,6 @@ class WatchmanDataset:
 
     @property
     def _id(self):
-        return _hashfromstrcol(s for p in self for s in p)
+        return hashfromstrcol(s for p in self for s in p)
 
 
-def _hashfromstrcol(values: Iterable[str]) -> str:
-    h = md5()
-    for s in values:
-        h.update(s.encode())
-    return h.hexdigest()
