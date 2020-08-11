@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from watchoptical.internal import timeconstants
 from watchoptical.internal.client import ClientType, client
 from watchoptical.internal.histoutils import categoryhistplot
-from watchoptical.internal.runanalysis import shelvedanalysis, AnalysisResult
+from watchoptical.internal.runopticsanalysis import shelvedopticsanalysis, OpticsAnalysisResult
 from watchoptical.internal.utils import searchforrootfilesexcludinganalysisfiles
 from watchoptical.internal.wmdataset import WatchmanDataset
 
@@ -24,9 +24,9 @@ def parsecml() -> Namespace:
     return parser.parse_args()
 
 
-def plot(data: AnalysisResult):
+def plot(data: OpticsAnalysisResult):
     # categoryhistplot(hist["events_selected"], lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
-    categoryhistplot(data["n9_1"], lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
+    categoryhistplot(data.hist["n9_1"], lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
     # categoryhistplot()
     plt.ylabel("events per week")
     plt.yscale("log")
@@ -43,7 +43,7 @@ def main():
                               if not ("IBDNeutron" in f or "IBDPosition" in f)
                               )
     with client(args.target):
-        result = shelvedanalysis(dataset)
+        result = shelvedopticsanalysis(dataset, forcecall=True)
     plot(result)
     return
 

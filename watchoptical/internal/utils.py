@@ -92,6 +92,10 @@ def shelveddecorator(keyfunc: Callable, dbname: str=DEFAULT_DBNAME):
     return g
 
 
+def sumlist(iterable: Iterable[Any]):
+    return functools.reduce(operator.add, iterable)
+
+
 def summap(iterable: Iterable[Mapping[Any, Any]]) -> Mapping[Any, Any]:
     sum = functools.partial(functools.reduce, operator.add)
     return functools.reduce(functools.partial(merge_with, sum), iterable)
