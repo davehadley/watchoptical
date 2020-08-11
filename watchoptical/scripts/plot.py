@@ -70,7 +70,7 @@ def ratefromtree(tree: TreeTuple) -> float:
     # this should return the expect rate for this process in number of events per second
     lines = str(uproot.open(tree.analysisfile.producedfrom.g4file)["macro"]).split("\n")
     for l in lines:
-        match = re.search("/generator/rate/set (.*)", l)
+        match = re.search("^/generator/rate/set (.*)", l)
         if match:
             return float(match.group(1))
     raise ValueError("failed to parse macro", lines)
@@ -140,8 +140,9 @@ def plot(dataset: WatchmanDataset):
             .map(analysis)
             .reduction(sumhistograms, sumhistograms)
             ).compute()
-    # categoryhistplot(data, lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
-    categoryhistplot(first(data.values()))
+    hist = first(data.values())
+    categoryhistplot(hist, lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK)
+    #categoryhistplot()
     plt.ylabel("events per week")
     plt.yscale("log")
     plt.xlabel("num PMT hits in 9 ns (n9)")
