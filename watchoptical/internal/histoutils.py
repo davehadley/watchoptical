@@ -77,15 +77,22 @@ class ExposureWeightedHistogram(Collection):
         return len(self._hist)
 
     def __iter__(self) -> Iterator[Item]:
+        return self._iterexposureweighted()
+
+    def _iterexposureweighted(self) -> Iterator[Item]:
         for k, v in self._hist:
             yield ExposureWeightedHistogram.Item(k, (1.0 / self._exposure[k].value) * v, self._exposure[k])
+
+    def _iterrawhist(self) -> Iterator[Item]:
+        for k, v in self._hist:
+            yield ExposureWeightedHistogram.Item(k, v, self._exposure[k])
 
     def __contains__(self, __x: object) -> bool:
         return __x in self._hist
 
     def __add__(self, other: "ExposureWeightedHistogram") -> "ExposureWeightedHistogram":
         result = deepcopy(self)
-        for key, histogram, exposure in other:
+        for key, histogram, exposure in other._iterrawhist():
             try:
                 result._hist._hist[key] += histogram
                 result._exposure[key] += exposure
