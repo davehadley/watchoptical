@@ -33,7 +33,7 @@ def parsecml() -> Namespace:
                         help="Where to run jobs."
                         )
     parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])
-    parser.add_argument("force", action="store_true", type=str, default=[])
+    parser.add_argument("force", action="store_true")
     return parser.parse_args()
 
 
@@ -187,7 +187,7 @@ def main():
                               if not ("IBDNeutron" in f or "IBDPosition" in f)
                               )
     with client(args.target):
-        result = getorcompute("analysis", runanalysis(dataset).compute)
+        result = getorcompute(f"analysis/{dataset.name}", runanalysis(dataset).compute, forcecompute=args.force)
     plot(result)
     return
 
