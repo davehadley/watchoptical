@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Iterable, Mapping, Callable, Any, Optional
+from typing import Iterable, Mapping, Callable, Any, Optional, MutableMapping
 
 import boost_histogram as bh
 import numpy as np
@@ -16,7 +16,8 @@ from watchoptical.internal.wmdataset import WatchmanDataset
 
 @dataclass
 class OpticsAnalysisResult:
-    hist: Mapping[str, ExposureWeightedHistogram] = field(default_factory=dict)
+    hist: MutableMapping[str, ExposureWeightedHistogram] = field(default_factory=dict)
+
 
     def __add__(self, other):
         return OpticsAnalysisResult(
@@ -70,20 +71,23 @@ def _makebonsaihistogram(tree: AnalysisEventTuple,
     histo.fill(category, tree.exposure, xv, weight=wv)
     return histo
 
+def _makebasichistograms(tree: AnalysisEventTuple, hist: MutableMapping[str, ExposureWeightedHistogram]):
+    hist["events_withatleastonesubevent"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
+                                                                 lambda x: np.zeros(len(x)), selection=identity)
+    hist["events_selected"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
+                                                   lambda x: np.zeros(len(x)), selection=_selection)
+    hist["n9_0"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
+                                        lambda x: x.n9)
+    hist["n9_1"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
+                                        lambda x: x.n9,
+                                        subevent=1)
+    return
+
 
 def _analysis(tree: AnalysisEventTuple) -> OpticsAnalysisResult:
     # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
     result = OpticsAnalysisResult()
-    hist = result.hist
-    hist["events_withatleastonesubevent"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
-                                                                   lambda x: np.zeros(len(x)), selection=identity)
-    hist["events_selected"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
-                                                     lambda x: np.zeros(len(x)), selection=_selection)
-    hist["n9_0"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
-                                          lambda x: x.n9)
-    hist["n9_1"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
-                                          lambda x: x.n9,
-                                          subevent=1)
+    _makebasichistograms(tree, result.hist)
     return result
 
 

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from watchoptical.internal import timeconstants
 from watchoptical.internal.client import ClientType, client
 from watchoptical.internal.histoutils import categoryhistplot
-from watchoptical.internal.runopticsanalysis import shelvedopticsanalysis, OpticsAnalysisResult
+from watchoptical.internal.opticsanalysis.runopticsanalysis import shelvedopticsanalysis, OpticsAnalysisResult
 from watchoptical.internal.utils import searchforrootfilesexcludinganalysisfiles
 from watchoptical.internal.wmdataset import WatchmanDataset
 

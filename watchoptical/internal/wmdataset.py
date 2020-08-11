@@ -19,7 +19,7 @@ class RatPacBonsaiPair(NamedTuple):
 
 
 class WatchmanDataset:
-    def __init__(self, filepatterns: Iterable[str], name: Optional[str] = None):
+    def __init__(self, filepatterns: Iterable[str], name: Optional[str] = None, empty_ok:bool=False):
         self._files: Tuple[RatPacBonsaiPair] = pipe(filepatterns,
                                                     findfiles,
                                                     self._match_bonsai_and_ratpac,
@@ -29,6 +29,8 @@ class WatchmanDataset:
             # automatically generate unique name from input files
             name = self._id
         self.name = name
+        if len(self) == 0 and not empty_ok:
+            raise ValueError("WatchmanDataset is empty", self.name)
 
     def __iter__(self) -> Iterator[RatPacBonsaiPair]:
         for f in self._files:
