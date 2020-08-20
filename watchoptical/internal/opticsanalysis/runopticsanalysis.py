@@ -1,5 +1,6 @@
 import re
 from collections import defaultdict
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Iterable, Mapping, Callable, Any, Optional, MutableMapping
 
@@ -18,6 +19,12 @@ from watchoptical.internal.utils import summap, shelveddecorator, sumlist
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 
+def _add_accum(l, r):
+    c = deepcopy(l)
+    c += r
+    return c
+
+
 @dataclass
 class OpticsAnalysisResult:
     hist: MutableMapping[str, ExposureWeightedHistogram] = field(default_factory=dict)
@@ -26,7 +33,7 @@ class OpticsAnalysisResult:
     def __add__(self, other):
         return OpticsAnalysisResult(
             hist=summap([self.hist, other.hist]),
-            scatter=summap([self.scatter, other.scatter]),
+            scatter=summap([self.scatter, other.scatter], lambda lhs, rhs: summap([lhs, rhs], _add_accum)),
         )
 
 
@@ -121,7 +128,7 @@ def _analysis(tree: AnalysisEventTuple) -> OpticsAnalysisResult:
     # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
     result = OpticsAnalysisResult()
     _makebasichistograms(tree, result.hist)
-    _makebasicattenuationscatter(tree, result.hist)
+    _makebasicattenuationscatter(tree, result)
     return result
 
 
