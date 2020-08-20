@@ -96,6 +96,6 @@ def sumlist(iterable: Iterable[Any]):
     return functools.reduce(operator.add, iterable)
 
 
-def summap(iterable: Iterable[MutableMapping[Any, Any]]) -> MutableMapping[Any, Any]:
-    sum = functools.partial(functools.reduce, operator.add)
+def summap(iterable: Iterable[MutableMapping[Any, Any]], add: Callable = operator.add) -> MutableMapping[Any, Any]:
+    sum = functools.partial(functools.reduce, add)
     return functools.reduce(functools.partial(merge_with, sum), iterable)

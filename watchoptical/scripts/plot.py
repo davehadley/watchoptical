@@ -46,7 +46,7 @@ def _plothist(data: OpticsAnalysisResult, dest="plots"):
         ax = fig.add_subplot(111)
         ax = categoryhistplot(h, lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK, ax=ax)
         ax.set_ylabel("events per week")
-        ax.set_yscale("log")
+        #ax.set_yscale("log")
         ax.set_xlabel(_xlabel(k))
         ax.legend()
         fig.tight_layout()
@@ -60,9 +60,9 @@ def _plotattenuation(data: OpticsAnalysisResult, dest="plots"):
     ax = fig.add_subplot(111)
     key = "idb_total_charge_by_attenuation_mean"
     points = data.scatter[key]
-    points = [(a, q) for a, q in points.items()]
+    points = [(float(a), q.value) for a, q in points.items()]
     X, Y = zip(*points)
-    ax.scatter(X, Y)
+    ax.scatter(list(X), list(Y))
     os.makedirs(dest, exist_ok=True)
     ax.set_ylabel("mean charge per event")
     # ax.set_yscale("log")
