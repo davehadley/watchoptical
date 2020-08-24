@@ -9,23 +9,24 @@ import dask.distributed
 from toolz import pipe, curry
 
 from watchoptical.internal.generatemc import generatemc, GenerateMCConfig
+from watchoptical.internal.makeratdb import makeratdb
 from watchoptical.internal.ratmacro import ratmacro
 from watchoptical.internal.runwatchmakers import WatchMakersConfig
 
 
-class TestGenerateMC(unittest.TestCase):
+class TestGenerateMCWithTweakedOpticalModel(unittest.TestCase):
 
-    def macro(self, attenuation):
-        return ratmacro(attenuation=attenuation)
+    def ratdb(self, attenuation):
+        return makeratdb(attenuation=attenuation)
 
     def test_generatemc_withcustomattenuation(self):
         with dask.distributed.Client(n_workers=1,
                                      threads_per_worker=1,
                                      memory_limit='4GB'):
-            macros = OrderedDict((f"attenuation_{index}", self.macro(attenuation)) for index, attenuation in enumerate([1.0, 10.0, 100.0, 10e3]))
+            ratdb = OrderedDict((f"attenuation_{index}", self.ratdb(attenuation)) for index, attenuation in enumerate([1.0]))
             jobs = generatemc(GenerateMCConfig(WatchMakersConfig(numevents=1), numjobs=1,
                                                filenamefilter=lambda f: "IBD_LIQUID_pn" in f,
-                                               injectmacros=macros,
+                                               injectratdb=ratdb,
                                                ))
             results = jobs.compute()
             self.assertTrue(len(results)>0)
