@@ -2,12 +2,11 @@ import inspect
 from typing import Optional
 
 
-def ratmacro(attenuation: Optional[float]=None, scattering: Optional[float]=None) -> Optional[str]:
+def ratmacro() -> Optional[str]:
     snippets = []
-    if attenuation is not None:
-        snippets.append(_attenuationmacro(attenuation))
-    if scattering is not None:
-        snippets.append(_scatteringmacro(scattering))
+    # this doesn't actually work, need to use makeratdb instead
+    # if attenuation is not None:
+    #     snippets.append(_attenuationmacro(attenuation))
     if len(snippets) > 0:
         return "\n".join(snippets)
     else:
@@ -23,12 +22,3 @@ def _attenuationmacro(attenuation: float) -> str:
     /rat/db/set OPTICS[salt_water] ABSLENGTH_value2 {attenuation} {attenuation} {attenuation}
     """)
 
-
-def _scatteringmacro(scattering: float) -> str:
-    scattering = "%.6e" % scattering
-    return inspect.cleandoc(f"""
-    /rat/db/set OPTICS[water] RSLENGTH_value1 60.0 200.0 800.0
-    /rat/db/set OPTICS[water] RSLENGTH_value2 {scattering} {scattering} {scattering}
-    /rat/db/set OPTICS[salt_water] RSLENGTH_value1 60.0 200.0 800.0
-    /rat/db/set OPTICS[salt_water] RSLENGTH_value2 {scattering} {scattering} {scattering}
-    """)

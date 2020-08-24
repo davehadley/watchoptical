@@ -30,6 +30,7 @@ class GenerateMCConfig:
     bonsaiexecutable: str = "${BONSAIDIR}/bonsai"
     bonsailikelihood: str = "${BONSAIDIR}/like.bin"
     injectmacros: Optional[typing.OrderedDict[str, str]] = None
+    injectratdb: Optional[typing.OrderedDict[str, str]] = None
 
     def __post_init__(self):
         if not os.path.exists(expandpath(self.bonsaiexecutable)):
@@ -45,6 +46,10 @@ class GenerateMCConfig:
             for k, v in self.injectmacros.items():
                 hsh.update(k.encode())
                 hsh.update(v.encode())
+        if self.injectratdb:
+            for k, v in self.injectratdb.items():
+                hsh.update(k.encode())
+                hsh.update(v.encode())
         return hsh.hexdigest()
 
 
@@ -52,7 +57,7 @@ def _rungeant4(watchmakersscript: str, cwd: str, config: GenerateMCConfig) -> Tu
     with open(watchmakersscript, "r") as script:
         scripttext = script.read()
         uid = str(uuid.uuid1())
-        with _inject_macros_into_script(scripttext, config.injectmacros) as scripttext:
+        with _inject_macros_and_ratdb_into_script(scripttext, config.injectmacros, config.injectratdb) as scripttext:
             scripttext = scripttext.replace("run$TMPNAME.root", f"run_{config.configid}_{uid}.root")
             scripttext = scripttext.replace("run$TMPNAME.log", f"run_{config.configid}_{uid}.log")
             filename = os.sep.join((cwd,
@@ -77,9 +82,28 @@ def _write_injected_macros_to_disk(tempdir: str, injectmacros: typing.OrderedDic
     return OrderedDict((k, _dump_text_to_temp_file(tempdir, k + ".mac", v)) for k, v in injectmacros.items())
 
 
+def _write_injected_ratdb_to_disk(tempdir: str, injectratdb: typing.OrderedDict[str, str]) -> typing.OrderedDict[
+    str, str]:
+    return OrderedDict((k, _dump_text_to_temp_file(tempdir, k + ".ratdb", v)) for k, v in injectratdb.items())
+
+
+def _load_ratdb_macro_command(jsoncontents, tempfilename):
+    return "\n".join((
+        # commented out ratdb contents
+        "\n".join(f"# {l}" for l in jsoncontents.split("\n")),
+        # macro command to load the file from disk
+        f"/rat/db/load {tempfilename}"))
+    return
+
+
 @contextmanager
-def _inject_macros_into_script(scripttext: str, injectmacros: Optional[typing.OrderedDict[str, str]]) -> Iterator[str]:
+def _inject_macros_and_ratdb_into_script(scripttext: str, injectmacros: Optional[typing.OrderedDict[str, str]], injectratdb: typing.OrderedDict[str, str]) -> Iterator[str]:
     with TemporaryDirectory() as tempdir:
+        if injectratdb is not None:
+            ratdbnames = _write_injected_ratdb_to_disk(tempdir, injectratdb)
+            if injectmacros is None:
+                injectmacros = OrderedDict()
+            injectmacros.update((key, _load_ratdb_macro_command(injectratdb[key], fname)) for key, fname in ratdbnames.items())
         if injectmacros is not None:
             macronames = _write_injected_macros_to_disk(tempdir, injectmacros)
             s1, s2 = scripttext.split("&& rat")

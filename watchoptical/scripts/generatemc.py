@@ -2,7 +2,7 @@ import os
 import sys
 from argparse import ArgumentParser, Namespace
 from enum import Enum
-from typing import Optional
+from typing import Optional, Any
 from collections import OrderedDict
 
 from dask.distributed import LocalCluster, Client
@@ -11,6 +11,7 @@ from distributed.system import memory_limit
 
 from watchoptical.internal.client import ClientType, client
 from watchoptical.internal.generatemc import generatemc, GenerateMCConfig
+from watchoptical.internal.makeratdb import makeratdb
 from watchoptical.internal.ratmacro import ratmacro
 from watchoptical.internal.runwatchmakers import WatchMakersConfig
 from watchoptical.internal.utils import expandpath
@@ -61,9 +62,9 @@ def _validatearguments(args):
     return
 
 
-def _wrapmacroindict(key: str, macro: Optional[str]):
-    if (macro is not None):
-        return OrderedDict({key: macro})
+def _wrapindict(key: str, value: Any):
+    if (value is not None):
+        return OrderedDict({key: value})
     else:
         return None
 
@@ -72,12 +73,12 @@ def _run(args):
     if not os.path.exists(args.directory):
         os.makedirs(args.directory, exist_ok=True)
     filenamefilter = None if args.signal_only is None else lambda f: "IBD_LIQUID_pn" in f
-    injectmacros = _wrapmacroindict(f"attenuation_{args.attenuation}", ratmacro(attenuation=args.attenuation, scattering=args.scattering))
+    injectratdb = _wrapindict(f"attenuation_{args.attenuation}", makeratdb(attenuation=args.attenuation, scattering=args.scattering))
     config = GenerateMCConfig(WatchMakersConfig(directory=args.directory, numevents=args.num_events_per_job),
                               numjobs=args.num_jobs,
                               bonsaiexecutable=expandpath(args.bonsai),
                               bonsailikelihood=expandpath(args.bonsai_likelihood),
-                              injectmacros=injectmacros,
+                              injectratdb=injectratdb,
                               filenamefilter=filenamefilter
                               )
     with client(args.target):
