@@ -99,12 +99,11 @@ def _makebasichistograms(tree: AnalysisEventTuple, hist: MutableMapping[str, Exp
 
 def _attenuationfromtree(tree: AnalysisEventTuple) -> float:
     # this should return the expect rate for this process in number of events per second
-    lines = str(tree.macro).split("\n")
-    for l in lines:
-        match = re.search("^/rat/db/set OPTICS\[water\] ABSLENGTH_value2 (.*?) ", l)
-        if match:
-            return float(match.group(1))
-    raise ValueError("failed to parse macro", lines)
+    macro = str(tree.macro)
+    match = re.search("(?s).*OPTICS.*?doped_water.*?ABSLENGTH_value2.*?\[(.*?),.*", macro)
+    if match:
+        return float(match.group(1))
+    raise ValueError("failed to parse macro", macro)
 
 
 def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
