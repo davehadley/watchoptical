@@ -1,19 +1,14 @@
-import functools
-import operator
 import os
-import re
 from argparse import ArgumentParser, Namespace
-from typing import NamedTuple, Iterable
-
-import uproot
-import boost_histogram as bh
 
 import matplotlib.pyplot as plt
+import numpy as np
 
+from watchoptical.internal import timeconstants
 from watchoptical.internal.client import ClientType, client
-from watchoptical.internal.histoutils import CategoryHistogram, categoryhistplot, ExposureWeightedHistogram
-from watchoptical.internal.mctoanalysis import mctoanalysis, AnalysisFile
-from watchoptical.internal.utils import findfiles
+from watchoptical.internal.histoutils import categoryhistplot
+from watchoptical.internal.opticsanalysis.runopticsanalysis import shelvedopticsanalysis, OpticsAnalysisResult
+from watchoptical.internal.utils import searchforrootfilesexcludinganalysisfiles
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 
@@ -25,108 +20,71 @@ def parsecml() -> Namespace:
                         default=ClientType.SINGLE,
                         help="Where to run jobs."
                         )
-    parser.add_argument("--inputfiles", nargs="+", type=str, default=[
-        "~/work/wm/data/testwatchoptical/attempt01/*_files_default/*/*.root"])
+    parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])
+    parser.add_argument("--force", action="store_true")
     return parser.parse_args()
 
 
-class TreeTuple(NamedTuple):
-    anal: dict
-    bonsai: dict
-    analysisfile: AnalysisFile
-
-    @property
-    def numevents(self):
-        return len(self.anal)
-
-    @property
-    def exposure(self):
-        # exposure in seconds
-        rate = ratefromtree(self)
-        return float(self.numevents) / rate
+def plot(data: OpticsAnalysisResult):
+    _plothist(data)
+    _plotattenuation(data)
+    return
 
 
-def load(analysisfile: AnalysisFile) -> TreeTuple:
-    anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].pandas.df(flatten=False)
-    bonsai = uproot.open(analysisfile.producedfrom.bonsaifile)["data"].pandas.df(flatten=False)
-    return TreeTuple(anal, bonsai, analysisfile)
-
-
-def eventtypefromfile(file: AnalysisFile) -> str:
-    fname = file.producedfrom.g4file
+def _xlabel(key: str) -> str:
     try:
-        result = re.match(".*/Watchman_(.*)/.*", fname).group(1)
-    except AttributeError:
-        result = "unknown"
-    return result
+        return {
+            "n9_0" : "num PMT hits in 9 ns",
+            "n9_1": "num PMT hits in 9 ns",
+                }[key]
+    except KeyError:
+        return key
 
 
-def ratefromtree(tree: TreeTuple) -> float:
-    # this should return the expect rate for this process in number of events per second
-    lines = str(uproot.open(tree.analysisfile.producedfrom.g4file)["macro"]).split("\n")
-    for l in lines:
-        match = re.search("/generator/rate/set (.*)", l)
-        if match:
-            return float(match.group(1))
-    raise ValueError("failed to parse macro", lines)
+def _plothist(data: OpticsAnalysisResult, dest="plots"):
+    for k, h in data.hist.items():
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax = categoryhistplot(h, lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK, ax=ax)
+        ax.set_ylabel("events per week")
+        #ax.set_yscale("log")
+        ax.set_xlabel(_xlabel(k))
+        ax.legend()
+        fig.tight_layout()
+        fig.tight_layout()
+        os.makedirs(dest, exist_ok=True)
+        fig.savefig(f"{dest}{os.sep}{k}.png")
+    return
 
 
-def categoryfromfile(file: AnalysisFile) -> str:
-    et = eventtypefromfile(file)
-    result = "IBD" if "IBD" in et else "Background"
-    return result
-
-
-def selection(data):
-    # watchmakers efficiency is based on:
-    #             cond = "closestPMT/1000.>%f"%(_d)
-    #             cond += "&& good_pos>%f " %(_posGood)
-    #             cond += "&& inner_hit > 4 &&  veto_hit < 4"
-    #             cond += "&& n9 > %f" %(_n9)
-    # with _distance2pmt=1,_n9=8,_dist=30.0,\
-    # _posGood=0.1,_dirGood=0.1,_pe=8,_nhit=8,_itr = 1.5
-    return data[(data.closestPMT/1000.0 > 2.0)
-                & (data.good_pos > 0.1)
-                & (data.inner_hit > 4)
-                & (data.veto_hit < 4)
-                ]
-
-
-def analysis(tree: TreeTuple) -> bh.Histogram:
-    histo = ExposureWeightedHistogram(bh.axis.Regular(25, 0.0, 60.0))
-    category = categoryfromfile(tree.analysisfile)
-    histo.fill(category, tree.exposure, tree.bonsai.n9.array)
-    #histo.fill(category, tree.exposure, selection(tree.bonsai).closestPMT.array)
-    return histo
-
-
-def sumhistograms(iterable: Iterable[bh.Histogram]) -> bh.Histogram:
-    return functools.reduce(operator.add, iterable)
-
-
-def plot(dataset: WatchmanDataset):
-    analfiles = mctoanalysis(dataset)
-    data = (analfiles.map(load)
-            .map(analysis)
-            .reduction(sumhistograms, sumhistograms)
-            ).compute()
-    categoryhistplot(data)
-    plt.ylabel("events per second")
-    plt.yscale("log")
-    plt.xlabel("num PMT hits in 9 ns (n9)")
-    plt.legend()
-    plt.savefig("n9.png")
-    plt.show()
+def _plotattenuation(data: OpticsAnalysisResult, dest="plots"):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    for key, label in [("idb_total_charge_by_attenuation_mean", "mean"),
+                       ("idb_total_charge_by_attenuation_mean_gt10", "mean | Q > 10"),
+                       ]:
+        points = data.scatter[key]
+        points = [(float(a)/1.0e3, q.value, np.sqrt(q.variance)/np.sqrt(q.sum_of_weights)) for a, q in points.items()]
+        X, Y, Yerr = zip(*points)
+        ax.errorbar(list(X), list(Y), yerr=Yerr, ls="", marker="o", label=label)
+    ax.legend()
+    os.makedirs(dest, exist_ok=True)
+    ax.set_ylabel("total charge per event")
+    ax.set_xscale("log")
+    ax.set_xlabel("attenuation length [m]")
+    fig.tight_layout()
+    fig.savefig(f"{dest}{os.sep}attenuationmean.png")
     return
 
 
 def main():
     args = parsecml()
-    dataset = WatchmanDataset(f for f in findfiles(args.inputfiles)
+    dataset = WatchmanDataset(f for f in searchforrootfilesexcludinganalysisfiles(args.inputfiles)
                               if not ("IBDNeutron" in f or "IBDPosition" in f)
                               )
     with client(args.target):
-        plot(dataset)
+        result = shelvedopticsanalysis(dataset, forcecall=args.force)
+    plot(result)
     return
 
 

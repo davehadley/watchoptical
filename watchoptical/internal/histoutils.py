@@ -1,11 +1,15 @@
+import operator
 from collections import defaultdict
 from copy import deepcopy
-from typing import NamedTuple, Iterator, Collection, Union, Optional, Any, Callable
+from typing import NamedTuple, Iterator, Collection, Union, Optional, Any, Callable, Iterable, Mapping
 
 import boost_histogram as bh
 import numpy as np
 import mplhep
-from matplotlib.axes import Axes
+from matplotlib.axes import Axes, functools
+from toolz import merge_with
+
+from watchoptical.internal.utils import summap
 
 
 class CategoryHistogram(Collection):
@@ -18,10 +22,11 @@ class CategoryHistogram(Collection):
         self._kwargs = kwargs
         self._hist = dict()
 
-    def fill(self, category: str, *args: np.ndarray, weight: Optional[np.ndarray] = None):
+    def fill(self, category: str, *args: np.ndarray, weight: Optional[np.ndarray] = None) ->  "CategoryHistogram":
         if category not in self._hist:
             self._hist[category] = bh.Histogram(*self._args, **self._kwargs)
         self._hist[category].fill(*args, weight=weight)
+        return self
 
     def __iter__(self) -> Iterator[Item]:
         for index, hist in sorted(self._hist.items()):
@@ -68,24 +73,31 @@ class ExposureWeightedHistogram(Collection):
         self._hist = CategoryHistogram(*axes, **kwargs)
         self._exposure = defaultdict(bh.accumulators.WeightedSum)
 
-    def fill(self, category: str, exposure: float, *args: np.ndarray, weight: Optional[np.ndarray] = None):
+    def fill(self, category: str, exposure: float, *args: np.ndarray, weight: Optional[np.ndarray] = None) -> "ExposureWeightedHistogram":
         self._hist.fill(category, *args, weight=weight)
         self._exposure[category].fill(exposure)
-        return
+        return self
 
     def __len__(self) -> int:
         return len(self._hist)
 
     def __iter__(self) -> Iterator[Item]:
+        return self._iterexposureweighted()
+
+    def _iterexposureweighted(self) -> Iterator[Item]:
         for k, v in self._hist:
             yield ExposureWeightedHistogram.Item(k, (1.0 / self._exposure[k].value) * v, self._exposure[k])
+
+    def _iterrawhist(self) -> Iterator[Item]:
+        for k, v in self._hist:
+            yield ExposureWeightedHistogram.Item(k, v, self._exposure[k])
 
     def __contains__(self, __x: object) -> bool:
         return __x in self._hist
 
     def __add__(self, other: "ExposureWeightedHistogram") -> "ExposureWeightedHistogram":
         result = deepcopy(self)
-        for key, histogram, exposure in other:
+        for key, histogram, exposure in other._iterrawhist():
             try:
                 result._hist._hist[key] += histogram
                 result._exposure[key] += exposure
@@ -93,3 +105,7 @@ class ExposureWeightedHistogram(Collection):
                 result._hist._hist[key] = deepcopy(histogram)
                 result._exposure[key] = deepcopy(exposure)
         return result
+
+
+def sumhistogrammap(iterable: Iterable[Mapping[str, bh.Histogram]]) -> Mapping[str, bh.Histogram]:
+    return summap(iterable)

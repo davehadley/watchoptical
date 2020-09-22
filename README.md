@@ -23,6 +23,13 @@ If you want to do development work on this package do:
 python3 setup.py develop
 ```
 
+### Testing you Installation
+
+From the `watchoptical` directory run:
+```bash
+python -m unittest discover tests
+```
+
 ## Generating WATCHMAN MC
 
 To generate MC do:
@@ -32,4 +39,18 @@ python3 -m watchoptical.scripts.generatemc --num-events=1000 --target=local
 For more options see:
 ```bash
 python3 -m watchoptical.scripts.generatemc --help
+```
+
+## Analyzing WATCHMAN Data 
+
+First run the analysis script on the files that you generated in the previous step:
+
+```bash
+python3 -m watchoptical.scripts.runanalysis path/to/input/files/*.root
+```
+
+Make plots from the output with:
+
+```bash
+python3 -m watchoptical.scripts.plot path/to/input/files/*.root
 ```
