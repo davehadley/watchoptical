@@ -120,6 +120,10 @@ def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: OpticsAnalysis
         meanq = defaultdict(bh.accumulators.WeightedMean)
         meanq[category].fill(totalq)
         store.scatter["idb_total_charge_by_attenuation_mean"] = meanq
+        # calculate mean Q > 10
+        meanq_gt10 = defaultdict(bh.accumulators.WeightedMean)
+        meanq_gt10[category].fill(totalq[totalq > 10.0])
+        store.scatter["idb_total_charge_by_attenuation_mean_gt10"] = meanq_gt10
     return
 
 
