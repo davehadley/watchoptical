@@ -2,6 +2,7 @@ import os
 from argparse import ArgumentParser, Namespace
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from watchoptical.internal import timeconstants
 from watchoptical.internal.client import ClientType, client
@@ -50,6 +51,7 @@ def _plothist(data: OpticsAnalysisResult, dest="plots"):
         ax.set_xlabel(_xlabel(k))
         ax.legend()
         fig.tight_layout()
+        fig.tight_layout()
         os.makedirs(dest, exist_ok=True)
         fig.savefig(f"{dest}{os.sep}{k}.png")
     return
@@ -58,16 +60,20 @@ def _plothist(data: OpticsAnalysisResult, dest="plots"):
 def _plotattenuation(data: OpticsAnalysisResult, dest="plots"):
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    key = "idb_total_charge_by_attenuation_mean"
-    points = data.scatter[key]
-    points = [(float(a), q.value) for a, q in points.items()]
-    X, Y = zip(*points)
-    ax.scatter(list(X), list(Y))
+    for key, label in [("idb_total_charge_by_attenuation_mean", "mean"),
+                       ("idb_total_charge_by_attenuation_mean_gt10", "mean | Q > 10"),
+                       ]:
+        points = data.scatter[key]
+        points = [(float(a)/1.0e3, q.value, np.sqrt(q.variance)/np.sqrt(q.sum_of_weights)) for a, q in points.items()]
+        X, Y, Yerr = zip(*points)
+        ax.errorbar(list(X), list(Y), yerr=Yerr, ls="", marker="o", label=label)
+    ax.legend()
     os.makedirs(dest, exist_ok=True)
-    ax.set_ylabel("mean charge per event")
-    # ax.set_yscale("log")
+    ax.set_ylabel("total charge per event")
+    ax.set_xscale("log")
     ax.set_xlabel("attenuation length [m]")
-    fig.savefig(f"{dest}{os.sep}{key}.png")
+    fig.tight_layout()
+    fig.savefig(f"{dest}{os.sep}attenuationmean.png")
     return
 
 

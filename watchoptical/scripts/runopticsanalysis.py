@@ -12,7 +12,7 @@ def parsecml() -> Namespace:
     parser.add_argument("-d", "--directory", type=str, default=os.getcwd(),
                         help="Output Directory to store the generated files.")
     parser.add_argument("--target", "-t", type=ClientType, choices=list(ClientType),
-                        default=ClientType.SINGLE,
+                        default=ClientType.LOCAL,
                         help="Where to run jobs."
                         )
     parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])
