@@ -23,11 +23,18 @@ class WatchMakersSensitivityResult(NamedTuple):
 
 def runwatchmakerssensitivityanalysis(config: WatchMakersSensitivityAnalysisConfig,
                                       force: bool = False) -> WatchMakersSensitivityResult:
-    sensitvitypattern = f"{config.inputdirectory}{os.sep}results_*.txt"
-    if force or not len(glob(sensitvitypattern)) > 0:
+    if force or not len(_get_sensitvity_files(config.inputdirectory)) > 0:
         logs = _run_all_watchmakers_steps(config.inputdirectory)
         _write_logs(logs, config.inputdirectory)
-    return _parse_watchmakers_result_txt(glob(sensitvitypattern)[0])
+    return loadwatchmakerssensitvity(config.inputdirectory)
+
+
+def _get_sensitvity_files(directory: str) -> List[str]:
+    return glob(f"{directory}{os.sep}results_*.txt")
+
+
+def loadwatchmakerssensitvity(directory: str) -> WatchMakersSensitivityResult:
+    return _parse_watchmakers_result_txt(_get_sensitvity_files(directory)[0])
 
 
 class WatchMakersSensitivityStep(Enum):

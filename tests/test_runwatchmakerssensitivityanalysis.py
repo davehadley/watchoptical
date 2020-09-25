@@ -26,9 +26,7 @@ class TestRunWatchMakersSensitivityAnalysis(unittest.TestCase):
 
     def test_runwatchmakerssensitvityanalysis_defaultconfiguration_generatesoutput(self):
         with TemporaryDirectory() as dirname:
-            config = WatchMakersSensitivityAnalysisConfig(inputdirectory=self.inputmcdirectory,
-                                                          outputdirectory=dirname
-                                                          )
+            config = WatchMakersSensitivityAnalysisConfig(inputdirectory=self.inputmcdirectory)
             runwatchmakerssensitivityanalysis(config)
 
 
