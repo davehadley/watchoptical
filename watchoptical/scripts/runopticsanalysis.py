@@ -16,7 +16,7 @@ def parsecml() -> Namespace:
                         help="Where to run jobs."
                         )
     parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])
-    parser.add_argument("--force", action="store_true")
+    parser.add_argument("--force", "-f", action="store_true")
     return parser.parse_args()
 
 
