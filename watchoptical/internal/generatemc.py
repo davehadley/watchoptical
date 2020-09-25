@@ -13,7 +13,6 @@ from typing import Tuple, Optional, Callable, Mapping, Iterator
 import dask.bag
 import typing
 from dask.bag import Bag
-from toolz import curry
 
 from watchoptical.internal.runwatchmakers import generatejobscripts, WatchMakersConfig
 from watchoptical.internal.utils import expandpath, temporaryworkingdirectory
