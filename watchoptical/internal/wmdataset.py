@@ -2,7 +2,7 @@ import itertools
 import os
 import re
 from hashlib import md5
-from typing import Iterable, NamedTuple, Iterator, Tuple, Optional, Collection
+from typing import Iterable, NamedTuple, Iterator, Tuple, Optional, Collection, Dict, Union
 
 from toolz import pipe, groupby
 
@@ -19,7 +19,7 @@ class RatPacBonsaiPair(NamedTuple):
 
 
 class WatchmanDataset:
-    def __init__(self, filepatterns: Iterable[str], name: Optional[str] = None, empty_ok:bool=False):
+    def __init__(self, filepatterns: Iterable[str], name: Optional[str] = None, empty_ok: bool = False):
         self._files: Tuple[RatPacBonsaiPair] = pipe(filepatterns,
                                                     findfiles,
                                                     self._match_bonsai_and_ratpac,
@@ -55,3 +55,20 @@ class WatchmanDataset:
         return hashfromstrcol(s for p in self for s in p)
 
 
+class WatchmanDataSetCollection:
+    def __init__(self, directories: Dict[str, Union[Iterable[str], str]], name: Optional[str] = None,
+                 empty_ok: bool = False):
+        self.name = name
+        self._datasets = {k: WatchmanDataset([d] if isinstance(d, str) else d,
+                                             name=k, empty_ok=empty_ok)
+                          for k, d in directories.items()}
+
+    def __iter__(self) -> Iterator[WatchmanDataset]:
+        for _, d in sorted(self._datasets.items()):
+            yield d
+
+    def __len__(self) -> int:
+        return len(self._datasets)
+
+    def __getitem__(self, name: str) -> WatchmanDataset:
+        return self._datasets[name]

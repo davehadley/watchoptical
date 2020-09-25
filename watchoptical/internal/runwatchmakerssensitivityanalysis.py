@@ -12,7 +12,6 @@ from watchoptical.internal.runwatchmakers import path_to_watchmakers_script
 @dataclass(frozen=True)
 class WatchMakersSensitivityAnalysisConfig:
     inputdirectory: str
-    outputdirectory: str
 
 
 class WatchMakersSensitivityResult(NamedTuple):
@@ -22,11 +21,12 @@ class WatchMakersSensitivityResult(NamedTuple):
     metric: float
 
 
-def runwatchmakerssensitivityanalysis(config: WatchMakersSensitivityAnalysisConfig) -> WatchMakersSensitivityResult:
+def runwatchmakerssensitivityanalysis(config: WatchMakersSensitivityAnalysisConfig,
+                                      force: bool = False) -> WatchMakersSensitivityResult:
     sensitvitypattern = f"{config.inputdirectory}{os.sep}results_*.txt"
-    if not len(glob(sensitvitypattern)) > 0:
+    if force or not len(glob(sensitvitypattern)) > 0:
         logs = _run_all_watchmakers_steps(config.inputdirectory)
-        _write_logs(logs, config.outputdirectory)
+        _write_logs(logs, config.inputdirectory)
     return _parse_watchmakers_result_txt(glob(sensitvitypattern)[0])
 
 

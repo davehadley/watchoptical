@@ -47,7 +47,7 @@ def searchdirectories(filepattern: str, directories: Iterable[str]) -> List[str]
 
 
 def searchforrootfilesexcludinganalysisfiles(directories: Iterable[str]):
-    return searchdirectories(r"^(?!watchopticalanalysis).*.root$", directories)
+    return searchdirectories(r"^(?!watchopticalanalysis|merged).*.root$", directories)
 
 
 def touchfile(path: str) -> None:
