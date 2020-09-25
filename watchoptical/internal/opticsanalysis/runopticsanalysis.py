@@ -127,11 +127,21 @@ def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: OpticsAnalysis
     return
 
 
+def _makesensitivityscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
+    attenuation = _attenuationfromtree(tree)
+    category = f"{attenuation:0.5e}"
+    sensitivity = defaultdict(bh.accumulators.WeightedMean)
+    sensitivity[category].fill(tree.sensitivity.metric)
+    store.scatter["sensitvity_metric"] = sensitivity
+    return
+
+
 def _analysis(tree: AnalysisEventTuple) -> OpticsAnalysisResult:
     # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
     result = OpticsAnalysisResult()
     _makebasichistograms(tree, result.hist)
     _makebasicattenuationscatter(tree, result)
+    _makesensitivityscatter(tree, result)
     return result
 
 
