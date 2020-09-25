@@ -17,6 +17,10 @@ class RatPacBonsaiPair(NamedTuple):
     def eventtype(self) -> str:
         return re.match(f".*Watchman_(.*){os.sep}.*.root$", self.g4file).group(1)
 
+    @property
+    def rootdirectory(self):
+        return os.path.commonpath((self.g4file, self.bonsaifile))
+
 
 class WatchmanDataset:
     def __init__(self, filepatterns: Iterable[str], name: Optional[str] = None, empty_ok: bool = False):

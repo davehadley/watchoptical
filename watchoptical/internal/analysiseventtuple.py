@@ -5,12 +5,15 @@ from pandas import DataFrame
 
 import uproot
 from watchoptical.internal.mctoanalysis import AnalysisFile
+from watchoptical.internal.runwatchmakerssensitivityanalysis import WatchMakersSensitivityResult, \
+    loadwatchmakerssensitvity
 
 
 class AnalysisEventTuple(NamedTuple):
     anal: DataFrame
     bonsai: DataFrame
     analysisfile: AnalysisFile
+    sensitivity: WatchMakersSensitivityResult
 
     @property
     def numevents(self):
@@ -29,7 +32,8 @@ class AnalysisEventTuple(NamedTuple):
                   .pandas.df(flatten=False)
                   # .set_index(["mcid", "subid"])
                   )
-        return AnalysisEventTuple(anal, bonsai, analysisfile)
+        sensitivity = loadwatchmakerssensitvity(analysisfile.producedfrom.rootdirectory)
+        return AnalysisEventTuple(anal, bonsai, analysisfile, sensitivity)
 
     @property
     def macro(self) -> str:
