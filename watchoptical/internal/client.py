@@ -42,4 +42,4 @@ def _slurmclient(memory: int, partition="epp,taskfarm", account="epp") -> Client
 
 
 def _singleclient():
-    return Client(processes=False)
+    return dask.config.set(scheduler="sync")

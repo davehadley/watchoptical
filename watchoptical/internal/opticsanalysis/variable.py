@@ -1,12 +1,14 @@
 from enum import Enum
 from typing import NamedTuple, Callable, Any
 
+from boost_histogram.axis import Axis, Regular
 from pandas import DataFrame
 
 import numpy as np
 
 class Variable(NamedTuple):
     name: str
+    binning: Axis
     f: Callable[[DataFrame], Any]
 
     def __call__(self, *args, **kwargs):
@@ -14,5 +16,5 @@ class Variable(NamedTuple):
 
 
 class VariableDefs(Enum):
-    eventcount = Variable("eventcount", lambda x: np.zeros(len(x)))
-    n9 = Variable("n9", lambda x: np.zeros(len(x)))
+    eventcount = Variable("eventcount", Regular(1, 0.0, 1.0), lambda x: np.zeros(len(x)))
+    n9 = Variable("n9", Regular(26, 0., 60.0), lambda x: np.zeros(len(x)))
