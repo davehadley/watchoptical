@@ -1,12 +1,14 @@
 import re
 from typing import NamedTuple
 
+from dask.bag import Bag
 from pandas import DataFrame
 
 import uproot
-from watchoptical.internal.mctoanalysis import AnalysisFile
+from watchoptical.internal.mctoanalysis import AnalysisFile, mctoanalysis
 from watchoptical.internal.runwatchmakerssensitivityanalysis import WatchMakersSensitivityResult, \
     loadwatchmakerssensitvity
+from watchoptical.internal.wmdataset import WatchmanDataset
 
 
 class AnalysisEventTuple(NamedTuple):
@@ -34,6 +36,10 @@ class AnalysisEventTuple(NamedTuple):
                   )
         sensitivity = loadwatchmakerssensitvity(analysisfile.producedfrom.rootdirectory)
         return AnalysisEventTuple(anal, bonsai, analysisfile, sensitivity)
+
+    @classmethod
+    def fromWatchmanDataset(cls, dataset: WatchmanDataset) -> Bag:
+        return mctoanalysis(dataset).map(AnalysisEventTuple.load)
 
     @property
     def macro(self) -> str:
