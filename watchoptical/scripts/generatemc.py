@@ -69,12 +69,25 @@ def _wrapindict(key: str, value: Any):
         return None
 
 
+def _getconfigdir(args: Namespace) -> str:
+    suffix = ""
+    if args.attenuation is not None:
+        suffix += f"_attenuation{args.attenuation:.5e}"
+    if args.scattering is not None:
+        suffix += f"_scattering{args.scattering:.5e}"
+    if suffix == "":
+        suffix = "_nominal"
+    return "watchmanmc" + suffix
+
+
 def _run(args):
-    if not os.path.exists(args.directory):
-        os.makedirs(args.directory, exist_ok=True)
+    directory = args.directory + os.sep + _getconfigdir(args)
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
     filenamefilter = None if args.signal_only is None else lambda f: "IBD_LIQUID_pn" in f
-    injectratdb = _wrapindict(f"attenuation_{args.attenuation}", makeratdb(attenuation=args.attenuation, scattering=args.scattering))
-    config = GenerateMCConfig(WatchMakersConfig(directory=args.directory, numevents=args.num_events_per_job),
+    injectratdb = _wrapindict(f"attenuation_{args.attenuation}",
+                              makeratdb(attenuation=args.attenuation, scattering=args.scattering))
+    config = GenerateMCConfig(WatchMakersConfig(directory=directory, numevents=args.num_events_per_job),
                               numjobs=args.num_jobs,
                               bonsaiexecutable=expandpath(args.bonsai),
                               bonsailikelihood=expandpath(args.bonsai_likelihood),
