@@ -41,6 +41,12 @@ For more options see:
 python3 -m watchoptical.scripts.generatemc --help
 ```
 
+## Running the Standard WATCHMAN WatchMakers sensitivity analysis 
+
+```bash
+python3 -m watchoptical.scripts.runsensitivityanalysis path/to/input/files
+```
+
 ## Analyzing WATCHMAN Data 
 
 First run the analysis script on the files that you generated in the previous step:
