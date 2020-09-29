@@ -12,8 +12,8 @@ def parsecml() -> Namespace:
     parser = ArgumentParser(description="Process WATCHMAN MC files to the watchoptical analysis file format.")
     parser.add_argument("-d", "--directory", type=str, default=os.getcwd(),
                         help="Output Directory to store the generated files.")
-    parser.add_argument("--target", "-t", type=ClientType, choices=list(ClientType),
-                        default=ClientType.SINGLE,
+    parser.add_argument("--client", "-c", type=ClientType, choices=list(ClientType),
+                        default=ClientType.LOCAL,
                         help="Where to run jobs."
                         )
     parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])
@@ -23,7 +23,7 @@ def parsecml() -> Namespace:
 def main():
     args = parsecml()
     dataset = WatchmanDataset(searchforrootfilesexcludinganalysisfiles(args.inputfiles))
-    with client(args.target):
+    with client(args.client):
         mctoanalysis(dataset, config=MCToAnalysisConfig(directory=args.directory)).compute()
     return
 

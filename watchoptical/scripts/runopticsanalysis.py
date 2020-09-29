@@ -11,7 +11,7 @@ def parsecml() -> Namespace:
     parser = ArgumentParser(description="Analyze WATCHMAN data files.")
     parser.add_argument("-d", "--directory", type=str, default=os.getcwd(),
                         help="Output Directory to store the generated files.")
-    parser.add_argument("--target", "-t", type=ClientType, choices=list(ClientType),
+    parser.add_argument("--client", "-c", type=ClientType, choices=list(ClientType),
                         default=ClientType.LOCAL,
                         help="Where to run jobs."
                         )
@@ -25,7 +25,7 @@ def main():
     dataset = WatchmanDataset(f for f in searchforrootfilesexcludinganalysisfiles(args.inputfiles)
                               if not ("IBDNeutron" in f or "IBDPosition" in f)
                               )
-    with client(args.target):
+    with client(args.client):
         shelvedopticsanalysis(dataset, forcecall=True)
     return
 
