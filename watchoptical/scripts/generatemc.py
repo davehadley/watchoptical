@@ -22,7 +22,7 @@ def _parsecml() -> Namespace:
     parser.add_argument("--directory", "-d", type=str, default=os.getcwd(),
                         help="Directory to store generated files. It will be created if it does not exist."
                         )
-    parser.add_argument("--target", "-t", type=ClientType, choices=list(ClientType),
+    parser.add_argument("--client", "-c", type=ClientType, choices=list(ClientType),
                         default=ClientType.SINGLE,
                         help="Where to run jobs."
                         )
@@ -94,7 +94,7 @@ def _run(args):
                               injectratdb=injectratdb,
                               filenamefilter=filenamefilter
                               )
-    with client(args.target):
+    with client(args.client):
         generatemc(config).compute()
 
 

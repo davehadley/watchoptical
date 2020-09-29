@@ -19,7 +19,7 @@ def _parsecml() -> Namespace:
     parser.add_argument("input_directories", type=str, nargs="+",
                         help="Directories containing input WATCHMAN MC files to be included in the sensitivity analysis."
                         )
-    parser.add_argument("--target", "-t", type=ClientType, choices=list(ClientType),
+    parser.add_argument("--client", "-c", type=ClientType, choices=list(ClientType),
                         default=ClientType.SINGLE,
                         help="Where to run jobs."
                         )
@@ -43,7 +43,7 @@ def _wrapindict(key: str, value: Any):
 
 
 def _run(args):
-    with client(args.target):
+    with client(args.client):
         dask.bag.from_sequence(args.input_directories).map(_processdir(force=args.force)).compute()
 
 
