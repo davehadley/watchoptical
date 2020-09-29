@@ -12,7 +12,7 @@ from watchoptical.internal.wmdataset import WatchmanDataset
 
 
 def parsecml() -> Namespace:
-    parser = ArgumentParser(description="Process WATCHMAN MC files to the watchoptical analysis file format.")
+    parser = ArgumentParser(description="Process WATCHMAN analysis files to generate plots.")
     parser.add_argument("-d", "--directory", type=str, default=os.getcwd(),
                         help="Output Directory to store the generated files.")
     parser.add_argument("-p", "--plot", type=lambda s: PlotMode[s], choices=list(PlotMode), default=None)

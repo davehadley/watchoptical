@@ -40,6 +40,9 @@ class OpticsAnalysisResult:
             scatter=summap([self.scatter, other.scatter], lambda lhs, rhs: summap([lhs, rhs], _add_accum)),
         )
 
+    def __str__(self) -> str:
+        return f"OpticsAnalysisResult({len(self.hist)} hist, {len(self.scatter)} scatter)"
+
 
 def _categoryfromfile(file: AnalysisFile) -> str:
     et = eventtypefromfile(file)

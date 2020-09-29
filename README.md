@@ -60,3 +60,9 @@ Make plots from the output with:
 ```bash
 python3 -m watchoptical.scripts.plot path/to/input/files/*.root
 ```
+
+Inspect datasets on the command line with:
+
+```bash
+python3 -m watchoptical.scripts.inspect path/to/input/files
+```
