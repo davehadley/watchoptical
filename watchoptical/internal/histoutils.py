@@ -1,7 +1,7 @@
 import operator
 from collections import defaultdict
 from copy import deepcopy
-from typing import NamedTuple, Iterator, Collection, Union, Optional, Any, Callable, Iterable, Mapping
+from typing import NamedTuple, Iterator, Collection, Union, Optional, Any, Callable, Iterable, Mapping, Hashable
 
 import boost_histogram as bh
 import numpy as np
@@ -13,8 +13,11 @@ from watchoptical.internal.utils import summap
 
 
 class CategoryHistogram(Collection):
+
+    Category = Any
+
     class Item(NamedTuple):
-        category: str
+        category: "CategoryHistogram.Category"
         histogram: bh.Histogram
 
     def __init__(self, *axes: bh.axis.Axis, **kwargs: Any):
@@ -22,7 +25,7 @@ class CategoryHistogram(Collection):
         self._kwargs = kwargs
         self._hist = dict()
 
-    def fill(self, category: str, *args: np.ndarray, weight: Optional[np.ndarray] = None) ->  "CategoryHistogram":
+    def fill(self, category: "CategoryHistogram.Category", *args: np.ndarray, weight: Optional[np.ndarray] = None) ->  "CategoryHistogram":
         if category not in self._hist:
             self._hist[category] = bh.Histogram(*self._args, **self._kwargs)
         self._hist[category].fill(*args, weight=weight)
@@ -65,7 +68,7 @@ def categoryhistplot(hist: CategoryHistogram,
 class ExposureWeightedHistogram(Collection):
 
     class Item(NamedTuple):
-        category: str
+        category: CategoryHistogram.Category
         histogram :bh.Histogram
         exposure: float
 
@@ -73,7 +76,7 @@ class ExposureWeightedHistogram(Collection):
         self._hist = CategoryHistogram(*axes, **kwargs)
         self._exposure = defaultdict(bh.accumulators.WeightedSum)
 
-    def fill(self, category: str, exposure: float, *args: np.ndarray, weight: Optional[np.ndarray] = None) -> "ExposureWeightedHistogram":
+    def fill(self, category: CategoryHistogram.Category, exposure: float, *args: np.ndarray, weight: Optional[np.ndarray] = None) -> "ExposureWeightedHistogram":
         self._hist.fill(category, *args, weight=weight)
         self._exposure[category].fill(exposure)
         return self
