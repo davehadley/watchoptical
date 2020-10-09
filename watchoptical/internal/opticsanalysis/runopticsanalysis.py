@@ -44,8 +44,17 @@ class OpticsAnalysisResult:
         return f"OpticsAnalysisResult({len(self.hist)} hist, {len(self.scatter)} scatter)"
 
 
-def _categoryfromfile(file: AnalysisFile) -> str:
-    et = eventtypefromfile(file)
+class Category(NamedTuple):
+    eventtype: str
+    attenuation: float
+
+    @classmethod
+    def fromAnalysisEventTuple(cls, tree: AnalysisEventTuple) -> "Category":
+        return Category(_eventtypecategory(tree), _attenuationfromtree(tree))
+
+
+def _eventtypecategory(tree: AnalysisEventTuple) -> str:
+    et = eventtypefromfile(tree.analysisfile)
     result = "IBD" if "IBD" in et else "Background"
     return result
 
@@ -65,7 +74,7 @@ def _makebonsaihistogram(tree: AnalysisEventTuple,
                          subevent: int = 0
                          ) -> ExposureWeightedHistogram:
     histo = ExposureWeightedHistogram(binning)
-    category = _categoryfromfile(tree.analysisfile)
+    category = Category.fromAnalysisEventTuple(tree)
     data = (selection(tree.bonsai)
             .groupby("mcid")
             .nth(subevent))
@@ -92,7 +101,7 @@ def _attenuationfromtree(tree: AnalysisEventTuple) -> float:
 
 
 def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
-    category = _categoryfromfile(tree.analysisfile)
+    category = Category.fromAnalysisEventTuple(tree)
     if category == "IBD":
         attenuation = _attenuationfromtree(tree)
         category = f"{attenuation:0.5e}"
