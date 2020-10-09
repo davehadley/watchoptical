@@ -23,11 +23,13 @@ If you want to do development work on this package do:
 pip install -e .[dev] # you may need to escape [ and ] characters
 ```
 
+
+
 ### Testing you Installation
 
 From the `watchoptical` directory run:
 ```bash
-python -m unittest discover tests
+pytest tests
 ```
 
 ## Generating WATCHMAN MC
