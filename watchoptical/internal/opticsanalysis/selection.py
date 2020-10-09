@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import NamedTuple, Callable, Any
+from typing import Any, Callable, NamedTuple
 
 from pandas import DataFrame
 from toolz import identity

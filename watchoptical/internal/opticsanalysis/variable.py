@@ -1,10 +1,10 @@
 from enum import Enum
-from typing import NamedTuple, Callable, Any
+from typing import Any, Callable, NamedTuple
 
+import numpy as np
 from boost_histogram.axis import Axis, Regular
 from pandas import DataFrame
 
-import numpy as np
 
 class Variable(NamedTuple):
     name: str

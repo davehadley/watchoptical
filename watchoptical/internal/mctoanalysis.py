@@ -7,8 +7,8 @@ import dask
 from dask.bag import Bag
 from toolz import complement, curry
 
-from watchoptical.internal.wmdataset import WatchmanDataset, RatPacBonsaiPair
 from watchoptical.internal.watchopticalcpp import convert_ratpacbonsai_to_analysis
+from watchoptical.internal.wmdataset import RatPacBonsaiPair, WatchmanDataset
 
 
 @dataclass(frozen=True)

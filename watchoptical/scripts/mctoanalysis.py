@@ -3,8 +3,11 @@ from argparse import ArgumentParser, Namespace
 
 from watchoptical.internal import watchopticalcpp
 from watchoptical.internal.client import ClientType, client
-from watchoptical.internal.mctoanalysis import mctoanalysis, MCToAnalysisConfig
-from watchoptical.internal.utils import findfiles, searchforrootfilesexcludinganalysisfiles
+from watchoptical.internal.mctoanalysis import MCToAnalysisConfig, mctoanalysis
+from watchoptical.internal.utils import (
+    findfiles,
+    searchforrootfilesexcludinganalysisfiles,
+)
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 

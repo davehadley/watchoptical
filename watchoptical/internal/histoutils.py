@@ -1,11 +1,22 @@
 import operator
 from collections import defaultdict
 from copy import deepcopy
-from typing import NamedTuple, Iterator, Collection, Union, Optional, Any, Callable, Iterable, Mapping, Hashable
+from typing import (
+    Any,
+    Callable,
+    Collection,
+    Hashable,
+    Iterable,
+    Iterator,
+    Mapping,
+    NamedTuple,
+    Optional,
+    Union,
+)
 
 import boost_histogram as bh
-import numpy as np
 import mplhep
+import numpy as np
 from matplotlib.axes import Axes, functools
 from toolz import merge_with
 

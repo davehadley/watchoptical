@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 from watchoptical.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
 
+
 def plotattenuation(data: OpticsAnalysisResult, dest: str="plots") -> None:
     _plotattenuation(data, dest)
 

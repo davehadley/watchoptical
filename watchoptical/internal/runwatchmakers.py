@@ -3,7 +3,7 @@ import os
 import subprocess
 import tempfile
 from dataclasses import dataclass
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
 
 @dataclass(frozen=True)

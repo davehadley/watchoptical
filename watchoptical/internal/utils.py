@@ -6,13 +6,12 @@ import operator
 import os
 import re
 import shelve
-from os.path import expanduser, expandvars, abspath
+from os.path import abspath, expanduser, expandvars
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Iterable, List, Callable, Any, Tuple, Mapping, MutableMapping
+from typing import Any, Callable, Iterable, List, Mapping, MutableMapping, Tuple
 
-from toolz import pipe
-from toolz import mapcat, curry, merge_with
+from toolz import curry, mapcat, merge_with, pipe
 
 
 def expandpath(path):

@@ -2,9 +2,18 @@ import itertools
 import os
 import re
 from hashlib import md5
-from typing import Iterable, NamedTuple, Iterator, Tuple, Optional, Collection, Dict, Union
+from typing import (
+    Collection,
+    Dict,
+    Iterable,
+    Iterator,
+    NamedTuple,
+    Optional,
+    Tuple,
+    Union,
+)
 
-from toolz import pipe, groupby
+from toolz import groupby, pipe
 
 from watchoptical.internal.utils import findfiles, hashfromstrcol
 

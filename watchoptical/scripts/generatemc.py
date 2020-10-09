@@ -1,16 +1,16 @@
 import os
 import sys
 from argparse import ArgumentParser, Namespace
-from enum import Enum
-from typing import Optional, Any
 from collections import OrderedDict
+from enum import Enum
+from typing import Any, Optional
 
-from dask.distributed import LocalCluster, Client
+from dask.distributed import Client, LocalCluster
 from dask.system import cpu_count
 from distributed.system import memory_limit
 
 from watchoptical.internal.client import ClientType, client
-from watchoptical.internal.generatemc import generatemc, GenerateMCConfig
+from watchoptical.internal.generatemc import GenerateMCConfig, generatemc
 from watchoptical.internal.makeratdb import makeratdb
 from watchoptical.internal.ratmacro import ratmacro
 from watchoptical.internal.runwatchmakers import WatchMakersConfig

@@ -7,7 +7,7 @@ import unittest
 import dask.distributed
 
 from watchoptical.internal.generatemc import GenerateMCConfig, generatemc
-from watchoptical.internal.mctoanalysis import mctoanalysis, MCToAnalysisConfig
+from watchoptical.internal.mctoanalysis import MCToAnalysisConfig, mctoanalysis
 from watchoptical.internal.runwatchmakers import WatchMakersConfig
 from watchoptical.internal.wmdataset import WatchmanDataset
 

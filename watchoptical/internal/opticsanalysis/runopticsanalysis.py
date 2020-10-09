@@ -4,7 +4,15 @@ from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Iterable, Mapping, Callable, Any, Optional, MutableMapping, NamedTuple
+from typing import (
+    Any,
+    Callable,
+    Iterable,
+    Mapping,
+    MutableMapping,
+    NamedTuple,
+    Optional,
+)
 
 import boost_histogram as bh
 import numpy as np
@@ -19,7 +27,7 @@ from watchoptical.internal.histoutils import ExposureWeightedHistogram, sumhisto
 from watchoptical.internal.mctoanalysis import AnalysisFile, mctoanalysis
 from watchoptical.internal.opticsanalysis.selection import SelectionDefs
 from watchoptical.internal.opticsanalysis.variable import VariableDefs
-from watchoptical.internal.utils import summap, shelveddecorator, sumlist
+from watchoptical.internal.utils import shelveddecorator, sumlist, summap
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 

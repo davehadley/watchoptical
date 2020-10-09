@@ -5,8 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from watchoptical.internal.client import ClientType, client
-from watchoptical.internal.opticsanalysis.runopticsanalysis import shelvedopticsanalysis, OpticsAnalysisResult
-from watchoptical.internal.opticsanalysis.plot import plot, PlotMode
+from watchoptical.internal.opticsanalysis.plot import PlotMode, plot
+from watchoptical.internal.opticsanalysis.runopticsanalysis import (
+    OpticsAnalysisResult,
+    shelvedopticsanalysis,
+)
 from watchoptical.internal.utils import searchforrootfilesexcludinganalysisfiles
 from watchoptical.internal.wmdataset import WatchmanDataset
 

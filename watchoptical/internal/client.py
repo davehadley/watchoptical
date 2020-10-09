@@ -2,11 +2,11 @@ from enum import Enum
 from typing import Union
 
 import dask
+import dask_jobqueue
 from dask.distributed import Client, LocalCluster
 from dask.system import cpu_count
 from dask_jobqueue import SLURMCluster
 from distributed.system import memory_limit
-import dask_jobqueue
 
 
 class ClientType(Enum):

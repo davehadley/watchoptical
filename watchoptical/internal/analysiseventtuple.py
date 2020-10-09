@@ -1,13 +1,15 @@
 import re
 from typing import NamedTuple
 
+import uproot
 from dask.bag import Bag
 from pandas import DataFrame
 
-import uproot
 from watchoptical.internal.mctoanalysis import AnalysisFile, mctoanalysis
-from watchoptical.internal.runwatchmakerssensitivityanalysis import WatchMakersSensitivityResult, \
-    loadwatchmakerssensitvity
+from watchoptical.internal.runwatchmakerssensitivityanalysis import (
+    WatchMakersSensitivityResult,
+    loadwatchmakerssensitvity,
+)
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 

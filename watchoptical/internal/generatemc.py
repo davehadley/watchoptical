@@ -3,18 +3,18 @@ import hashlib
 import os
 import re
 import subprocess
+import typing
 import uuid
 from collections import OrderedDict
 from contextlib import contextmanager
 from dataclasses import dataclass
 from tempfile import TemporaryDirectory
-from typing import Tuple, Optional, Callable, Mapping, Iterator
+from typing import Callable, Iterator, Mapping, Optional, Tuple
 
 import dask.bag
-import typing
 from dask.bag import Bag
 
-from watchoptical.internal.runwatchmakers import generatejobscripts, WatchMakersConfig
+from watchoptical.internal.runwatchmakers import WatchMakersConfig, generatejobscripts
 from watchoptical.internal.utils import expandpath, temporaryworkingdirectory
 from watchoptical.internal.wmdataset import RatPacBonsaiPair
 

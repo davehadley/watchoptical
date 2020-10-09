@@ -2,20 +2,25 @@ import contextlib  # noqa
 import os
 import sys
 from argparse import ArgumentParser, Namespace
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 import matplotlib.pyplot as plt  # noqa
 import numpy as np  # noqa
-
 from IPython import start_ipython
 from traitlets.config import get_config
 
 import watchoptical
 from watchoptical.internal.analysiseventtuple import AnalysisEventTuple
 from watchoptical.internal.client import ClientType, client
-from watchoptical.internal.opticsanalysis.runopticsanalysis import shelvedopticsanalysis, OpticsAnalysisResult
-from watchoptical.internal.opticsanalysis.plot import plot, PlotMode
-from watchoptical.internal.utils import searchforrootfilesexcludinganalysisfiles, shelvedget
+from watchoptical.internal.opticsanalysis.plot import PlotMode, plot
+from watchoptical.internal.opticsanalysis.runopticsanalysis import (
+    OpticsAnalysisResult,
+    shelvedopticsanalysis,
+)
+from watchoptical.internal.utils import (
+    searchforrootfilesexcludinganalysisfiles,
+    shelvedget,
+)
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 

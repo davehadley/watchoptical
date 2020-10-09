@@ -4,9 +4,9 @@ import re
 import unittest
 
 import dask.distributed
-from toolz import pipe, curry
+from toolz import curry, pipe
 
-from watchoptical.internal.generatemc import generatemc, GenerateMCConfig
+from watchoptical.internal.generatemc import GenerateMCConfig, generatemc
 from watchoptical.internal.runwatchmakers import WatchMakersConfig
 
 

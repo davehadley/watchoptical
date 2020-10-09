@@ -1,7 +1,7 @@
 import os
 from argparse import ArgumentParser, Namespace
-from typing import Any
 from collections import OrderedDict
+from typing import Any
 
 import dask
 from dask.bag import Bag
@@ -9,9 +9,12 @@ from dask.delayed import Delayed, delayed
 from toolz import curry
 
 from watchoptical.internal.client import ClientType, client
+from watchoptical.internal.runwatchmakerssensitivityanalysis import (
+    WatchMakersSensitivityAnalysisConfig,
+    WatchMakersSensitivityResult,
+    runwatchmakerssensitivityanalysis,
+)
 from watchoptical.internal.utils import expandpath
-from watchoptical.internal.runwatchmakerssensitivityanalysis import WatchMakersSensitivityAnalysisConfig, \
-    runwatchmakerssensitivityanalysis, WatchMakersSensitivityResult
 
 
 def _parsecml() -> Namespace:
