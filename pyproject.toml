@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel", "scikit-build", "cmake", "ninja", "pre-commit"]
+requires = ["setuptools", "wheel", "scikit-build", "cmake", "ninja"]
 
 [tool.black]
 target_version = ["py38"]

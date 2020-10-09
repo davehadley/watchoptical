@@ -15,12 +15,12 @@ Check out this package:
 ```bash
 git clone https://github.com/davehadley/watchoptical
 cd watchoptical
-python3 setup.py install
+pip install .
 ```
 
 If you want to do development work on this package do:
 ```bash
-python3 setup.py develop
+pip install -e .[dev] # you may need to escape [ and ] characters
 ```
 
 ### Testing you Installation
