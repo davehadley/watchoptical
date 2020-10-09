@@ -15,15 +15,19 @@ Check out this package:
 ```bash
 git clone https://github.com/davehadley/watchoptical
 cd watchoptical
+./post-clone.sh
 pip install .
 ```
 
 If you want to do development work on this package do:
 ```bash
-pip install -e .[dev] # you may need to escape [ and ] characters
+python setup.py develop
 ```
 
-
+Note editable installs with `pip` do not work on my system:
+```
+pip install -e .
+```
 
 ### Testing you Installation
 
