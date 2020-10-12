@@ -1,6 +1,7 @@
 import os
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from watchoptical.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
 

@@ -9,7 +9,7 @@ from collections import OrderedDict
 from contextlib import contextmanager
 from dataclasses import dataclass
 from tempfile import TemporaryDirectory
-from typing import Callable, Iterator, Mapping, Optional, Tuple
+from typing import Callable, Iterator, Optional, Tuple
 
 import dask.bag
 from dask.bag import Bag
@@ -103,7 +103,7 @@ def _load_ratdb_macro_command(jsoncontents, tempfilename):
     return "\n".join(
         (
             # commented out ratdb contents
-            "\n".join(f"# {l}" for l in jsoncontents.split("\n")),
+            "\n".join(f"# {line}" for line in jsoncontents.split("\n")),
             # macro command to load the file from disk
             f"/rat/db/load {tempfilename}",
         )

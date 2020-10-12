@@ -1,6 +1,5 @@
 import glob
 import os
-import random
 import tempfile
 import unittest
 

@@ -55,8 +55,8 @@ class AnalysisEventTuple(NamedTuple):
 def _ratefromtree(tree: AnalysisEventTuple) -> float:
     # this should return the expect rate for this process in number of events per second
     lines = str(tree.macro).split("\n")
-    for l in lines:
-        match = re.search("^/generator/rate/set (.*)", l)
+    for ln in lines:
+        match = re.search("^/generator/rate/set (.*)", ln)
         if match:
             return float(match.group(1))
     raise ValueError("failed to parse macro", lines)

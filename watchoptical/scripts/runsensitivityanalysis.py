@@ -4,8 +4,6 @@ from collections import OrderedDict
 from typing import Any
 
 import dask
-from dask.bag import Bag
-from dask.delayed import Delayed, delayed
 from toolz import curry
 
 from watchoptical.internal.client import ClientType, client
@@ -23,7 +21,8 @@ def _parsecml() -> Namespace:
         "input_directories",
         type=str,
         nargs="+",
-        help="Directories containing input WATCHMAN MC files to be included in the sensitivity analysis.",
+        help="Directories containing input WATCHMAN MC files to be included in the "
+        "sensitivity analysis.",
     )
     parser.add_argument(
         "--client",

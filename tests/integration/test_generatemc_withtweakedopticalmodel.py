@@ -1,16 +1,11 @@
-import inspect
 import os
-import random
-import re
 import unittest
 from collections import OrderedDict
 
 import dask.distributed
-from toolz import curry, pipe
 
 from watchoptical.internal.generatemc import GenerateMCConfig, generatemc
 from watchoptical.internal.makeratdb import makeratdb
-from watchoptical.internal.ratmacro import ratmacro
 from watchoptical.internal.runwatchmakers import WatchMakersConfig
 
 

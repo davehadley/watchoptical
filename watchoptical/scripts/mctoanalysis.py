@@ -1,19 +1,16 @@
 import os
 from argparse import ArgumentParser, Namespace
 
-from watchoptical.internal import watchopticalcpp
 from watchoptical.internal.client import ClientType, client
 from watchoptical.internal.mctoanalysis import MCToAnalysisConfig, mctoanalysis
-from watchoptical.internal.utils import (
-    findfiles,
-    searchforrootfilesexcludinganalysisfiles,
-)
+from watchoptical.internal.utils import searchforrootfilesexcludinganalysisfiles
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 
 def parsecml() -> Namespace:
     parser = ArgumentParser(
-        description="Process WATCHMAN MC files to the watchoptical analysis file format."
+        description="Process WATCHMAN MC files to the watchoptical analysis file "
+        "format."
     )
     parser.add_argument(
         "-d",

@@ -9,7 +9,7 @@ import shelve
 from os.path import abspath, expanduser, expandvars
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, Callable, Iterable, List, Mapping, MutableMapping, Tuple
+from typing import Any, Callable, Iterable, List, MutableMapping
 
 from toolz import curry, mapcat, merge_with, pipe
 

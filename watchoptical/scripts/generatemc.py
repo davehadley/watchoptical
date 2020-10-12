@@ -2,17 +2,11 @@ import os
 import sys
 from argparse import ArgumentParser, Namespace
 from collections import OrderedDict
-from enum import Enum
-from typing import Any, Optional
-
-from dask.distributed import Client, LocalCluster
-from dask.system import cpu_count
-from distributed.system import memory_limit
+from typing import Any
 
 from watchoptical.internal.client import ClientType, client
 from watchoptical.internal.generatemc import GenerateMCConfig, generatemc
 from watchoptical.internal.makeratdb import makeratdb
-from watchoptical.internal.ratmacro import ratmacro
 from watchoptical.internal.runwatchmakers import WatchMakersConfig
 from watchoptical.internal.utils import expandpath
 
@@ -24,7 +18,8 @@ def _parsecml() -> Namespace:
         "-d",
         type=str,
         default=os.getcwd(),
-        help="Directory to store generated files. It will be created if it does not exist.",
+        help="Directory to store generated files. "
+        "It will be created if it does not exist.",
     )
     parser.add_argument(
         "--client",
@@ -40,23 +35,27 @@ def _parsecml() -> Namespace:
         "-n",
         type=int,
         default=10000,
-        help="Number of events per sub-job to generate for each source of signal/background type.",
+        help="Number of events per sub-job to generate for each source of "
+        "signal/background type.",
     )
     parser.add_argument(
         "--num-jobs",
         "-j",
         type=int,
         default=100,
-        help="Number of sub-jobs to generate for each source of signal/background type.",
+        help="Number of sub-jobs to generate for each source of signal/background "
+        "type.",
     )
     parser.add_argument(
         "--bonsai",
-        help="Path to the bonsai executable. Environment variable ${BONSAIDIR}/bonsai is used if not set.",
+        help="Path to the bonsai executable. Environment variable ${BONSAIDIR}/bonsai "
+        "is used if not set.",
         default="${BONSAIDIR}/bonsai",
     )
     parser.add_argument(
         "--bonsai-likelihood",
-        help="Path to the bonsai likelihood. Environment variable ${BONSAIDIR}/like.bin is used if not set.",
+        help="Path to the bonsai likelihood. Environment variable "
+        "${BONSAIDIR}/like.bin is used if not set.",
         default="${BONSAIDIR}/like.bin",
     )
     parser.add_argument(

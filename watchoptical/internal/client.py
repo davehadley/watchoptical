@@ -1,8 +1,6 @@
 from enum import Enum
-from typing import Union
 
 import dask
-import dask_jobqueue
 from dask.distributed import Client, LocalCluster
 from dask.system import cpu_count
 from dask_jobqueue import SLURMCluster
@@ -35,7 +33,8 @@ def _localclient(memory: int) -> Client:
 
 
 def _slurmclient(memory: int, partition="epp,taskfarm", account="epp") -> Client:
-    # For slurm usage instructions see: https://wiki.csc.warwick.ac.uk/twiki/bin/view/Desktop2018/CowUserGuide
+    # For slurm usage instructions see:
+    # https://wiki.csc.warwick.ac.uk/twiki/bin/view/Desktop2018/CowUserGuide
     cluster = SLURMCluster(
         queue=partition, memory=memory, project=account, cores=1, walltime="24:00:00"
     )

@@ -54,7 +54,8 @@ def _run_watchmakers_script(directory: str, step: WatchMakersSensitivityStep) ->
             path_to_watchmakers_script(),
             "--lassen",
             step.value,
-            "--noRoot=",  # TODO: after updating Watchmakers this should become "--enableROOT"
+            # TODO: after updating Watchmakers this should become "--enableROOT"
+            "--noRoot=",
         ],
         text=True,
         cwd=directory,

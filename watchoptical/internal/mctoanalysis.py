@@ -1,11 +1,9 @@
 import os
-import tempfile
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 import dask
 from dask.bag import Bag
-from toolz import complement, curry
 
 from watchoptical.internal.watchopticalcpp import convert_ratpacbonsai_to_analysis
 from watchoptical.internal.wmdataset import RatPacBonsaiPair, WatchmanDataset
@@ -23,7 +21,12 @@ class AnalysisFile:
 
 
 def _outputfilename(files: RatPacBonsaiPair, config: MCToAnalysisConfig) -> str:
-    return f"{config.directory}{os.sep}watchopticalanalysis_{os.path.basename(files.g4file)}"
+    return (
+        f"{config.directory}"
+        f"{os.sep}"
+        f"watchopticalanalysis_"
+        f"{os.path.basename(files.g4file)}"
+    )
 
 
 def _outputfileexists(files: RatPacBonsaiPair, config: MCToAnalysisConfig):

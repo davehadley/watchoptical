@@ -1,17 +1,7 @@
 import itertools
 import os
 import re
-from hashlib import md5
-from typing import (
-    Collection,
-    Dict,
-    Iterable,
-    Iterator,
-    NamedTuple,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import Dict, Iterable, Iterator, NamedTuple, Optional, Tuple, Union
 
 from toolz import groupby, pipe
 
@@ -64,11 +54,14 @@ class WatchmanDataset:
         iterpairs = groupby(
             lambda s: (os.path.basename(os.path.dirname(s)), os.path.basename(s)), files
         ).values()
-        sortedpairs = (((l, r) if self._isbonsai(r) else (r, l)) for l, r in iterpairs)
+        sortedpairs = (
+            ((left, right) if self._isbonsai(right) else (right, left))
+            for left, right in iterpairs
+        )
         return itertools.starmap(RatPacBonsaiPair, sortedpairs)
 
     def _isbonsai(self, filename: str) -> bool:
-        return bool(re.match(f".*bonsai_root.*$", filename))
+        return bool(re.match(".*bonsai_root.*$", filename))
 
     @property
     def _id(self):

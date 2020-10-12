@@ -13,7 +13,12 @@ from watchoptical.internal.runwatchmakerssensitivityanalysis import (
 
 
 class TestRunWatchMakersSensitivityAnalysis(unittest.TestCase):
-    inputmcdirectory = f"{tempfile.gettempdir()}{os.sep}tmp_watchoptical_unittest_runwatchmakerssensitivityanalysis_{os.getuid()}"
+    inputmcdirectory = (
+        f"{tempfile.gettempdir()}"
+        f"{os.sep}"
+        f"tmp_watchoptical_unittest_runwatchmakerssensitivityanalysis_"
+        f"{os.getuid()}"
+    )
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -34,7 +39,7 @@ class TestRunWatchMakersSensitivityAnalysis(unittest.TestCase):
     def test_runwatchmakerssensitvityanalysis_defaultconfiguration_generatesoutput(
         self,
     ):
-        with TemporaryDirectory() as dirname:
+        with TemporaryDirectory():
             config = WatchMakersSensitivityAnalysisConfig(
                 inputdirectory=self.inputmcdirectory
             )

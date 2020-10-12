@@ -3,37 +3,25 @@ import re
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    Mapping,
-    MutableMapping,
-    NamedTuple,
-    Optional,
-)
+from typing import Any, Callable, MutableMapping, NamedTuple, Optional
 
 import boost_histogram as bh
 import numpy as np
-import uproot
 from dask.bag import Bag
 from pandas import DataFrame
-from toolz import identity
 
 from watchoptical.internal.analysiseventtuple import AnalysisEventTuple
 from watchoptical.internal.eventtype import eventtypefromfile
-from watchoptical.internal.histoutils import ExposureWeightedHistogram, sumhistogrammap
-from watchoptical.internal.mctoanalysis import AnalysisFile, mctoanalysis
+from watchoptical.internal.histoutils import ExposureWeightedHistogram
 from watchoptical.internal.opticsanalysis.selection import SelectionDefs
 from watchoptical.internal.opticsanalysis.variable import VariableDefs
 from watchoptical.internal.utils import shelveddecorator, sumlist, summap
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 
-def _add_accum(l, r):
-    c = deepcopy(l)
-    c += r
+def _add_accum(left, right):
+    c = deepcopy(left)
+    c += right
     return c
 
 
@@ -113,7 +101,7 @@ def _attenuationfromtree(tree: AnalysisEventTuple) -> float:
     # this should return the expect rate for this process in number of events per second
     macro = str(tree.macro)
     match = re.search(
-        "(?s).*OPTICS.*?doped_water.*?ABSLENGTH_value2.*?\[(.*?),.*", macro
+        r"(?s).*OPTICS.*?doped_water.*?ABSLENGTH_value2.*?\[(.*?),.*", macro
     )
     if match:
         return float(match.group(1))

@@ -21,5 +21,5 @@ def _attenuationmacro(attenuation: float) -> str:
     /rat/db/set OPTICS[water] ABSLENGTH_value2 {attenuation} {attenuation} {attenuation}
     /rat/db/set OPTICS[salt_water] ABSLENGTH_value1 60.0 200.0 800.0
     /rat/db/set OPTICS[salt_water] ABSLENGTH_value2 {attenuation} {attenuation} {attenuation}
-    """
+    """  # noqa
     )
