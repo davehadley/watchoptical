@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import glob
 import hashlib
 import os
 import re
 import subprocess
 import uuid
-from typing import OrderedDict
+from collections import OrderedDict
 from contextlib import contextmanager
 from dataclasses import dataclass
 from tempfile import TemporaryDirectory
