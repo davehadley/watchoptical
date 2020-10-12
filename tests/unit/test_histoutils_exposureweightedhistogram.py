@@ -7,16 +7,16 @@ from watchoptical.internal.histoutils import ExposureWeightedHistogram
 
 
 class TestHistoUtilsExposureWeightedHistogram(unittest.TestCase):
-
     def assertArrayEqual(self, a, b, msg=None):
-        return self.assertTrue(np.all(a == b),
-                               msg if msg else f"arrays not equal: {a} != {b}")
+        return self.assertTrue(
+            np.all(a == b), msg if msg else f"arrays not equal: {a} != {b}"
+        )
 
     def test_categoryhistogram_fill(self):
         h = ExposureWeightedHistogram(bh.axis.Regular(3, 0.0, 3.0))
         h.fill("A", 0.5, np.array([1.0]))
         h.fill("B", 2.0, np.array([2.0]))
-        d = {item.category:item.histogram for item in h}
+        d = {item.category: item.histogram for item in h}
         self.assertArrayEqual(d["A"].view(), np.array([0.0, 2.0, 0.0]))
         self.assertArrayEqual(d["B"].view(), np.array([0.0, 0.0, 0.5]))
 
@@ -30,6 +30,6 @@ class TestHistoUtilsExposureWeightedHistogram(unittest.TestCase):
 
         h = h1 + h2
 
-        d = {item.category:item.histogram for item in h}
-        self.assertArrayEqual(d["A"].view(), np.array([0.0, 2.0/1.5, 0.0]))
-        self.assertArrayEqual(d["B"].view(), np.array([0.0, 0.0, 2.0/6.0]))
+        d = {item.category: item.histogram for item in h}
+        self.assertArrayEqual(d["A"].view(), np.array([0.0, 2.0 / 1.5, 0.0]))
+        self.assertArrayEqual(d["B"].view(), np.array([0.0, 0.0, 2.0 / 6.0]))

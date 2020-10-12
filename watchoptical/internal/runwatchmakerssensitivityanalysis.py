@@ -21,8 +21,9 @@ class WatchMakersSensitivityResult(NamedTuple):
     metric: float
 
 
-def runwatchmakerssensitivityanalysis(config: WatchMakersSensitivityAnalysisConfig,
-                                      force: bool = False) -> WatchMakersSensitivityResult:
+def runwatchmakerssensitivityanalysis(
+    config: WatchMakersSensitivityAnalysisConfig, force: bool = False
+) -> WatchMakersSensitivityResult:
     if force or not len(_get_sensitvity_files(config.inputdirectory)) > 0:
         logs = _run_all_watchmakers_steps(config.inputdirectory)
         _write_logs(logs, config.inputdirectory)
@@ -47,18 +48,24 @@ class WatchMakersSensitivityStep(Enum):
 def _run_watchmakers_script(directory: str, step: WatchMakersSensitivityStep) -> str:
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
-    return subprocess.check_output(["python3",
-                                    path_to_watchmakers_script(),
-                                    "--lassen",
-                                    step.value,
-                                    "--noRoot="  # TODO: after updating Watchmakers this should become "--enableROOT"
-                                    ],
-                                   text=True,
-                                   cwd=directory)
+    return subprocess.check_output(
+        [
+            "python3",
+            path_to_watchmakers_script(),
+            "--lassen",
+            step.value,
+            # TODO: after updating Watchmakers this should become "--enableROOT"
+            "--noRoot=",
+        ],
+        text=True,
+        cwd=directory,
+    )
 
 
 def _run_all_watchmakers_steps(directory: str) -> List[str]:
-    return [_run_watchmakers_script(directory, step) for step in WatchMakersSensitivityStep]
+    return [
+        _run_watchmakers_script(directory, step) for step in WatchMakersSensitivityStep
+    ]
 
 
 def _write_logs(logs: List[str], directory: str) -> str:
@@ -74,5 +81,7 @@ def _write_logs(logs: List[str], directory: str) -> str:
 def _parse_watchmakers_result_txt(filename: str) -> WatchMakersSensitivityResult:
     text = open(filename).readlines()[0]
     pattern = "^.+ .+ .+ .+ (.*?) (.+?) (.+?) (.+?)$"
-    (s, b, t3sigma, metric) = map(float, re.match(pattern, text).groups())
+    (s, b, t3sigma, metric) = map(
+        float, re.match(pattern, text).groups()  # type: ignore
+    )
     return WatchMakersSensitivityResult(s=s, b=b, t3sigma=t3sigma, metric=metric)

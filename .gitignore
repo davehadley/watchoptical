@@ -1,4 +1,9 @@
 run/
+pip-wheel-metadata/
+
+.ninja_deps
+.ninja_log
+cmake_install.cmake
 
 *.png
 

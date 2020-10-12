@@ -15,19 +15,25 @@ Check out this package:
 ```bash
 git clone https://github.com/davehadley/watchoptical
 cd watchoptical
-python3 setup.py install
+./post-clone.sh
+pip install .
 ```
 
 If you want to do development work on this package do:
 ```bash
-python3 setup.py develop
+python setup.py develop
+```
+
+Note editable installs with `pip` do not work on my system:
+```
+pip install -e .
 ```
 
 ### Testing you Installation
 
 From the `watchoptical` directory run:
 ```bash
-python -m unittest discover tests
+pytest tests
 ```
 
 ## Generating WATCHMAN MC

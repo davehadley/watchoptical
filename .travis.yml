@@ -1,0 +1,15 @@
+branches:
+  only:
+  - master
+  - dev
+
+language: python
+python:
+  - "3.8"
+# command to install dependencies
+install:
+  # this won't actually work as it won't install ROOT/Watchman software
+  - pip install -e .
+# command to run tests
+script:
+  - pytest tests/unit
