@@ -4,7 +4,7 @@ import os
 import re
 import subprocess
 import uuid
-from collections import OrderedDict
+from typing import OrderedDict
 from contextlib import contextmanager
 from dataclasses import dataclass
 from tempfile import TemporaryDirectory
