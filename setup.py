@@ -19,7 +19,7 @@ setup(name="watchoptical",
       author_email="d.r.hadley@warwick.ac.uk",
       license="MIT",
       packages=find_packages(include=["watchoptical*"]),
-      install_requires=["dask>=2.20.0", "toolz>=0.10.0", "distributed>=2.20.0", "numpy", "docopt", "fsspec>=0.3.3",
+      install_requires=["dask[delayed]>=2.20.0", "dask-jobqueue>=0.7.1", "toolz>=0.10.0", "distributed>=2.20.0", "numpy", "docopt", "fsspec>=0.3.3",
                         "boost_histogram", "pandas", "mplhep"],
       tests_require=["pytest"],
       extras_require={
