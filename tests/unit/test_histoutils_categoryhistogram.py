@@ -7,7 +7,6 @@ from watchoptical.internal.histoutils import CategoryHistogram
 
 
 class TestHistoUtilsCategoryHistogram(unittest.TestCase):
-
     def assertArrayEqual(self, a, b):
         return self.assertTrue(np.all(a == b))
 
