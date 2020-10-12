@@ -3,7 +3,6 @@ import hashlib
 import os
 import re
 import subprocess
-import typing
 import uuid
 from collections import OrderedDict
 from contextlib import contextmanager
@@ -28,8 +27,8 @@ class GenerateMCConfig:
     numjobs: int = 1
     bonsaiexecutable: str = "${BONSAIDIR}/bonsai"
     bonsailikelihood: str = "${BONSAIDIR}/like.bin"
-    injectmacros: Optional[typing.OrderedDict[str, str]] = None
-    injectratdb: Optional[typing.OrderedDict[str, str]] = None
+    injectmacros: Optional[OrderedDict[str, str]] = None
+    injectratdb: Optional[OrderedDict[str, str]] = None
 
     def __post_init__(self):
         if not os.path.exists(expandpath(self.bonsaiexecutable)):
@@ -53,7 +52,7 @@ class GenerateMCConfig:
 
 def _rungeant4(
     watchmakersscript: str, cwd: str, config: GenerateMCConfig
-) -> Tuple[str]:
+) -> Tuple[str, ...]:
     with open(watchmakersscript, "r") as script:
         scripttext = script.read()
         uid = str(uuid.uuid1())
@@ -66,9 +65,9 @@ def _rungeant4(
             scripttext = scripttext.replace(
                 "run$TMPNAME.log", f"run_{config.configid}_{uid}.log"
             )
-            filename = os.sep.join(
-                (cwd, (re.search(f".* -o (root_.*{uid}.root) .*", scripttext).group(1)))
-            )
+            match = re.search(f".* -o (root_.*{uid}.root) .*", scripttext)
+            assert match is not None
+            filename = os.sep.join((cwd, match.group(1)))
             if config.filenamefilter is None or config.filenamefilter(filename):
                 subprocess.check_call(scripttext, shell=True, cwd=cwd)
     return tuple(glob.glob(filename))
@@ -82,8 +81,8 @@ def _dump_text_to_temp_file(tempdir: str, fname: str, content: str) -> str:
 
 
 def _write_injected_macros_to_disk(
-    tempdir: str, injectmacros: typing.OrderedDict[str, str]
-) -> typing.OrderedDict[str, str]:
+    tempdir: str, injectmacros: OrderedDict[str, str]
+) -> OrderedDict[str, str]:
     return OrderedDict(
         (k, _dump_text_to_temp_file(tempdir, k + ".mac", v))
         for k, v in injectmacros.items()
@@ -91,8 +90,8 @@ def _write_injected_macros_to_disk(
 
 
 def _write_injected_ratdb_to_disk(
-    tempdir: str, injectratdb: typing.OrderedDict[str, str]
-) -> typing.OrderedDict[str, str]:
+    tempdir: str, injectratdb: OrderedDict[str, str]
+) -> OrderedDict[str, str]:
     return OrderedDict(
         (k, _dump_text_to_temp_file(tempdir, k + ".ratdb", v))
         for k, v in injectratdb.items()
@@ -114,8 +113,8 @@ def _load_ratdb_macro_command(jsoncontents, tempfilename):
 @contextmanager
 def _inject_macros_and_ratdb_into_script(
     scripttext: str,
-    injectmacros: Optional[typing.OrderedDict[str, str]],
-    injectratdb: typing.OrderedDict[str, str],
+    injectmacros: Optional[OrderedDict[str, str]],
+    injectratdb: Optional[OrderedDict[str, str]],
 ) -> Iterator[str]:
     with TemporaryDirectory() as tempdir:
         if injectratdb is not None:

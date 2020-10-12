@@ -4,11 +4,13 @@ from typing import (
     Any,
     Callable,
     Collection,
+    DefaultDict,
+    Dict,
     Iterable,
     Iterator,
-    Mapping,
     NamedTuple,
     Optional,
+    Union,
 )
 
 import boost_histogram as bh
@@ -20,8 +22,7 @@ from watchoptical.internal.utils import summap
 
 
 class CategoryHistogram(Collection):
-
-    Category = Any
+    Category = Union[Any]
 
     class Item(NamedTuple):
         category: "CategoryHistogram.Category"
@@ -30,7 +31,7 @@ class CategoryHistogram(Collection):
     def __init__(self, *axes: bh.axis.Axis, **kwargs: Any):
         self._args = axes
         self._kwargs = kwargs
-        self._hist = dict()
+        self._hist: Dict["CategoryHistogram.Category", bh.Histogram] = dict()
 
     def fill(
         self,
@@ -90,7 +91,9 @@ class ExposureWeightedHistogram(Collection):
 
     def __init__(self, *axes: bh.axis, **kwargs: Any):
         self._hist = CategoryHistogram(*axes, **kwargs)
-        self._exposure = defaultdict(bh.accumulators.WeightedSum)
+        self._exposure: DefaultDict[
+            CategoryHistogram.Category, bh.accumulators.WeightedSum
+        ] = defaultdict(bh.accumulators.WeightedSum)
 
     def fill(
         self,
@@ -137,6 +140,6 @@ class ExposureWeightedHistogram(Collection):
 
 
 def sumhistogrammap(
-    iterable: Iterable[Mapping[str, bh.Histogram]]
-) -> Mapping[str, bh.Histogram]:
+    iterable: Iterable[Dict[str, bh.Histogram]]
+) -> Dict[str, bh.Histogram]:
     return summap(iterable)

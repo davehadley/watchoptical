@@ -18,11 +18,11 @@ def _plotattenuation(data: OpticsAnalysisResult, dest="plots"):
         ("idb_total_charge_by_attenuation_mean_gt10", "mean | Q > 10"),
     ]:
         points = data.scatter[key]
-        points = [
+        processedpoints = [
             (float(a) / 1.0e3, q.value, np.sqrt(q.variance) / np.sqrt(q.sum_of_weights))
             for a, q in points.items()
         ]
-        X, Y, Yerr = zip(*points)
+        X, Y, Yerr = zip(*processedpoints)
         ax.errorbar(list(X), list(Y), yerr=Yerr, ls="", marker="o", label=label)
     ax.legend()
     os.makedirs(dest, exist_ok=True)

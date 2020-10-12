@@ -14,7 +14,7 @@ class WatchMakersConfig:
 
 @dataclass(frozen=True)
 class WatchMakersScripts:
-    scripts: Tuple[str]
+    scripts: Tuple[str, ...]
     directory: str
 
 
@@ -39,7 +39,7 @@ def generatejobscripts(config: WatchMakersConfig = None) -> WatchMakersScripts:
     return WatchMakersScripts(scripts=scripts, directory=directory)
 
 
-def _run_watchmakers_script(directory: str = None, numevents: int = 2500):
+def _run_watchmakers_script(directory: str, numevents: int = 2500):
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
     subprocess.check_call(

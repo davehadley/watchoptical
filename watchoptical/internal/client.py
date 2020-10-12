@@ -13,7 +13,7 @@ class ClientType(Enum):
     CLUSTER = "cluster"
 
 
-def client(clienttype: ClientType, memory: int = 4 * 1e9) -> Client:
+def client(clienttype: ClientType, memory: int = int(4 * 1e9)) -> Client:
     if clienttype == ClientType.SINGLE:
         return _singleclient()
     elif clienttype == ClientType.LOCAL:

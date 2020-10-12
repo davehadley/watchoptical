@@ -189,7 +189,7 @@ _nominal_doped_water_ABSLENGTH_value1 = [
     720.0,
     730.0,
 ]
-_nominal_doped_water_ABSLENGTH_value2: [
+_nominal_doped_water_ABSLENGTH_value2 = [
     0.0,
     3086.42,
     7936.51,

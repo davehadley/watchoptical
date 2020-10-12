@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 from setuptools import find_packages
 from skbuild import setup
 
@@ -5,7 +7,7 @@ with open("README.md", "r") as readme:
     long_description = readme.read()
 
 with open("watchoptical/_version.py") as fp:
-    version = {}
+    version: Dict[str, Any] = {}
     exec(fp.read(), version)
     version = version["__version__"]
 

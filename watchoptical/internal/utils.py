@@ -9,7 +9,7 @@ import shelve
 from os.path import abspath, expanduser, expandvars
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, Callable, Iterable, List, MutableMapping
+from typing import Any, Callable, Dict, Iterable, Iterator, List
 
 from toolz import curry, mapcat, merge_with, pipe
 
@@ -63,7 +63,7 @@ def touchfile(path: str) -> None:
 
 
 @contextlib.contextmanager
-def temporaryworkingdirectory() -> str:
+def temporaryworkingdirectory() -> Iterator[str]:
     cwd = os.getcwd()
     try:
         with TemporaryDirectory() as d:
@@ -123,7 +123,7 @@ def sumlist(iterable: Iterable[Any]):
 
 
 def summap(
-    iterable: Iterable[MutableMapping[Any, Any]], add: Callable = operator.add
-) -> MutableMapping[Any, Any]:
+    iterable: Iterable[Dict[Any, Any]], add: Callable = operator.add
+) -> Dict[Any, Any]:
     sum = functools.partial(functools.reduce, add)
     return functools.reduce(functools.partial(merge_with, sum), iterable)

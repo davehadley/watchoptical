@@ -3,7 +3,7 @@ import re
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Any, Callable, MutableMapping, NamedTuple, Optional
+from typing import Any, Callable, DefaultDict, MutableMapping, NamedTuple, Optional
 
 import boost_histogram as bh
 import numpy as np
@@ -13,7 +13,7 @@ from pandas import DataFrame
 from watchoptical.internal.analysiseventtuple import AnalysisEventTuple
 from watchoptical.internal.eventtype import eventtypefromfile
 from watchoptical.internal.histoutils import ExposureWeightedHistogram
-from watchoptical.internal.opticsanalysis.selection import SelectionDefs
+from watchoptical.internal.opticsanalysis.selection import Selection, SelectionDefs
 from watchoptical.internal.opticsanalysis.variable import VariableDefs
 from watchoptical.internal.utils import shelveddecorator, sumlist, summap
 from watchoptical.internal.wmdataset import WatchmanDataset
@@ -72,7 +72,7 @@ def _makebonsaihistogram(
     binning: bh.axis.Axis,
     x: Callable[[DataFrame], Any],
     w: Optional[Callable[[DataFrame], Any]] = None,
-    selection: Callable[[DataFrame], DataFrame] = SelectionDefs.nominal,
+    selection: Selection = SelectionDefs.nominal.value,
     subevent: int = 0,
 ) -> ExposureWeightedHistogram:
     histo = ExposureWeightedHistogram(binning)
@@ -108,31 +108,32 @@ def _attenuationfromtree(tree: AnalysisEventTuple) -> float:
     raise ValueError("failed to parse macro", macro)
 
 
+def _weightedmeandict() -> DefaultDict[Category, bh.accumulators.WeightedMean]:
+    return defaultdict(bh.accumulators.WeightedMean)
+
+
 def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
     category = Category.fromAnalysisEventTuple(tree)
-    if category == "IBD":
-        attenuation = _attenuationfromtree(tree)
-        category = f"{attenuation:0.5e}"
+    if category.eventtype == "IBD":
         totalq = tree.anal.pmt_q.groupby("entry").sum().array
         # histogram total Q
         store.hist["ibd_total_charge_by_attenuation"] = ExposureWeightedHistogram(
             bh.axis.Regular(300, 0.0, 150.0)
         ).fill(category, tree.exposure, totalq)
         # calculate mean Q
-        meanq = defaultdict(bh.accumulators.WeightedMean)
+        meanq = _weightedmeandict()
         meanq[category].fill(totalq)
         store.scatter["idb_total_charge_by_attenuation_mean"] = meanq
         # calculate mean Q > 10
-        meanq_gt10 = defaultdict(bh.accumulators.WeightedMean)
+        meanq_gt10 = _weightedmeandict()
         meanq_gt10[category].fill(totalq[totalq > 10.0])
         store.scatter["idb_total_charge_by_attenuation_mean_gt10"] = meanq_gt10
     return
 
 
 def _makesensitivityscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
-    attenuation = _attenuationfromtree(tree)
-    category = f"{attenuation:0.5e}"
-    sensitivity = defaultdict(bh.accumulators.WeightedMean)
+    category = Category.fromAnalysisEventTuple(tree)
+    sensitivity = _weightedmeandict()
     sensitivity[category].fill(tree.sensitivity.metric)
     store.scatter["sensitvity_metric"] = sensitivity
     return

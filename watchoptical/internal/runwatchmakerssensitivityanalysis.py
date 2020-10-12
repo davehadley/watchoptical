@@ -81,5 +81,7 @@ def _write_logs(logs: List[str], directory: str) -> str:
 def _parse_watchmakers_result_txt(filename: str) -> WatchMakersSensitivityResult:
     text = open(filename).readlines()[0]
     pattern = "^.+ .+ .+ .+ (.*?) (.+?) (.+?) (.+?)$"
-    (s, b, t3sigma, metric) = map(float, re.match(pattern, text).groups())
+    (s, b, t3sigma, metric) = map(
+        float, re.match(pattern, text).groups()  # type: ignore
+    )
     return WatchMakersSensitivityResult(s=s, b=b, t3sigma=t3sigma, metric=metric)

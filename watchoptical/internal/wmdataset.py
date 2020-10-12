@@ -14,7 +14,9 @@ class RatPacBonsaiPair(NamedTuple):
 
     @property
     def eventtype(self) -> str:
-        return re.match(f".*Watchman_(.*){os.sep}.*.root$", self.g4file).group(1)
+        match = re.match(f".*Watchman_(.*){os.sep}.*.root$", self.g4file)
+        assert match is not None
+        return match.group(1)
 
     @property
     def rootdirectory(self):

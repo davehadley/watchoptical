@@ -26,7 +26,9 @@ def _plothist(data: OpticsAnalysisResult, dest="plots"):
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax = categoryhistplot(
-            h, lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK, ax=ax
+            h,  # type: ignore
+            lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK,
+            ax=ax,
         )
         ax.set_ylabel("events per week")
         # ax.set_yscale("log")
