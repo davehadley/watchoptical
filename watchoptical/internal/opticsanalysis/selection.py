@@ -21,11 +21,15 @@ class Selection(NamedTuple):
 
 
 class SelectionDefs(Enum):
-    nominal = Selection("nominal", lambda data: data[((data.closestPMT / 1500.0) > 1.0)
-                                                     & (data.good_pos > 0.1)
-                                                     & (data.inner_hit > 4)
-                                                     & (data.veto_hit < 4)
-                                                     & _hascoincidence(data)
-                                                     ])
+    nominal = Selection(
+        "nominal",
+        lambda data: data[
+            ((data.closestPMT / 1500.0) > 1.0)
+            & (data.good_pos > 0.1)
+            & (data.inner_hit > 4)
+            & (data.veto_hit < 4)
+            & _hascoincidence(data)
+        ],
+    )
 
     noselection = Selection("noselection", lambda data: identity(data))

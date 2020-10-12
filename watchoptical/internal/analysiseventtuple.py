@@ -31,11 +31,15 @@ class AnalysisEventTuple(NamedTuple):
 
     @classmethod
     def load(cls, analysisfile: AnalysisFile) -> "AnalysisEventTuple":
-        anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].pandas.df(["pmt_*"])
-        bonsai = (uproot.open(analysisfile.producedfrom.bonsaifile)["data"]
-                  .pandas.df(flatten=False)
-                  # .set_index(["mcid", "subid"])
-                  )
+        anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].pandas.df(
+            ["pmt_*"]
+        )
+        bonsai = (
+            uproot.open(analysisfile.producedfrom.bonsaifile)["data"].pandas.df(
+                flatten=False
+            )
+            # .set_index(["mcid", "subid"])
+        )
         sensitivity = loadwatchmakerssensitvity(analysisfile.producedfrom.rootdirectory)
         return AnalysisEventTuple(anal, bonsai, analysisfile, sensitivity)
 

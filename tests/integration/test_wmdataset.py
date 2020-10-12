@@ -12,9 +12,13 @@ class TestWMDataset(unittest.TestCase):
         scripts = runwatchmakers.generatejobscripts()
         directory = scripts.directory
         jobdirs = list(glob.glob(f"{directory}{os.sep}*root_files_*/*"))
-        filelist = list(map(lambda d: touchfile(f"{d}{os.sep}runDUMMYFILE.root"), jobdirs))
+        filelist = list(
+            map(lambda d: touchfile(f"{d}{os.sep}runDUMMYFILE.root"), jobdirs)
+        )
 
-        dataset = WatchmanDataset([f"{directory}{os.sep}*root_files_*{os.sep}*{os.sep}*.root"])
+        dataset = WatchmanDataset(
+            [f"{directory}{os.sep}*root_files_*{os.sep}*{os.sep}*.root"]
+        )
 
         self.assertEqual(len(jobdirs) / 2, len(dataset))
         self.assertTrue(len(dataset) > 0)

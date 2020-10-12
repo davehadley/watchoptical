@@ -15,10 +15,11 @@ from watchoptical.internal.wmdataset import RatPacBonsaiPair, WatchmanDataset
 class MCToAnalysisConfig:
     directory: str = os.getcwd()
 
+
 @dataclass(frozen=True)
 class AnalysisFile:
     filename: str
-    producedfrom :RatPacBonsaiPair
+    producedfrom: RatPacBonsaiPair
 
 
 def _outputfilename(files: RatPacBonsaiPair, config: MCToAnalysisConfig) -> str:
@@ -36,9 +37,12 @@ def _run(files: RatPacBonsaiPair, config: MCToAnalysisConfig) -> AnalysisFile:
     return AnalysisFile(outname, files)
 
 
-def mctoanalysis(dataset: WatchmanDataset, config: Optional[MCToAnalysisConfig] = None) -> Bag:
+def mctoanalysis(
+    dataset: WatchmanDataset, config: Optional[MCToAnalysisConfig] = None
+) -> Bag:
     config = config if config is not None else MCToAnalysisConfig()
-    return (dask.bag.from_sequence(dataset)
-           #.filter(curry(complement(_outputfileexists))(config=config))
-           .map(_run, config=config)
-           )
+    return (
+        dask.bag.from_sequence(dataset)
+        # .filter(curry(complement(_outputfileexists))(config=config))
+        .map(_run, config=config)
+    )

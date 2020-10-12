@@ -23,12 +23,21 @@ class TestRunWatchMakersSensitivityAnalysis(unittest.TestCase):
     def ensure_input_mc_exists(cls):
         if not os.path.exists(cls.inputmcdirectory):
             with client(ClientType.LOCAL):
-                generatemc(GenerateMCConfig(WatchMakersConfig(numevents=1, directory=cls.inputmcdirectory), numjobs=1)).compute()
+                generatemc(
+                    GenerateMCConfig(
+                        WatchMakersConfig(numevents=1, directory=cls.inputmcdirectory),
+                        numjobs=1,
+                    )
+                ).compute()
         return
 
-    def test_runwatchmakerssensitvityanalysis_defaultconfiguration_generatesoutput(self):
+    def test_runwatchmakerssensitvityanalysis_defaultconfiguration_generatesoutput(
+        self,
+    ):
         with TemporaryDirectory() as dirname:
-            config = WatchMakersSensitivityAnalysisConfig(inputdirectory=self.inputmcdirectory)
+            config = WatchMakersSensitivityAnalysisConfig(
+                inputdirectory=self.inputmcdirectory
+            )
             runwatchmakerssensitivityanalysis(config)
 
 

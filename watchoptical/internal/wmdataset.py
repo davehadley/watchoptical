@@ -32,12 +32,15 @@ class RatPacBonsaiPair(NamedTuple):
 
 
 class WatchmanDataset:
-    def __init__(self, filepatterns: Iterable[str], name: Optional[str] = None, empty_ok: bool = False):
-        self._files: Tuple[RatPacBonsaiPair] = pipe(filepatterns,
-                                                    findfiles,
-                                                    self._match_bonsai_and_ratpac,
-                                                    tuple
-                                                    )
+    def __init__(
+        self,
+        filepatterns: Iterable[str],
+        name: Optional[str] = None,
+        empty_ok: bool = False,
+    ):
+        self._files: Tuple[RatPacBonsaiPair] = pipe(
+            filepatterns, findfiles, self._match_bonsai_and_ratpac, tuple
+        )
         if name is None:
             # automatically generate unique name from input files
             name = self._id
@@ -55,8 +58,12 @@ class WatchmanDataset:
     def __getitem__(self, index) -> RatPacBonsaiPair:
         return self._files[index]
 
-    def _match_bonsai_and_ratpac(self, files: Iterable[str]) -> Iterator[RatPacBonsaiPair]:
-        iterpairs = groupby(lambda s: (os.path.basename(os.path.dirname(s)), os.path.basename(s)), files).values()
+    def _match_bonsai_and_ratpac(
+        self, files: Iterable[str]
+    ) -> Iterator[RatPacBonsaiPair]:
+        iterpairs = groupby(
+            lambda s: (os.path.basename(os.path.dirname(s)), os.path.basename(s)), files
+        ).values()
         sortedpairs = (((l, r) if self._isbonsai(r) else (r, l)) for l, r in iterpairs)
         return itertools.starmap(RatPacBonsaiPair, sortedpairs)
 
@@ -69,12 +76,19 @@ class WatchmanDataset:
 
 
 class WatchmanDataSetCollection:
-    def __init__(self, directories: Dict[str, Union[Iterable[str], str]], name: Optional[str] = None,
-                 empty_ok: bool = False):
+    def __init__(
+        self,
+        directories: Dict[str, Union[Iterable[str], str]],
+        name: Optional[str] = None,
+        empty_ok: bool = False,
+    ):
         self.name = name
-        self._datasets = {k: WatchmanDataset([d] if isinstance(d, str) else d,
-                                             name=k, empty_ok=empty_ok)
-                          for k, d in directories.items()}
+        self._datasets = {
+            k: WatchmanDataset(
+                [d] if isinstance(d, str) else d, name=k, empty_ok=empty_ok
+            )
+            for k, d in directories.items()
+        }
 
     def __iter__(self) -> Iterator[WatchmanDataset]:
         for _, d in sorted(self._datasets.items()):

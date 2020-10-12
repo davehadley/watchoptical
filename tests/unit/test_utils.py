@@ -12,7 +12,8 @@ class TestUtils(unittest.TestCase):
         try:
             expected = [f"{tmpdirname}{os.sep}{ii}.txt" for ii in range(3)]
             for f in expected:
-                with open(f, "w"): pass
+                with open(f, "w"):
+                    pass
 
             actual = findfiles([f"{tmpdirname}{os.sep}*.txt"])
 

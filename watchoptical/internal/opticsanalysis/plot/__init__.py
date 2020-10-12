@@ -12,5 +12,5 @@ class PlotMode(Enum):
 
 
 def plot(data: OpticsAnalysisResult, dest: str, mode: Optional[PlotMode] = None):
-    for p in ([mode] if mode is not None else list(PlotMode)):
+    for p in [mode] if mode is not None else list(PlotMode):
         p.value(data, dest)
