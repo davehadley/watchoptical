@@ -33,6 +33,7 @@ setup(
         "boost_histogram",
         "pandas",
         "mplhep",
+        "uproot",
     ],
     tests_require=["pytest"],
     extras_require={
