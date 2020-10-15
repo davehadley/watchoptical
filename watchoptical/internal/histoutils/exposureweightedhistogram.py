@@ -1,6 +1,6 @@
 from collections import defaultdict
 from copy import deepcopy
-from typing import Any, Collection, DefaultDict, Iterator, NamedTuple, Optional
+from typing import Any, Collection, DefaultDict, Iterator, NamedTuple, Optional, Union
 
 import boost_histogram as bh
 import numpy as np
@@ -24,8 +24,8 @@ class ExposureWeightedHistogram(Collection):
         self,
         category: CategoryHistogram.Category,
         exposure: float,
-        *args: np.ndarray,
-        weight: Optional[np.ndarray] = None,
+        *args: Union[float, np.ndarray],
+        weight: Optional[Union[float, np.ndarray]] = None,
     ) -> "ExposureWeightedHistogram":
         self._hist.fill(category, *args, weight=weight)
         self._exposure[category].fill(exposure)

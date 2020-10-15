@@ -20,8 +20,8 @@ class CategoryHistogram(Collection):
     def fill(
         self,
         category: "CategoryHistogram.Category",
-        *args: np.ndarray,
-        weight: Optional[np.ndarray] = None,
+        *args: Union[float, np.ndarray],
+        weight: Optional[Union[float, np.ndarray]] = None,
     ) -> "CategoryHistogram":
         if category not in self._hist:
             self._hist[category] = bh.Histogram(*self._args, **self._kwargs)
