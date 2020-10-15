@@ -4,11 +4,13 @@ from typing import Optional
 
 from watchoptical.internal.opticsanalysis.plot.plotattenuation import plotattenuation
 from watchoptical.internal.opticsanalysis.plot.plothist import plothist
+from watchoptical.internal.opticsanalysis.plot.plotscatter import plotscatter
 from watchoptical.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
 
 
 class PlotMode(Enum):
     hist = partial(plothist)
+    scatter = partial(plotscatter)
     attenuation = partial(plotattenuation)
 
 
