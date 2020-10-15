@@ -24,7 +24,7 @@ def _plotattenuation(data: OpticsAnalysisResult, dest="plots"):
                 q.value,
                 np.sqrt(q.variance) / np.sqrt(q.sum_of_weights),
             )
-            for category, q in points.items()
+            for category, q in points
         ]
         X, Y, Yerr = zip(*processedpoints)
         ax.errorbar(list(X), list(Y), yerr=Yerr, ls="", marker="o", label=label)
