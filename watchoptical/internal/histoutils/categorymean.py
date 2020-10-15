@@ -17,7 +17,7 @@ class CategoryMean(Collection):
     def __init__(self):
         self._points: DefaultDict[
             "CategoryMean.Category", "CategoryMean.Moment"
-        ] = defaultdict(list)
+        ] = defaultdict(boost_histogram.accumulators.WeightedMean)
 
     def fill(
         self,
@@ -40,7 +40,7 @@ class CategoryMean(Collection):
 
     def __add__(self, other) -> "CategoryMean":
         result = deepcopy(self)
-        for key, value in other._hist.items():
+        for key, value in other._points.items():
             try:
                 result._points[key] += value
             except KeyError:

@@ -35,7 +35,7 @@ class OpticsAnalysisResult:
             hist=summap([self.hist, other.hist]),
             scatter=summap(
                 [self.scatter, other.scatter],
-                lambda lhs, rhs: summap([lhs, rhs], _add_accum),
+                # lambda lhs, rhs: summap([lhs, rhs], _add_accum),
             ),
         )
 
