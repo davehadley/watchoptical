@@ -12,7 +12,7 @@ from pandas import DataFrame
 
 from watchoptical.internal.analysiseventtuple import AnalysisEventTuple
 from watchoptical.internal.eventtype import eventtypefromfile
-from watchoptical.internal.histoutils import ExposureWeightedHistogram
+from watchoptical.internal.histoutils import CategoryMean, ExposureWeightedHistogram
 from watchoptical.internal.opticsanalysis.selection import Selection, SelectionDefs
 from watchoptical.internal.opticsanalysis.variable import VariableDefs
 from watchoptical.internal.utils import shelveddecorator, sumlist, summap
@@ -28,7 +28,7 @@ def _add_accum(left, right):
 @dataclass
 class OpticsAnalysisResult:
     hist: MutableMapping[str, ExposureWeightedHistogram] = field(default_factory=dict)
-    scatter: MutableMapping[str, dict] = field(default_factory=dict)
+    scatter: MutableMapping[str, CategoryMean] = field(default_factory=dict)
 
     def __add__(self, other):
         return OpticsAnalysisResult(
@@ -121,20 +121,17 @@ def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: OpticsAnalysis
             bh.axis.Regular(300, 0.0, 150.0)
         ).fill(category, tree.exposure, totalq)
         # calculate mean Q
-        meanq = _weightedmeandict()
-        meanq[category].fill(totalq)
+        meanq = CategoryMean().fill(category, totalq)
         store.scatter["idb_total_charge_by_attenuation_mean"] = meanq
         # calculate mean Q > 10
-        meanq_gt10 = _weightedmeandict()
-        meanq_gt10[category].fill(totalq[totalq > 10.0])
+        meanq_gt10 = CategoryMean().fill(category, totalq[totalq > 10.0])
         store.scatter["idb_total_charge_by_attenuation_mean_gt10"] = meanq_gt10
     return
 
 
 def _makesensitivityscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
     category = Category.fromAnalysisEventTuple(tree)
-    sensitivity = _weightedmeandict()
-    sensitivity[category].fill(tree.sensitivity.metric)
+    sensitivity = CategoryMean().fill(category, tree.sensitivity.metric)
     store.scatter["sensitvity_metric"] = sensitivity
     return
 
