@@ -12,7 +12,7 @@ class CategoryMean(Collection):
 
     class Item(NamedTuple):
         category: "CategoryMean.Category"
-        points: "CategoryMean.Moment"
+        moment: "CategoryMean.Moment"
 
     def __init__(self):
         self._points: DefaultDict[
