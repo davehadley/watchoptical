@@ -19,4 +19,4 @@ class VariableDefs(Enum):
     eventcount = Variable(
         "eventcount", Regular(1, 0.0, 1.0), lambda x: np.zeros(len(x))
     )
-    n9 = Variable("n9", Regular(26, 0.0, 60.0), lambda x: np.zeros(len(x)))
+    n9 = Variable("n9", Regular(26, 0.0, 60.0), lambda x: x.n9)

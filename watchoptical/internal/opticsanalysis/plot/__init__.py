@@ -1,4 +1,5 @@
 from enum import Enum
+from functools import partial
 from typing import Optional
 
 from watchoptical.internal.opticsanalysis.plot.plotattenuation import plotattenuation
@@ -7,8 +8,8 @@ from watchoptical.internal.opticsanalysis.runopticsanalysis import OpticsAnalysi
 
 
 class PlotMode(Enum):
-    hist = plothist
-    attenuation = plotattenuation
+    hist = partial(plothist)
+    attenuation = partial(plotattenuation)
 
 
 def plot(data: OpticsAnalysisResult, dest: str, mode: Optional[PlotMode] = None):

@@ -28,6 +28,8 @@ def _plothist(data: OpticsAnalysisResult, dest="plots"):
         ax = categoryhistplot(
             h,  # type: ignore
             lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK,
+            formatlabel=lambda item: f"{item.category.eventtype} "
+            f"{item.category.attenuation}",
             ax=ax,
         )
         ax.set_ylabel("events per week")
