@@ -8,7 +8,7 @@ from watchoptical.internal.opticsanalysis.runopticsanalysis import OpticsAnalysi
 
 
 def plothist(data: OpticsAnalysisResult, dest: str = "plots") -> None:
-    _plothist(data, dest)
+    _plothist(data, dest=f"{dest}{os.sep}hist")
 
 
 def _xlabel(key: str) -> str:
@@ -21,23 +21,25 @@ def _xlabel(key: str) -> str:
         return key
 
 
-def _plothist(data: OpticsAnalysisResult, dest="plots"):
-    for k, h in data.hist.items():
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax = categoryhistplot(
-            h,  # type: ignore
-            lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK,
-            formatlabel=lambda item: f"{item.category.eventtype} "
-            f"{item.category.attenuation}",
-            ax=ax,
-        )
-        ax.set_ylabel("events per week")
-        # ax.set_yscale("log")
-        ax.set_xlabel(_xlabel(k))
-        ax.legend()
-        fig.tight_layout()
-        fig.tight_layout()
-        os.makedirs(dest, exist_ok=True)
-        fig.savefig(f"{dest}{os.sep}{k}.png")
+def _plothist(data: OpticsAnalysisResult, dest):
+    for key, h in data.hist.items():
+        for yscale in ("linear", "log"):
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax = categoryhistplot(
+                h,  # type: ignore
+                lambda item: item.histogram * timeconstants.SECONDS_IN_WEEK,
+                formatlabel=lambda item: f"{item.category.eventtype} "
+                f"{item.category.attenuation}",
+                ax=ax,
+            )
+            ax.set_ylabel("events per week")
+            ax.set_yscale(yscale)
+            ax.set_xlabel(_xlabel(key))
+            ax.legend()
+            fig.tight_layout()
+            fig.tight_layout()
+            fname = f"{dest}{os.sep}{key}_{yscale}.png"
+            os.makedirs(os.path.dirname(fname), exist_ok=True)
+            fig.savefig(fname)
     return
