@@ -1,28 +1,32 @@
 import os
-import tempfile
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 import dask
 from dask.bag import Bag
-from toolz import complement, curry
 
-from watchoptical.internal.wmdataset import WatchmanDataset, RatPacBonsaiPair
 from watchoptical.internal.watchopticalcpp import convert_ratpacbonsai_to_analysis
+from watchoptical.internal.wmdataset import RatPacBonsaiPair, WatchmanDataset
 
 
 @dataclass(frozen=True)
 class MCToAnalysisConfig:
     directory: str = os.getcwd()
 
+
 @dataclass(frozen=True)
 class AnalysisFile:
     filename: str
-    producedfrom :RatPacBonsaiPair
+    producedfrom: RatPacBonsaiPair
 
 
 def _outputfilename(files: RatPacBonsaiPair, config: MCToAnalysisConfig) -> str:
-    return f"{config.directory}{os.sep}watchopticalanalysis_{os.path.basename(files.g4file)}"
+    return (
+        f"{config.directory}"
+        f"{os.sep}"
+        f"watchopticalanalysis_"
+        f"{os.path.basename(files.g4file)}"
+    )
 
 
 def _outputfileexists(files: RatPacBonsaiPair, config: MCToAnalysisConfig):
@@ -36,9 +40,12 @@ def _run(files: RatPacBonsaiPair, config: MCToAnalysisConfig) -> AnalysisFile:
     return AnalysisFile(outname, files)
 
 
-def mctoanalysis(dataset: WatchmanDataset, config: Optional[MCToAnalysisConfig] = None) -> Bag:
+def mctoanalysis(
+    dataset: WatchmanDataset, config: Optional[MCToAnalysisConfig] = None
+) -> Bag:
     config = config if config is not None else MCToAnalysisConfig()
-    return (dask.bag.from_sequence(dataset)
-           #.filter(curry(complement(_outputfileexists))(config=config))
-           .map(_run, config=config)
-           )
+    return (
+        dask.bag.from_sequence(dataset)
+        # .filter(curry(complement(_outputfileexists))(config=config))
+        .map(_run, config=config)
+    )

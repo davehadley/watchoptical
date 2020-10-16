@@ -6,13 +6,12 @@ import operator
 import os
 import re
 import shelve
-from os.path import expanduser, expandvars, abspath
+from os.path import abspath, expanduser, expandvars
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Iterable, List, Callable, Any, Tuple, Mapping, MutableMapping
+from typing import Any, Callable, Dict, Iterable, Iterator, List
 
-from toolz import pipe
-from toolz import mapcat, curry, merge_with
+from toolz import curry, mapcat, merge_with, pipe
 
 
 def expandpath(path):
@@ -30,9 +29,12 @@ def _expandpatterns(patterns: Iterable[str]) -> List[str]:
 @curry
 def _crawldirectoryforfilesmatching(pattern: str, directory: str) -> List[str]:
     if os.path.isdir(directory):
-        return [expandpath(os.sep.join((root, fname)))
-                for root, dirs, files in os.walk(directory)
-                for fname in files if re.match(pattern, fname)]
+        return [
+            expandpath(os.sep.join((root, fname)))
+            for root, dirs, files in os.walk(directory)
+            for fname in files
+            if re.match(pattern, fname)
+        ]
     else:
         return [directory] if re.match(pattern, directory) else []
 
@@ -43,11 +45,17 @@ def findfiles(patterns: Iterable[str]) -> List[str]:
 
 def searchdirectories(filepattern: str, directories: Iterable[str]) -> List[str]:
     """Search directories for files matching filepattern regex."""
-    return list(sorted(mapcat(_crawldirectoryforfilesmatching(filepattern), findfiles(directories))))
+    return list(
+        sorted(
+            mapcat(_crawldirectoryforfilesmatching(filepattern), findfiles(directories))
+        )
+    )
 
 
 def searchforrootfilesexcludinganalysisfiles(directories: Iterable[str]):
-    return searchdirectories(r"^(?!watchopticalanalysis).*.root$", directories)
+    return searchdirectories(
+        r"^(?!watchopticalanalysis|merged|analysis|results).*.root$", directories
+    )
 
 
 def touchfile(path: str) -> None:
@@ -55,7 +63,7 @@ def touchfile(path: str) -> None:
 
 
 @contextlib.contextmanager
-def temporaryworkingdirectory() -> str:
+def temporaryworkingdirectory() -> Iterator[str]:
     cwd = os.getcwd()
     try:
         with TemporaryDirectory() as d:
@@ -64,16 +72,30 @@ def temporaryworkingdirectory() -> str:
     finally:
         os.chdir(cwd)
 
+
 def hashfromstrcol(values: Iterable[str]) -> str:
     h = hashlib.md5()
     for s in values:
         h.update(s.encode())
     return h.hexdigest()
 
+
 DEFAULT_DBNAME = "watchoptical.shelve.db"
 
 
-def shelvedcall(key: str, f: Callable, *args, dbname: str=DEFAULT_DBNAME, forcecall: bool=False, **kwargs):
+def shelvedget(key: str, dbname: str = DEFAULT_DBNAME):
+    with shelve.open(dbname) as db:
+        return db[key]
+
+
+def shelvedcall(
+    key: str,
+    f: Callable,
+    *args,
+    dbname: str = DEFAULT_DBNAME,
+    forcecall: bool = False,
+    **kwargs,
+):
     with shelve.open(dbname) as db:
         if key in db and not forcecall:
             return db[key]
@@ -83,12 +105,16 @@ def shelvedcall(key: str, f: Callable, *args, dbname: str=DEFAULT_DBNAME, forcec
             return result
 
 
-def shelveddecorator(keyfunc: Callable, dbname: str=DEFAULT_DBNAME):
+def shelveddecorator(keyfunc: Callable, dbname: str = DEFAULT_DBNAME):
     def g(f: Callable):
-        def h(*args, forcecall:bool=False, **kwargs):
+        def h(*args, forcecall: bool = False, **kwargs):
             key = keyfunc(*args, **kwargs)
-            return shelvedcall(key, f, *args, dbname=dbname, forcecall=forcecall, **kwargs)
+            return shelvedcall(
+                key, f, *args, dbname=dbname, forcecall=forcecall, **kwargs
+            )
+
         return h
+
     return g
 
 
@@ -96,6 +122,8 @@ def sumlist(iterable: Iterable[Any]):
     return functools.reduce(operator.add, iterable)
 
 
-def summap(iterable: Iterable[MutableMapping[Any, Any]], add: Callable = operator.add) -> MutableMapping[Any, Any]:
+def summap(
+    iterable: Iterable[Dict[Any, Any]], add: Callable = operator.add
+) -> Dict[Any, Any]:
     sum = functools.partial(functools.reduce, add)
     return functools.reduce(functools.partial(merge_with, sum), iterable)

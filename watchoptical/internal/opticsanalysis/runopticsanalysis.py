@@ -1,44 +1,61 @@
+import itertools
 import re
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Iterable, Mapping, Callable, Any, Optional, MutableMapping
+from typing import Any, Callable, DefaultDict, MutableMapping, NamedTuple, Optional
 
 import boost_histogram as bh
 import numpy as np
-import uproot
 from dask.bag import Bag
 from pandas import DataFrame
-from toolz import identity
 
 from watchoptical.internal.analysiseventtuple import AnalysisEventTuple
 from watchoptical.internal.eventtype import eventtypefromfile
-from watchoptical.internal.histoutils import ExposureWeightedHistogram, sumhistogrammap
-from watchoptical.internal.mctoanalysis import AnalysisFile, mctoanalysis
-from watchoptical.internal.utils import summap, shelveddecorator, sumlist
+from watchoptical.internal.histoutils import CategoryMean, ExposureWeightedHistogram
+from watchoptical.internal.opticsanalysis.selection import Selection, SelectionDefs
+from watchoptical.internal.opticsanalysis.variable import VariableDefs
+from watchoptical.internal.utils import shelveddecorator, sumlist, summap
 from watchoptical.internal.wmdataset import WatchmanDataset
 
 
-def _add_accum(l, r):
-    c = deepcopy(l)
-    c += r
+def _add_accum(left, right):
+    c = deepcopy(left)
+    c += right
     return c
 
 
 @dataclass
 class OpticsAnalysisResult:
     hist: MutableMapping[str, ExposureWeightedHistogram] = field(default_factory=dict)
-    scatter: dict = field(default_factory=dict)
+    scatter: MutableMapping[str, CategoryMean] = field(default_factory=dict)
 
     def __add__(self, other):
         return OpticsAnalysisResult(
             hist=summap([self.hist, other.hist]),
-            scatter=summap([self.scatter, other.scatter], lambda lhs, rhs: summap([lhs, rhs], _add_accum)),
+            scatter=summap(
+                [self.scatter, other.scatter],
+                # lambda lhs, rhs: summap([lhs, rhs], _add_accum),
+            ),
+        )
+
+    def __str__(self) -> str:
+        return (
+            f"OpticsAnalysisResult({len(self.hist)} hist, {len(self.scatter)} scatter)"
         )
 
 
-def _categoryfromfile(file: AnalysisFile) -> str:
-    et = eventtypefromfile(file)
+class Category(NamedTuple):
+    eventtype: str
+    attenuation: float
+
+    @classmethod
+    def fromAnalysisEventTuple(cls, tree: AnalysisEventTuple) -> "Category":
+        return Category(_eventtypecategory(tree), _attenuationfromtree(tree))
+
+
+def _eventtypecategory(tree: AnalysisEventTuple) -> str:
+    et = eventtypefromfile(tree.analysisfile)
     result = "IBD" if "IBD" in et else "Background"
     return result
 
@@ -50,80 +67,72 @@ def _hascoincidence(data):
     return (count >= 2) & (dt.abs() < 50.0)
 
 
-def _selection(data):
-    # watchmakers efficiency is based on:
-    #             cond = "closestPMT/1000.>%f"%(_d)
-    #             cond += "&& good_pos>%f " %(_posGood)
-    #             cond += "&& inner_hit > 4 &&  veto_hit < 4"
-    #             cond += "&& n9 > %f" %(_n9)
-    # with _distance2pmt=1,_n9=8,_dist=30.0,\
-    # _posGood=0.1,_dirGood=0.1,_pe=8,_nhit=8,_itr = 1.5
-    return data[((data.closestPMT / 1500.0) > 1.0)
-                & (data.good_pos > 0.1)
-                & (data.inner_hit > 4)
-                & (data.veto_hit < 4)
-                & _hascoincidence(data)
-                ]
-
-
-def _makebonsaihistogram(tree: AnalysisEventTuple,
-                         binning: bh.axis.Axis,
-                         x: Callable[[DataFrame], Any],
-                         w: Optional[Callable[[DataFrame], Any]] = None,
-                         selection: Callable[[DataFrame], DataFrame] = _selection,
-                         subevent: int = 0
-                         ) -> ExposureWeightedHistogram:
+def _makebonsaihistogram(
+    tree: AnalysisEventTuple,
+    binning: bh.axis.Axis,
+    x: Callable[[DataFrame], Any],
+    w: Optional[Callable[[DataFrame], Any]] = None,
+    selection: Selection = SelectionDefs.nominal.value,
+    subevent: int = 0,
+) -> ExposureWeightedHistogram:
     histo = ExposureWeightedHistogram(binning)
-    category = _categoryfromfile(tree.analysisfile)
-    data = (selection(tree.bonsai)
-            .groupby("mcid")
-            .nth(subevent))
+    category = Category.fromAnalysisEventTuple(tree)
+    data = selection(tree.bonsai).groupby("mcid").nth(subevent)
     xv = np.asarray(x(data))
     wv = None if not w else np.asarray(w(data))
     histo.fill(category, tree.exposure, xv, weight=wv)
     return histo
 
 
-def _makebasichistograms(tree: AnalysisEventTuple, hist: MutableMapping[str, ExposureWeightedHistogram]):
-    hist["events_withatleastonesubevent"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
-                                                                 lambda x: np.zeros(len(x)), selection=identity)
-    hist["events_selected"] = _makebonsaihistogram(tree, bh.axis.Regular(1, 0.0, 1.0),
-                                                   lambda x: np.zeros(len(x)), selection=_selection)
-    hist["n9_0"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
-                                        lambda x: x.n9)
-    hist["n9_1"] = _makebonsaihistogram(tree, bh.axis.Regular(26, 0., 60.0),
-                                        lambda x: x.n9,
-                                        subevent=1)
+def _makebasichistograms(
+    tree: AnalysisEventTuple, hist: MutableMapping[str, ExposureWeightedHistogram]
+):
+    for (selection, variable, subevent) in itertools.product(
+        SelectionDefs, VariableDefs, (None, 0, 1)
+    ):
+        name = "_".join((variable.name, selection.name, "subevent" + str(subevent)))
+        hist[name] = _makebonsaihistogram(
+            tree, variable.value.binning, variable.value, selection=selection.value
+        )
     return
 
 
 def _attenuationfromtree(tree: AnalysisEventTuple) -> float:
     # this should return the expect rate for this process in number of events per second
     macro = str(tree.macro)
-    match = re.search("(?s).*OPTICS.*?doped_water.*?ABSLENGTH_value2.*?\[(.*?),.*", macro)
+    match = re.search(
+        r"(?s).*OPTICS.*?doped_water.*?ABSLENGTH_value2.*?\[(.*?),.*", macro
+    )
     if match:
         return float(match.group(1))
     raise ValueError("failed to parse macro", macro)
 
 
+def _weightedmeandict() -> DefaultDict[Category, bh.accumulators.WeightedMean]:
+    return defaultdict(bh.accumulators.WeightedMean)
+
+
 def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
-    category = _categoryfromfile(tree.analysisfile)
-    if category == "IBD":
-        attenuation = _attenuationfromtree(tree)
-        category = f"{attenuation:0.5e}"
+    category = Category.fromAnalysisEventTuple(tree)
+    if category.eventtype == "IBD":
         totalq = tree.anal.pmt_q.groupby("entry").sum().array
         # histogram total Q
-        store.hist["ibd_total_charge_by_attenuation"] = (ExposureWeightedHistogram(bh.axis.Regular(300, 0.0, 150.0))
-                                                         .fill(category, tree.exposure, totalq)
-                                                         )
+        store.hist["ibd_total_charge_by_attenuation"] = ExposureWeightedHistogram(
+            bh.axis.Regular(300, 0.0, 150.0)
+        ).fill(category, tree.exposure, totalq)
         # calculate mean Q
-        meanq = defaultdict(bh.accumulators.WeightedMean)
-        meanq[category].fill(totalq)
+        meanq = CategoryMean().fill(category, totalq)
         store.scatter["idb_total_charge_by_attenuation_mean"] = meanq
         # calculate mean Q > 10
-        meanq_gt10 = defaultdict(bh.accumulators.WeightedMean)
-        meanq_gt10[category].fill(totalq[totalq > 10.0])
+        meanq_gt10 = CategoryMean().fill(category, totalq[totalq > 10.0])
         store.scatter["idb_total_charge_by_attenuation_mean_gt10"] = meanq_gt10
+    return
+
+
+def _makesensitivityscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
+    category = Category.fromAnalysisEventTuple(tree)
+    sensitivity = CategoryMean().fill(category, tree.sensitivity.metric)
+    store.scatter["sensitvity_metric"] = sensitivity
     return
 
 
@@ -132,15 +141,16 @@ def _analysis(tree: AnalysisEventTuple) -> OpticsAnalysisResult:
     result = OpticsAnalysisResult()
     _makebasichistograms(tree, result.hist)
     _makebasicattenuationscatter(tree, result)
+    _makesensitivityscatter(tree, result)
     return result
 
 
 def runopticsanalysis(dataset: WatchmanDataset) -> Bag:
-    analfiles = mctoanalysis(dataset)
-    hist = (analfiles.map(AnalysisEventTuple.load)
-            .map(_analysis)
-            .reduction(sumlist, sumlist)
-            )
+    hist = (
+        AnalysisEventTuple.fromWatchmanDataset(dataset)
+        .map(_analysis)
+        .reduction(sumlist, sumlist)
+    )
     return hist
 
 

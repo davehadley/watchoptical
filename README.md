@@ -15,19 +15,25 @@ Check out this package:
 ```bash
 git clone https://github.com/davehadley/watchoptical
 cd watchoptical
-python3 setup.py install
+./post-clone.sh
+pip install .
 ```
 
 If you want to do development work on this package do:
 ```bash
-python3 setup.py develop
+python setup.py develop
+```
+
+Note editable installs with `pip` do not work on my system:
+```
+pip install -e .
 ```
 
 ### Testing you Installation
 
 From the `watchoptical` directory run:
 ```bash
-python -m unittest discover tests
+pytest tests
 ```
 
 ## Generating WATCHMAN MC
@@ -39,6 +45,12 @@ python3 -m watchoptical.scripts.generatemc --num-events=1000 --target=local
 For more options see:
 ```bash
 python3 -m watchoptical.scripts.generatemc --help
+```
+
+## Running the Standard WATCHMAN WatchMakers sensitivity analysis 
+
+```bash
+python3 -m watchoptical.scripts.runsensitivityanalysis path/to/input/files
 ```
 
 ## Analyzing WATCHMAN Data 
@@ -53,4 +65,10 @@ Make plots from the output with:
 
 ```bash
 python3 -m watchoptical.scripts.plot path/to/input/files/*.root
+```
+
+Inspect datasets on the command line with:
+
+```bash
+python3 -m watchoptical.scripts.inspect path/to/input/files
 ```

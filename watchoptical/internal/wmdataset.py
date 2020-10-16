@@ -1,10 +1,9 @@
 import itertools
 import os
 import re
-from hashlib import md5
-from typing import Iterable, NamedTuple, Iterator, Tuple, Optional, Collection
+from typing import Dict, Iterable, Iterator, NamedTuple, Optional, Tuple, Union
 
-from toolz import pipe, groupby
+from toolz import groupby, pipe
 
 from watchoptical.internal.utils import findfiles, hashfromstrcol
 
@@ -15,16 +14,25 @@ class RatPacBonsaiPair(NamedTuple):
 
     @property
     def eventtype(self) -> str:
-        return re.match(f".*Watchman_(.*){os.sep}.*.root$", self.g4file).group(1)
+        match = re.match(f".*Watchman_(.*){os.sep}.*.root$", self.g4file)
+        assert match is not None
+        return match.group(1)
+
+    @property
+    def rootdirectory(self):
+        return os.path.commonpath((self.g4file, self.bonsaifile))
 
 
 class WatchmanDataset:
-    def __init__(self, filepatterns: Iterable[str], name: Optional[str] = None, empty_ok:bool=False):
-        self._files: Tuple[RatPacBonsaiPair] = pipe(filepatterns,
-                                                    findfiles,
-                                                    self._match_bonsai_and_ratpac,
-                                                    tuple
-                                                    )
+    def __init__(
+        self,
+        filepatterns: Iterable[str],
+        name: Optional[str] = None,
+        empty_ok: bool = False,
+    ):
+        self._files: Tuple[RatPacBonsaiPair] = pipe(
+            filepatterns, findfiles, self._match_bonsai_and_ratpac, tuple
+        )
         if name is None:
             # automatically generate unique name from input files
             name = self._id
@@ -42,16 +50,47 @@ class WatchmanDataset:
     def __getitem__(self, index) -> RatPacBonsaiPair:
         return self._files[index]
 
-    def _match_bonsai_and_ratpac(self, files: Iterable[str]) -> Iterator[RatPacBonsaiPair]:
-        iterpairs = groupby(lambda s: (os.path.basename(os.path.dirname(s)), os.path.basename(s)), files).values()
-        sortedpairs = (((l, r) if self._isbonsai(r) else (r, l)) for l, r in iterpairs)
+    def _match_bonsai_and_ratpac(
+        self, files: Iterable[str]
+    ) -> Iterator[RatPacBonsaiPair]:
+        iterpairs = groupby(
+            lambda s: (os.path.basename(os.path.dirname(s)), os.path.basename(s)), files
+        ).values()
+        sortedpairs = (
+            ((left, right) if self._isbonsai(right) else (right, left))
+            for left, right in iterpairs
+        )
         return itertools.starmap(RatPacBonsaiPair, sortedpairs)
 
     def _isbonsai(self, filename: str) -> bool:
-        return bool(re.match(f".*bonsai_root.*$", filename))
+        return bool(re.match(".*bonsai_root.*$", filename))
 
     @property
     def _id(self):
         return hashfromstrcol(s for p in self for s in p)
 
 
+class WatchmanDataSetCollection:
+    def __init__(
+        self,
+        directories: Dict[str, Union[Iterable[str], str]],
+        name: Optional[str] = None,
+        empty_ok: bool = False,
+    ):
+        self.name = name
+        self._datasets = {
+            k: WatchmanDataset(
+                [d] if isinstance(d, str) else d, name=k, empty_ok=empty_ok
+            )
+            for k, d in directories.items()
+        }
+
+    def __iter__(self) -> Iterator[WatchmanDataset]:
+        for _, d in sorted(self._datasets.items()):
+            yield d
+
+    def __len__(self) -> int:
+        return len(self._datasets)
+
+    def __getitem__(self, name: str) -> WatchmanDataset:
+        return self._datasets[name]

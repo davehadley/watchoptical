@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13.0)
 
 project(watchoptical)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 # For easier debugging
 set(CMAKE_BUILD_TYPE Debug)
