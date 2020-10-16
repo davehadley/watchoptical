@@ -2,6 +2,8 @@ import inspect
 import json
 from typing import Optional
 
+import numpy as np
+
 
 def makeratdb(
     attenuation: Optional[float] = None, scattering: Optional[float] = None
@@ -250,7 +252,9 @@ _nominal_doped_water_ABSLENGTH_value2 = [
 
 def _attenuationjson(attenuation: float) -> str:
     abslength1 = json.dumps(_nominal_doped_water_ABSLENGTH_value1)
-    abslength2 = json.dumps([attenuation] * len(_nominal_doped_water_ABSLENGTH_value1))
+    abslength2 = json.dumps(
+        list(np.array(_nominal_doped_water_ABSLENGTH_value2) * attenuation)
+    )
     return inspect.cleandoc(
         f"""
     {{
@@ -266,9 +270,9 @@ def _attenuationjson(attenuation: float) -> str:
 
 
 def _scatteringjson(scatteringlength: float) -> str:
-    rslength1 = json.dumps(_nominal_doped_water_ABSLENGTH_value1)
+    rslength1 = json.dumps(_nominal_doped_water_RSLENGTH_value1)
     rslength2 = json.dumps(
-        [scatteringlength] * len(_nominal_doped_water_ABSLENGTH_value1)
+        list(np.array(_nominal_doped_water_RSLENGTH_value2) * scatteringlength)
     )
     return inspect.cleandoc(
         f"""

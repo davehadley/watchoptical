@@ -10,17 +10,14 @@ from watchoptical.internal.runwatchmakers import WatchMakersConfig
 
 
 class TestGenerateMCWithTweakedOpticalModel(unittest.TestCase):
-    def ratdb(self, attenuation):
-        return makeratdb(attenuation=attenuation)
+    def ratdb(self, attenuation, scattering):
+        return makeratdb(attenuation=attenuation, scattering=scattering)
 
     def test_generatemc_withcustomattenuation(self):
         with dask.distributed.Client(
             n_workers=1, threads_per_worker=1, memory_limit="4GB"
         ):
-            ratdb = OrderedDict(
-                (f"attenuation_{index}", self.ratdb(attenuation))
-                for index, attenuation in enumerate([1.0])
-            )
+            ratdb = OrderedDict({"tweak_attenuation_and_scat": self.ratdb(1.1, 1.2)})
             jobs = generatemc(
                 GenerateMCConfig(
                     WatchMakersConfig(numevents=1),
