@@ -103,7 +103,7 @@ def _run(args):
         None if args.signal_only is None else lambda f: "IBD_LIQUID_pn" in f
     )
     injectratdb = _wrapindict(
-        f"attenuation_{args.attenuation}",
+        f"attenuation_{args.attenuation}_scattering_{args.scattering}",
         makeratdb(attenuation=args.attenuation, scattering=args.scattering),
     )
     config = GenerateMCConfig(
