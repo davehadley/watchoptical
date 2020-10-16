@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from tempfile import TemporaryDirectory
 from typing import Callable, Iterator, Optional, Tuple
 
+import cloudpickle
 import dask.bag
 from dask.bag import Bag
 
@@ -51,6 +52,25 @@ class GenerateMCConfig:
                 hsh.update(v.encode())
         return hsh.hexdigest()
 
+    @property
+    def configfilename(self):
+        dirname = self.watchmakersconfig.directory
+        if dirname is None:
+            dirname = os.getcwd()
+        return f"{dirname}{os.sep}watchopticalconfig_{self.configid}.pickle"
+
+    @classmethod
+    def fromfile(cls, filename: str) -> "GenerateMCConfig":
+        with open(filename) as f:
+            return cloudpickle.load(f)
+
+
+def _write_config_to_disk(config: GenerateMCConfig):
+    os.makedirs(os.path.dirname(config.configfilename), exist_ok=True)
+    with open(config.configfilename, "wb") as f:
+        cloudpickle.dump(config, f)
+    return
+
 
 def _rungeant4(
     watchmakersscript: str, cwd: str, config: GenerateMCConfig
@@ -58,9 +78,7 @@ def _rungeant4(
     with open(watchmakersscript, "r") as script:
         scripttext = script.read()
         uid = str(uuid.uuid1())
-        with _inject_macros_and_ratdb_into_script(
-            scripttext, config.injectmacros, config.injectratdb
-        ) as scripttext:
+        with _inject_macros_and_ratdb_into_script(scripttext, config) as scripttext:
             scripttext = scripttext.replace(
                 "run$TMPNAME.root", f"run_{config.configid}_{uid}.root"
             )
@@ -114,10 +132,10 @@ def _load_ratdb_macro_command(jsoncontents, tempfilename):
 
 @contextmanager
 def _inject_macros_and_ratdb_into_script(
-    scripttext: str,
-    injectmacros: Optional[OrderedDict[str, str]],
-    injectratdb: Optional[OrderedDict[str, str]],
+    scripttext: str, config: GenerateMCConfig
 ) -> Iterator[str]:
+    injectmacros = config.injectmacros
+    injectratdb = config.injectratdb
     with TemporaryDirectory() as tempdir:
         if injectratdb is not None:
             ratdbnames = _write_injected_ratdb_to_disk(tempdir, injectratdb)
@@ -127,6 +145,7 @@ def _inject_macros_and_ratdb_into_script(
                 (key, _load_ratdb_macro_command(injectratdb[key], fname))
                 for key, fname in ratdbnames.items()
             )
+            injectmacros["_linktoconfig"] = f"# config-file: {config.configfilename}"
         if injectmacros is not None:
             macronames = _write_injected_macros_to_disk(tempdir, injectmacros)
             s1, s2 = scripttext.split("&& rat")
@@ -148,6 +167,7 @@ def _runbonsai(g4file: str, config: GenerateMCConfig) -> str:
 
 
 def generatemc(config: GenerateMCConfig) -> Bag:
+    _write_config_to_disk(config)
     scripts = generatejobscripts(config.watchmakersconfig)
     cwd = scripts.directory
     return (
