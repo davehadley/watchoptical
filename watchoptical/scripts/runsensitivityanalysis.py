@@ -3,7 +3,7 @@ from argparse import ArgumentParser, Namespace
 from collections import OrderedDict
 from typing import Any
 
-import dask
+import dask.bag
 from toolz import curry
 
 from watchoptical.internal.client import ClientType, client
