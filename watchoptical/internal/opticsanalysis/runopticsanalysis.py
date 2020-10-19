@@ -1,5 +1,4 @@
 import itertools
-import re
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -48,10 +47,15 @@ class OpticsAnalysisResult:
 class Category(NamedTuple):
     eventtype: str
     attenuation: float
+    scattering: float
 
     @classmethod
     def fromAnalysisEventTuple(cls, tree: AnalysisEventTuple) -> "Category":
-        return Category(_eventtypecategory(tree), _attenuationfromtree(tree))
+        return Category(
+            _eventtypecategory(tree),
+            _attenuationfromtree(tree),
+            _scatteringfromtree(tree),
+        )
 
 
 def _eventtypecategory(tree: AnalysisEventTuple) -> str:
@@ -98,14 +102,19 @@ def _makebasichistograms(
 
 
 def _attenuationfromtree(tree: AnalysisEventTuple) -> float:
-    # this should return the expect rate for this process in number of events per second
-    macro = str(tree.macro)
-    match = re.search(
-        r"(?s).*OPTICS.*?doped_water.*?ABSLENGTH_value2.*?\[(.*?),.*", macro
-    )
-    if match:
-        return float(match.group(1))
-    raise ValueError("failed to parse macro", macro)
+    if tree.generatemcconfig.injectratdb is not None:
+        for v in tree.generatemcconfig.injectratdb.values():
+            if v.config.attenuation is not None:
+                return v.config.attenuation
+    return 1.0
+
+
+def _scatteringfromtree(tree: AnalysisEventTuple) -> float:
+    if tree.generatemcconfig.injectratdb is not None:
+        for v in tree.generatemcconfig.injectratdb.values():
+            if v.config.scattering is not None:
+                return v.config.scattering
+    return 1.0
 
 
 def _weightedmeandict() -> DefaultDict[Category, bh.accumulators.WeightedMean]:

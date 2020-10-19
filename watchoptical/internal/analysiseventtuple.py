@@ -74,5 +74,5 @@ def _loadgeneratemcconfig(analysisfile: AnalysisFile) -> GenerateMCConfig:
     fname = glob.glob(f"{dirname}/watchopticalconfig_*.pickle")[0]
     with open(fname, "rb") as f:
         result = cloudpickle.load(f)
-        assert result is GenerateMCConfig
+        assert isinstance(result, GenerateMCConfig)
         return result
