@@ -1,10 +1,13 @@
+import glob
 import re
 from typing import NamedTuple
 
 import uproot
+from cloudpickle import cloudpickle
 from dask.bag import Bag
 from pandas import DataFrame
 
+from watchoptical.internal.generatemc import GenerateMCConfig
 from watchoptical.internal.mctoanalysis import AnalysisFile, mctoanalysis
 from watchoptical.internal.runwatchmakerssensitivityanalysis import (
     WatchMakersSensitivityResult,
@@ -18,6 +21,7 @@ class AnalysisEventTuple(NamedTuple):
     bonsai: DataFrame
     analysisfile: AnalysisFile
     sensitivity: WatchMakersSensitivityResult
+    generatemcconfig: GenerateMCConfig
 
     @property
     def numevents(self):
@@ -41,7 +45,10 @@ class AnalysisEventTuple(NamedTuple):
             # .set_index(["mcid", "subid"])
         )
         sensitivity = loadwatchmakerssensitvity(analysisfile.producedfrom.rootdirectory)
-        return AnalysisEventTuple(anal, bonsai, analysisfile, sensitivity)
+        generatemcconfig = _loadgeneratemcconfig(analysisfile)
+        return AnalysisEventTuple(
+            anal, bonsai, analysisfile, sensitivity, generatemcconfig
+        )
 
     @classmethod
     def fromWatchmanDataset(cls, dataset: WatchmanDataset) -> Bag:
@@ -60,3 +67,12 @@ def _ratefromtree(tree: AnalysisEventTuple) -> float:
         if match:
             return float(match.group(1))
     raise ValueError("failed to parse macro", lines)
+
+
+def _loadgeneratemcconfig(analysisfile: AnalysisFile) -> GenerateMCConfig:
+    dirname = analysisfile.producedfrom.rootdirectory
+    fname = glob.glob(f"{dirname}/watchopticalconfig_*.pickle")[0]
+    with open(fname, "rb") as f:
+        result = cloudpickle.load(f)
+        assert isinstance(result, GenerateMCConfig)
+        return result
