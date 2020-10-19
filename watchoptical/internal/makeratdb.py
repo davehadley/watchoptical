@@ -1,18 +1,33 @@
 import inspect
 import json
-from typing import Optional
+from typing import NamedTuple, Optional
 
 import numpy as np
 
 
+class RatDbConfig(NamedTuple):
+    attenuation: Optional[float] = None
+    scattering: Optional[float] = None
+
+
+class RatDb(NamedTuple):
+    json: Optional[str]
+    config: RatDbConfig
+
+
 def makeratdb(
     attenuation: Optional[float] = None, scattering: Optional[float] = None
-) -> Optional[str]:
+) -> RatDb:
+    config = RatDbConfig(attenuation=attenuation, scattering=scattering)
+    return RatDb(json=makeratdbjson(config), config=config)
+
+
+def makeratdbjson(config: RatDbConfig) -> Optional[str]:
     snippets = []
-    if attenuation is not None:
-        snippets.append(_attenuationjson(attenuation))
-    if scattering is not None:
-        snippets.append(_scatteringjson(scattering))
+    if config.attenuation is not None:
+        snippets.append(_attenuationjson(config.attenuation))
+    if config.scattering is not None:
+        snippets.append(_scatteringjson(config.scattering))
     if len(snippets) > 0:
         return "\n".join(snippets)
     else:
