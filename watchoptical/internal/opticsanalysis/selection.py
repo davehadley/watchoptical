@@ -1,35 +1,57 @@
+import operator
 from enum import Enum
-from typing import Any, Callable, NamedTuple
+from functools import reduce
+from typing import Callable, NamedTuple, Tuple
 
-from pandas import DataFrame
+from pandas import DataFrame, Series
 from toolz import identity
 
 
-def _hascoincidence(data: DataFrame) -> Any:
+def _hascoincidence(data: DataFrame) -> Series:
     t = data.groupby("mcid")
     count = t.transform("count")
     dt = t.transform(lambda t: t.max() - t.min())
     return (count >= 2) & (dt.abs() < 50.0)
 
 
+def _fiducialvolumecut(data: DataFrame) -> Series:
+    return (data.closestPMT / 1500.0) > 1.0
+
+
+def _goodpositioncut(data: DataFrame) -> Series:
+    return data.good_pos > 0.1
+
+
+def _innerhitscut(data: DataFrame) -> Series:
+    return data.inner_hit > 4
+
+
+def _vetohitscut(data: DataFrame) -> Series:
+    return data.veto_hit < 4
+
+
 class Selection(NamedTuple):
     name: str
-    f: Callable[[DataFrame], DataFrame]
+    cuts: Tuple[Callable[[DataFrame], Series], ...]
+
+    def select(self, data: DataFrame) -> DataFrame:
+        selected = reduce(operator.and_, (c(data) for c in self.cuts))
+        return data[selected]
 
     def __call__(self, *args, **kwargs):
-        return self.f(*args, **kwargs)
+        return self.select(*args, **kwargs)
 
 
 class SelectionDefs(Enum):
     nominal = Selection(
-        "nominal",
-        lambda data: data[
-            ((data.closestPMT / 1500.0) > 1.0)
-            & (data.good_pos > 0.1)
-            & (data.inner_hit > 4)
-            & (data.veto_hit < 4)
-            & _hascoincidence(data)
-        ],
+        name="nominal",
+        cuts=(
+            _fiducialvolumecut,
+            _goodpositioncut,
+            _innerhitscut,
+            _vetohitscut,
+            _hascoincidence,
+        ),
     )
 
-    noselection = Selection("noselection", lambda data: identity(data))
+    noselection = Selection(name="noselection", cuts=(identity,))
