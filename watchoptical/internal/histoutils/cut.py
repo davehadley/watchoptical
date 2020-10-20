@@ -1,10 +1,10 @@
 from typing import Callable, NamedTuple, Optional
 
-from pandas import DataFrame, Series
+import numpy as np
 
 
 class Cut(NamedTuple):
-    apply: Callable[[DataFrame], Series]
+    apply: Callable[[np.ndarray], np.ndarray]
     name: Optional[str] = None
 
     def __call__(self, *args, **kwargs):

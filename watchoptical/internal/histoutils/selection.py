@@ -2,7 +2,7 @@ import operator
 from functools import reduce
 from typing import NamedTuple, Tuple
 
-from pandas import DataFrame
+import numpy as np
 
 from watchoptical.internal.histoutils.cut import Cut
 
@@ -11,7 +11,7 @@ class Selection(NamedTuple):
     name: str
     cuts: Tuple[Cut, ...]
 
-    def apply(self, data: DataFrame) -> DataFrame:
+    def apply(self, data: np.ndarray) -> np.ndarray:
         selected = reduce(operator.and_, (c(data) for c in self.cuts))
         return data[selected]
 
