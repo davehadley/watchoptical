@@ -1,4 +1,6 @@
-from typing import Any, Iterable, Iterator, List, NamedTuple, Optional, Union
+from copy import deepcopy
+from dataclasses import dataclass
+from typing import Any, Iterable, Iterator, List, Optional, Union
 
 import numpy as np
 from pandas import DataFrame
@@ -8,7 +10,8 @@ from watchoptical.internal.histoutils.cut import Cut
 from watchoptical.internal.histoutils.selection import Selection
 
 
-class CutStats(NamedTuple):
+@dataclass(frozen=True)
+class CutStats:
     numtotal: float
     numpassed: float
 
@@ -20,12 +23,27 @@ class CutStats(NamedTuple):
     def numfailed(self) -> float:
         return self.numtotal - self.numpassed
 
+    def __add__(self, other):
+        return CutStats(
+            self.numtotal + other.numtotal, self.numpassed + other.numpassed
+        )
+
 
 class SelectionStats(Iterable):
-    class Item(NamedTuple):
+    @dataclass(frozen=True)
+    class Item:
         cut: Cut
         individual: CutStats
         cumulative: CutStats
+
+        def __add__(self, other: "SelectionStats.Item"):
+            if self.cut.name != other.cut.name:
+                raise ValueError(f"cannot add {self} and {other}")
+            return SelectionStats.Item(
+                self.cut,
+                self.individual + other.individual,
+                self.cumulative + other.cumulative,
+            )
 
     def __init__(self, selection: Selection):
         self._selection = selection
@@ -38,6 +56,18 @@ class SelectionStats(Iterable):
             cumulative = result if cumulative is None else cumulative & result
             individualcount(result, weight)
             cumulativecount(cumulative, weight)
+
+    def __add__(self, other: "SelectionStats") -> "SelectionStats":
+        result = deepcopy(self)
+        result._cutcounters = tuple(
+            (
+                left[0],
+                left[1] + right[1],
+                left[2] + right[2],
+            )
+            for left, right in zip(result._cutcounters, other._cutcounters)
+        )
+        return result
 
     def __len__(self) -> int:
         return len(self._cutcounters)
@@ -77,6 +107,12 @@ class _Counter:
 
     def tocutstats(self):
         return CutStats(numtotal=self.total, numpassed=self.selected)
+
+    def __add__(self, other: "_Counter") -> "_Counter":
+        result = _Counter()
+        result.total = self.total + other.total
+        result.selected = self.selected + other.selected
+        return result
 
 
 def _table(stats: SelectionStats) -> List[List[Any]]:
