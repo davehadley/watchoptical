@@ -1,10 +1,10 @@
-import operator
 from enum import Enum
-from functools import reduce
-from typing import Callable, NamedTuple, Tuple
 
+import numpy as np
 from pandas import DataFrame, Series
-from toolz import identity
+
+from watchoptical.internal.histoutils.cut import Cut
+from watchoptical.internal.histoutils.selection import Selection
 
 
 def _hascoincidence(data: DataFrame) -> Series:
@@ -30,28 +30,20 @@ def _vetohitscut(data: DataFrame) -> Series:
     return data.veto_hit < 4
 
 
-class Selection(NamedTuple):
-    name: str
-    cuts: Tuple[Callable[[DataFrame], Series], ...]
-
-    def select(self, data: DataFrame) -> DataFrame:
-        selected = reduce(operator.and_, (c(data) for c in self.cuts))
-        return data[selected]
-
-    def __call__(self, *args, **kwargs):
-        return self.select(*args, **kwargs)
+def _passall(data: DataFrame) -> Series:
+    return Series(np.ones(shape=data.size, dtype=bool))
 
 
 class SelectionDefs(Enum):
     nominal = Selection(
         name="nominal",
         cuts=(
-            _fiducialvolumecut,
-            _goodpositioncut,
-            _innerhitscut,
-            _vetohitscut,
-            _hascoincidence,
+            Cut(_fiducialvolumecut),
+            Cut(_goodpositioncut),
+            Cut(_innerhitscut),
+            Cut(_vetohitscut),
+            Cut(_hascoincidence),
         ),
     )
 
-    noselection = Selection(name="noselection", cuts=(identity,))
+    noselection = Selection(name="noselection", cuts=(Cut(_passall),))
