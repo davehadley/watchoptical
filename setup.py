@@ -34,6 +34,7 @@ setup(
         "pandas",
         "mplhep",
         "uproot",
+        "tabulate",
     ],
     tests_require=["pytest"],
     extras_require={
