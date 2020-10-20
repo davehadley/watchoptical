@@ -13,8 +13,8 @@ class TestSelectionStats(unittest.TestCase):
 
     def _sampledata(self):
         return DataFrame(
-            data=self._random.normal([0.0, 0.0], [1.0, 1.0], size=(10000, 2)),
-            columns=["x", "y"],
+            data=self._random.normal([0.0, 0.0, 1.0], [1.0, 1.0, 0.1], size=(10000, 3)),
+            columns=["x", "y", "w"],
         )
 
     def _sampleselection(self):
@@ -80,5 +80,67 @@ class TestSelectionStats(unittest.TestCase):
                 np.sum(np.logical_and(data.y < 0, data.x > 0)),
                 np.sum(np.logical_or(data.y > 0, data.x < 0)),
                 np.sum(np.logical_and(data.y < 0, data.x > 0)) / len(data),
+            ],
+        )
+
+    def test_selectionstats_floatweighted_individual(self):
+        data = self._sampledata()
+
+        stat = SelectionStats(self._sampleselection())
+
+        w = 0.1
+        stat.fill(data, w)
+
+        np.testing.assert_almost_equal(
+            [
+                stat[0].individual.numtotal,
+                stat[0].individual.numpassed,
+                stat[0].individual.numfailed,
+                stat[0].individual.efficiency,
+                stat[1].individual.numtotal,
+                stat[1].individual.numpassed,
+                stat[1].individual.numfailed,
+                stat[1].individual.efficiency,
+            ],
+            [
+                len(data) * w,
+                np.sum(data.x > 0) * w,
+                np.sum(data.x < 0) * w,
+                np.sum(data.x > 0) / len(data),
+                len(data) * w,
+                np.sum(data.y < 0) * w,
+                np.sum(data.y > 0) * w,
+                np.sum(data.y < 0) / len(data),
+            ],
+        )
+
+    def test_selectionstats_arrayweighted_individual(self):
+        data = self._sampledata()
+
+        stat = SelectionStats(self._sampleselection())
+
+        w = data.w
+        stat.fill(data, w)
+
+        np.testing.assert_almost_equal(
+            [
+                stat[0].individual.numtotal,
+                stat[0].individual.numpassed,
+                stat[0].individual.numfailed,
+                stat[0].individual.efficiency,
+                stat[1].individual.numtotal,
+                stat[1].individual.numpassed,
+                stat[1].individual.numfailed,
+                stat[1].individual.efficiency,
+            ],
+            [
+                np.sum(w),
+                np.sum(w * (data.x > 0)),
+                np.sum(w * (data.x < 0)),
+                np.sum(w * (data.x > 0)) / np.sum(w),
+                np.sum(w),
+                np.sum(w * (data.y < 0)),
+                np.sum(w * (data.y > 0)),
+                np.sum(w * (data.y < 0)) / np.sum(w),
             ],
         )
