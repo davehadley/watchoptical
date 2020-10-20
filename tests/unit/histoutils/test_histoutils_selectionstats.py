@@ -144,3 +144,9 @@ class TestSelectionStats(unittest.TestCase):
                 np.sum(w * (data.y < 0)) / np.sum(w),
             ],
         )
+
+    def test_selectionstats_stringrepresentation(self):
+        data = self._sampledata()
+        stat = SelectionStats(self._sampleselection())
+        stat.fill(data)
+        print(stat)
