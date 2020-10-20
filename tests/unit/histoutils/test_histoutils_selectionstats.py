@@ -1,4 +1,5 @@
 import unittest
+from itertools import zip_longest
 
 import numpy as np
 from pandas import DataFrame
@@ -150,3 +151,17 @@ class TestSelectionStats(unittest.TestCase):
         stat = SelectionStats(self._sampleselection())
         stat.fill(data)
         print(stat)
+
+    def test_selectionstats_addition(self):
+        data1 = self._sampledata()
+        stat1 = SelectionStats(self._sampleselection())
+        stat1.fill(data1)
+
+        data2 = self._sampledata()
+        stat2 = SelectionStats(self._sampleselection())
+        stat2.fill(data2)
+
+        stat3 = stat1 + stat2
+
+        for item in zip_longest(stat1, stat2, stat3):
+            self.assertEqual(item[0] + item[1], item[2])
