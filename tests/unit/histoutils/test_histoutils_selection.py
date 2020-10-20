@@ -3,7 +3,8 @@ import unittest
 import numpy as np
 from pandas import DataFrame
 
-from watchoptical.internal.opticsanalysis.selection import Selection
+from watchoptical.internal.histoutils.cut import Cut
+from watchoptical.internal.histoutils.selection import Selection
 
 
 class TestSelection(unittest.TestCase):
@@ -14,7 +15,8 @@ class TestSelection(unittest.TestCase):
         )
 
         sel = Selection(
-            name="Simple selection", cuts=[lambda d: d.x > 0.0, lambda d: d.y < 0.0]
+            name="Simple selection",
+            cuts=(Cut(lambda d: d.x > 0.0), Cut(lambda d: d.y < 0.0)),
         )
         selected = sel(data)
         self.assertTrue(selected.equals(data[(data.x > 0.0) & (data.y < 0.0)]))

@@ -12,7 +12,8 @@ from pandas import DataFrame
 from watchoptical.internal.analysiseventtuple import AnalysisEventTuple
 from watchoptical.internal.eventtype import eventtypefromfile
 from watchoptical.internal.histoutils import CategoryMean, ExposureWeightedHistogram
-from watchoptical.internal.opticsanalysis.selection import Selection, SelectionDefs
+from watchoptical.internal.histoutils.selection import Selection
+from watchoptical.internal.opticsanalysis.selectiondefs import SelectionDefs
 from watchoptical.internal.opticsanalysis.variable import VariableDefs
 from watchoptical.internal.utils import shelveddecorator, sumlist, summap
 from watchoptical.internal.wmdataset import WatchmanDataset
