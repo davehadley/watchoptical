@@ -49,13 +49,16 @@ class SelectionStats(Iterable):
         self._selection = selection
         self._cutcounters = tuple((c, _Counter(), _Counter()) for c in selection.cuts)
 
-    def fill(self, data: DataFrame, weight: Optional[Union[float, np.ndarray]] = None):
+    def fill(
+        self, data: DataFrame, weight: Optional[Union[float, np.ndarray]] = None
+    ) -> "SelectionStats":
         cumulative = None
         for cut, individualcount, cumulativecount in self._cutcounters:
             result = cut(data)
             cumulative = result if cumulative is None else cumulative & result
             individualcount(result, weight)
             cumulativecount(cumulative, weight)
+        return self
 
     def __add__(self, other: "SelectionStats") -> "SelectionStats":
         result = deepcopy(self)
