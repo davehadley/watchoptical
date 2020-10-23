@@ -3,7 +3,7 @@ import unittest
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from watchoptical.internal.utils import findfiles
+from watchoptical.internal.utils.filepathutils import findfiles
 
 
 class TestUtils(unittest.TestCase):

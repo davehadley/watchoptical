@@ -4,11 +4,11 @@ from argparse import ArgumentParser, Namespace
 from collections import OrderedDict
 from typing import Any
 
-from watchoptical.internal.client import ClientType, client
-from watchoptical.internal.generatemc import GenerateMCConfig, generatemc
-from watchoptical.internal.makeratdb import makeratdb
-from watchoptical.internal.runwatchmakers import WatchMakersConfig
-from watchoptical.internal.utils import expandpath
+from watchoptical.internal.generatemc.generatemc import GenerateMCConfig, generatemc
+from watchoptical.internal.generatemc.makeratdb import makeratdb
+from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
+from watchoptical.internal.utils.client import ClientType, client
+from watchoptical.internal.utils.filepathutils import expandpath
 
 
 def _parsecml() -> Namespace:

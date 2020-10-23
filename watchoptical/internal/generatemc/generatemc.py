@@ -16,10 +16,16 @@ import cloudpickle
 import dask.bag
 from dask.bag import Bag
 
-from watchoptical.internal.makeratdb import RatDb
-from watchoptical.internal.runwatchmakers import WatchMakersConfig, generatejobscripts
-from watchoptical.internal.utils import expandpath, temporaryworkingdirectory
-from watchoptical.internal.wmdataset import RatPacBonsaiPair
+from watchoptical.internal.generatemc.makeratdb import RatDb
+from watchoptical.internal.generatemc.runwatchmakers import (
+    WatchMakersConfig,
+    generatejobscripts,
+)
+from watchoptical.internal.generatemc.wmdataset import RatPacBonsaiPair
+from watchoptical.internal.utils.filepathutils import (
+    expandpath,
+    temporaryworkingdirectory,
+)
 
 
 @dataclass(frozen=True)

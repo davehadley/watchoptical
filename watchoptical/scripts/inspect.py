@@ -10,15 +10,15 @@ from IPython import start_ipython
 from traitlets.config import get_config
 
 import watchoptical
-from watchoptical.internal.analysiseventtuple import AnalysisEventTuple
-from watchoptical.internal.client import ClientType
+from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
+from watchoptical.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
 from watchoptical.internal.opticsanalysis.plot import PlotMode
 from watchoptical.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
-from watchoptical.internal.utils import (
+from watchoptical.internal.utils.cache import shelvedget
+from watchoptical.internal.utils.client import ClientType
+from watchoptical.internal.utils.filepathutils import (
     searchforrootfilesexcludinganalysisfiles,
-    shelvedget,
 )
-from watchoptical.internal.wmdataset import WatchmanDataset
 
 
 def parsecml() -> Namespace:

@@ -2,7 +2,7 @@ from typing import Dict, Iterable
 
 import boost_histogram as bh
 
-from watchoptical.internal.utils import summap
+from watchoptical.internal.utils.collectionutils import summap
 
 
 def sumhistogrammap(

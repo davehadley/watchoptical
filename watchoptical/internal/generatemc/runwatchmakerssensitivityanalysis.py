@@ -6,7 +6,7 @@ from enum import Enum
 from glob import glob
 from typing import List, NamedTuple
 
-from watchoptical.internal.runwatchmakers import path_to_watchmakers_script
+from watchoptical.internal.generatemc.runwatchmakers import path_to_watchmakers_script
 
 
 @dataclass(frozen=True)

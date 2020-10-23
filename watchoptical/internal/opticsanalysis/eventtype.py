@@ -1,6 +1,6 @@
 import re
 
-from watchoptical.internal.mctoanalysis import AnalysisFile
+from watchoptical.internal.generatemc.mctoanalysis import AnalysisFile
 
 
 def eventtypefromfile(file: AnalysisFile) -> str:

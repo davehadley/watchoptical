@@ -6,13 +6,13 @@ from typing import Any
 import dask.bag
 from toolz import curry
 
-from watchoptical.internal.client import ClientType, client
-from watchoptical.internal.runwatchmakerssensitivityanalysis import (
+from watchoptical.internal.generatemc.runwatchmakerssensitivityanalysis import (
     WatchMakersSensitivityAnalysisConfig,
     WatchMakersSensitivityResult,
     runwatchmakerssensitivityanalysis,
 )
-from watchoptical.internal.utils import expandpath
+from watchoptical.internal.utils.client import ClientType, client
+from watchoptical.internal.utils.filepathutils import expandpath
 
 
 def _parsecml() -> Namespace:
