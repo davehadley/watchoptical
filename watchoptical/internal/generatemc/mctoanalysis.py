@@ -5,8 +5,8 @@ from typing import Optional
 import dask
 from dask.bag import Bag
 
+from watchoptical.internal.generatemc.wmdataset import RatPacBonsaiPair, WatchmanDataset
 from watchoptical.internal.watchopticalcpp import convert_ratpacbonsai_to_analysis
-from watchoptical.internal.wmdataset import RatPacBonsaiPair, WatchmanDataset
 
 
 @dataclass(frozen=True)

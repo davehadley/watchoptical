@@ -5,7 +5,8 @@ from typing import Dict, Iterable, Iterator, NamedTuple, Optional, Tuple, Union
 
 from toolz import groupby, pipe
 
-from watchoptical.internal.utils import findfiles, hashfromstrcol
+from watchoptical.internal.utils.filepathutils import findfiles
+from watchoptical.internal.utils.stringutils import hashfromstrcol
 
 
 class RatPacBonsaiPair(NamedTuple):

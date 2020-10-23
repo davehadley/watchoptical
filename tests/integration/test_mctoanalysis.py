@@ -5,10 +5,13 @@ import unittest
 
 import dask.distributed
 
-from watchoptical.internal.generatemc import GenerateMCConfig, generatemc
-from watchoptical.internal.mctoanalysis import MCToAnalysisConfig, mctoanalysis
-from watchoptical.internal.runwatchmakers import WatchMakersConfig
-from watchoptical.internal.wmdataset import WatchmanDataset
+from watchoptical.internal.generatemc.generatemc import GenerateMCConfig, generatemc
+from watchoptical.internal.generatemc.mctoanalysis import (
+    MCToAnalysisConfig,
+    mctoanalysis,
+)
+from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
+from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
 
 
 class TestMCToAnalysis(unittest.TestCase):

@@ -1,10 +1,15 @@
 import os
 from argparse import ArgumentParser, Namespace
 
-from watchoptical.internal.client import ClientType, client
-from watchoptical.internal.mctoanalysis import MCToAnalysisConfig, mctoanalysis
-from watchoptical.internal.utils import searchforrootfilesexcludinganalysisfiles
-from watchoptical.internal.wmdataset import WatchmanDataset
+from watchoptical.internal.generatemc.mctoanalysis import (
+    MCToAnalysisConfig,
+    mctoanalysis,
+)
+from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
+from watchoptical.internal.utils.client import ClientType, client
+from watchoptical.internal.utils.filepathutils import (
+    searchforrootfilesexcludinganalysisfiles,
+)
 
 
 def parsecml() -> Namespace:
