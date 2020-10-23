@@ -19,7 +19,7 @@ from watchoptical.internal.opticsanalysis.analysiseventtuple import AnalysisEven
 from watchoptical.internal.opticsanalysis.eventtype import eventtypefromfile
 from watchoptical.internal.opticsanalysis.selectiondefs import SelectionDefs
 from watchoptical.internal.opticsanalysis.variable import VariableDefs
-from watchoptical.internal.utils.cache import shelveddecorator
+from watchoptical.internal.utils.cache import cachedcallable
 from watchoptical.internal.utils.collectionutils import sumlist, summap
 
 
@@ -181,6 +181,6 @@ def runopticsanalysis(dataset: WatchmanDataset) -> Bag:
     return hist
 
 
-@shelveddecorator(lambda d: f"opticsanalysis/{d.name}")
+@cachedcallable(lambda d: f"opticsanalysis/{d.name}")
 def shelvedopticsanalysis(dataset: WatchmanDataset) -> OpticsAnalysisResult:
     return runopticsanalysis(dataset).compute()
