@@ -27,7 +27,7 @@ def parsecml() -> Namespace:
         "-c",
         type=ClientType,
         choices=list(ClientType),
-        default=ClientType.LOCAL,
+        default=ClientType.SINGLE,
         help="Where to run jobs.",
     )
     parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])
