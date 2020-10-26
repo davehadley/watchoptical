@@ -48,30 +48,28 @@ class TestCache(TestCase):
     def test_cache_read_write_python(self):
         with TemporaryDirectory() as dirname:
             dbname = os.sep.join((dirname, "test.db"))
-            key = "object_key_string"
             writevalue = self.createpurepython()
 
             # write
             with Cache(dbname) as cache:
-                cache[key] = writevalue
+                cache["key"] = writevalue
             # read
             with Cache(dbname) as cache:
-                readvalue = cache[key]
+                readvalue = cache["key"]
 
             self.assertEqual(writevalue, readvalue)
 
     def test_cache_read_write_lambda(self):
         with TemporaryDirectory() as dirname:
             dbname = os.sep.join((dirname, "test.db"))
-            key = "object_key_string"
             writevalue = self.createlambda()
 
             # write
             with Cache(dbname) as cache:
-                cache[key] = writevalue
+                cache["key"] = writevalue
             # read
             with Cache(dbname) as cache:
-                readvalue = cache[key]
+                readvalue = cache["key"]
 
             self.assertEqual(writevalue.__code__.co_code, readvalue.__code__.co_code)
             self.assertEqual(
@@ -81,15 +79,14 @@ class TestCache(TestCase):
     def test_cache_read_write_numpy_array(self):
         with TemporaryDirectory() as dirname:
             dbname = os.sep.join((dirname, "test.db"))
-            key = "object_key_string"
             writevalue = self.createnumpyarray()
 
             # write
             with Cache(dbname) as cache:
-                cache[key] = writevalue
+                cache["key"] = writevalue
             # read
             with Cache(dbname) as cache:
-                readvalue = cache[key]
+                readvalue = cache["key"]
 
             self.assertTrue(np.all(writevalue == readvalue))
 
