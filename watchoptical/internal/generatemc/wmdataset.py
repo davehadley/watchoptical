@@ -57,7 +57,7 @@ class WatchmanDataset:
         iterpairs = groupby(
             lambda s: (os.path.basename(os.path.dirname(s)), os.path.basename(s)), files
         ).values()
-        iterpairs = map(self._validatepairs, iterpairs)
+        iterpairs = self._validatepairs(iterpairs)
         sortedpairs = (
             ((left, right) if self._isbonsai(right) else (right, left))
             for left, right in iterpairs
@@ -67,17 +67,23 @@ class WatchmanDataset:
     def _isbonsai(self, filename: str) -> bool:
         return bool(re.match(".*bonsai_root.*$", filename))
 
-    def _validatepairs(self, pair: Iterable[str]) -> Tuple[str, str]:
-        result = tuple(pair)
-        try:
-            (left, right) = result
-            return (left, right)
-        except ValueError:
+    def _validatepairs(
+        self, pairs: Iterable[Iterable[str]]
+    ) -> Iterable[Tuple[str, str]]:
+        failed = []
+        for p in pairs:
+            result = tuple(p)
+            try:
+                (left, right) = result
+                yield (left, right)
+            except ValueError:
+                failed.append(result)
+        if len(failed):
             raise ValueError(
-                "Invalid Watchman Dataset"
-                "Wrong number of files found."
+                "Invalid Watchman Dataset. "
+                f"{len(failed)} mis-matched files found. "
                 "A matching pair is required.",
-                result,
+                failed,
             )
 
     @property
