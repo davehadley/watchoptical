@@ -88,9 +88,6 @@ class SelectionStats(Iterable):
             cut, individualcount.tocutstats(), cumulativecount.tocutstats()
         )
 
-    def _totable(self):
-        pass
-
     def __str__(self):
         return str(tabulate(_table(self)))
 

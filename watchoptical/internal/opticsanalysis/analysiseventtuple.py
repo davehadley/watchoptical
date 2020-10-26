@@ -10,8 +10,9 @@ from pandas import DataFrame
 from watchoptical.internal.generatemc.generatemc import GenerateMCConfig
 from watchoptical.internal.generatemc.mctoanalysis import AnalysisFile, mctoanalysis
 from watchoptical.internal.generatemc.runwatchmakerssensitivityanalysis import (
+    WatchMakersSensitivityAnalysisConfig,
     WatchMakersSensitivityResult,
-    loadwatchmakerssensitvity,
+    runwatchmakerssensitivityanalysis,
 )
 from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
 
@@ -44,7 +45,11 @@ class AnalysisEventTuple(NamedTuple):
             )
             # .set_index(["mcid", "subid"])
         )
-        sensitivity = loadwatchmakerssensitvity(analysisfile.producedfrom.rootdirectory)
+        sensitivity = runwatchmakerssensitivityanalysis(
+            WatchMakersSensitivityAnalysisConfig(
+                analysisfile.producedfrom.rootdirectory
+            )
+        )
         generatemcconfig = _loadgeneratemcconfig(analysisfile)
         return AnalysisEventTuple(
             anal, bonsai, analysisfile, sensitivity, generatemcconfig
