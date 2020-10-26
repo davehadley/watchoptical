@@ -2,7 +2,7 @@ import os
 import sys
 from argparse import ArgumentParser, Namespace
 from collections import OrderedDict
-from typing import Any
+from typing import Any, Callable, Optional
 
 from watchoptical.internal.generatemc.generatemc import GenerateMCConfig, generatemc
 from watchoptical.internal.generatemc.makeratdb import makeratdb
@@ -30,6 +30,7 @@ def _parsecml() -> Namespace:
         help="Where to run jobs.",
     )
     parser.add_argument("--signal-only", action="store_true")
+    parser.add_argument("--background-only", action="store_true")
     parser.add_argument(
         "--num-events-per-job",
         "-n",
@@ -95,11 +96,20 @@ def _getconfigdir(args: Namespace) -> str:
     return "watchmanmc" + suffix
 
 
+def _filenamefilterfromargs(args: Namespace) -> Optional[Callable[[str], bool]]:
+    if args.signal_only:
+        return lambda f: "IBD_LIQUID_pn" in f
+    elif args.background_only:
+        return lambda f: "IBD_LIQUID" not in f
+    else:
+        return None
+
+
 def _run(args):
     directory = args.directory + os.sep + _getconfigdir(args)
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
-    filenamefilter = None if not args.signal_only else lambda f: "IBD_LIQUID_pn" in f
+    filenamefilter = _filenamefilterfromargs(args)
     injectratdb = _wrapindict(
         f"attenuation_{args.attenuation}_scattering_{args.scattering}",
         makeratdb(attenuation=args.attenuation, scattering=args.scattering),
