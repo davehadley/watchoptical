@@ -99,9 +99,7 @@ def _run(args):
     directory = args.directory + os.sep + _getconfigdir(args)
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
-    filenamefilter = (
-        None if args.signal_only is None else lambda f: "IBD_LIQUID_pn" in f
-    )
+    filenamefilter = None if not args.signal_only else lambda f: "IBD_LIQUID_pn" in f
     injectratdb = _wrapindict(
         f"attenuation_{args.attenuation}_scattering_{args.scattering}",
         makeratdb(attenuation=args.attenuation, scattering=args.scattering),
