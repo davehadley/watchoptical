@@ -8,9 +8,9 @@ from watchoptical.internal.histoutils.selection import Selection
 
 
 def _hascoincidence(data: DataFrame) -> Series:
-    t = data.groupby("mcid")
-    count = t.transform("count")
-    dt = t.transform(lambda t: t.max() - t.min())
+    grp = data.groupby("mcid")
+    count = grp["mcid"].transform("count")
+    dt = grp["t"].transform(lambda t: t.max() - t.min())
     return (count >= 2) & (dt.abs() < 50.0)
 
 
