@@ -26,6 +26,7 @@ from watchoptical.internal.utils.filepathutils import (
     expandpath,
     temporaryworkingdirectory,
 )
+from watchoptical.internal.utils.retry import retry
 
 
 @dataclass(frozen=True)
@@ -163,6 +164,7 @@ def _inject_macros_and_ratdb_into_script(
         yield scripttext
 
 
+@retry(3)
 def _runbonsai(g4file: str, config: GenerateMCConfig) -> str:
     bonsai_name = f"{g4file.replace('root_files', 'bonsai_root_files')}"
     with temporaryworkingdirectory():
