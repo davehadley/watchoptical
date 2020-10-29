@@ -99,7 +99,7 @@ def _rungeant4(
             assert match is not None
             filename = os.sep.join((cwd, match.group(1)))
             if config.filenamefilter is None or config.filenamefilter(filename):
-                subprocess.check_call(scripttext, shell=True, cwd=cwd)
+                subprocess.call(scripttext, shell=True, cwd=cwd)
     return tuple(glob.glob(filename))
 
 
