@@ -2,8 +2,11 @@ import os
 import unittest
 from tempfile import TemporaryDirectory
 
-from watchoptical.internal import runwatchmakers
-from watchoptical.internal.runwatchmakers import WatchMakersConfig, generatejobscripts
+from watchoptical.internal.generatemc import runwatchmakers
+from watchoptical.internal.generatemc.runwatchmakers import (
+    WatchMakersConfig,
+    generatejobscripts,
+)
 
 
 class TestRunWatchMakers(unittest.TestCase):

@@ -9,13 +9,18 @@ import numpy as np
 from dask.bag import Bag
 from pandas import DataFrame
 
-from watchoptical.internal.analysiseventtuple import AnalysisEventTuple
-from watchoptical.internal.eventtype import eventtypefromfile
+from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
 from watchoptical.internal.histoutils import CategoryMean, ExposureWeightedHistogram
-from watchoptical.internal.opticsanalysis.selection import Selection, SelectionDefs
+from watchoptical.internal.histoutils.categoryselectionstats import (
+    CategorySelectionStats,
+)
+from watchoptical.internal.histoutils.selection import Selection
+from watchoptical.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
+from watchoptical.internal.opticsanalysis.eventtype import eventtypefromfile
+from watchoptical.internal.opticsanalysis.selectiondefs import SelectionDefs
 from watchoptical.internal.opticsanalysis.variable import VariableDefs
-from watchoptical.internal.utils import shelveddecorator, sumlist, summap
-from watchoptical.internal.wmdataset import WatchmanDataset
+from watchoptical.internal.utils.cache import cachedcallable
+from watchoptical.internal.utils.collectionutils import sumlist, summap
 
 
 def _add_accum(left, right):
@@ -28,6 +33,9 @@ def _add_accum(left, right):
 class OpticsAnalysisResult:
     hist: MutableMapping[str, ExposureWeightedHistogram] = field(default_factory=dict)
     scatter: MutableMapping[str, CategoryMean] = field(default_factory=dict)
+    selectionstats: MutableMapping[str, CategorySelectionStats] = field(
+        default_factory=dict
+    )
 
     def __add__(self, other):
         return OpticsAnalysisResult(
@@ -36,6 +44,7 @@ class OpticsAnalysisResult:
                 [self.scatter, other.scatter],
                 # lambda lhs, rhs: summap([lhs, rhs], _add_accum),
             ),
+            selectionstats=summap([self.selectionstats, other.selectionstats]),
         )
 
     def __str__(self) -> str:
@@ -145,12 +154,21 @@ def _makesensitivityscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResul
     return
 
 
+def _makeselectiontable(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
+    category = Category.fromAnalysisEventTuple(tree)
+    for selection in list(SelectionDefs):
+        store.selectionstats[selection.name] = CategorySelectionStats(
+            selection.value
+        ).fill(category, tree.bonsai, tree.exposure)
+
+
 def _analysis(tree: AnalysisEventTuple) -> OpticsAnalysisResult:
     # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
     result = OpticsAnalysisResult()
     _makebasichistograms(tree, result.hist)
     _makebasicattenuationscatter(tree, result)
     _makesensitivityscatter(tree, result)
+    _makeselectiontable(tree, result)
     return result
 
 
@@ -163,6 +181,6 @@ def runopticsanalysis(dataset: WatchmanDataset) -> Bag:
     return hist
 
 
-@shelveddecorator(lambda d: f"opticsanalysis/{d.name}")
+@cachedcallable(lambda d: f"opticsanalysis/{d.name}")
 def shelvedopticsanalysis(dataset: WatchmanDataset) -> OpticsAnalysisResult:
     return runopticsanalysis(dataset).compute()

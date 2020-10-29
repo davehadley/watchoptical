@@ -16,10 +16,17 @@ import cloudpickle
 import dask.bag
 from dask.bag import Bag
 
-from watchoptical.internal.makeratdb import RatDb
-from watchoptical.internal.runwatchmakers import WatchMakersConfig, generatejobscripts
-from watchoptical.internal.utils import expandpath, temporaryworkingdirectory
-from watchoptical.internal.wmdataset import RatPacBonsaiPair
+from watchoptical.internal.generatemc.makeratdb import RatDb
+from watchoptical.internal.generatemc.runwatchmakers import (
+    WatchMakersConfig,
+    generatejobscripts,
+)
+from watchoptical.internal.generatemc.wmdataset import RatPacBonsaiPair
+from watchoptical.internal.utils.filepathutils import (
+    expandpath,
+    temporaryworkingdirectory,
+)
+from watchoptical.internal.utils.retry import retry
 
 
 @dataclass(frozen=True)
@@ -92,7 +99,7 @@ def _rungeant4(
             assert match is not None
             filename = os.sep.join((cwd, match.group(1)))
             if config.filenamefilter is None or config.filenamefilter(filename):
-                subprocess.check_call(scripttext, shell=True, cwd=cwd)
+                subprocess.call(scripttext, shell=True, cwd=cwd)
     return tuple(glob.glob(filename))
 
 
@@ -157,6 +164,7 @@ def _inject_macros_and_ratdb_into_script(
         yield scripttext
 
 
+@retry(3)
 def _runbonsai(g4file: str, config: GenerateMCConfig) -> str:
     bonsai_name = f"{g4file.replace('root_files', 'bonsai_root_files')}"
     with temporaryworkingdirectory():

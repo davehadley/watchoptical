@@ -5,9 +5,9 @@ from tempfile import TemporaryDirectory
 
 import dask.distributed
 
-from watchoptical.internal.generatemc import GenerateMCConfig, generatemc
-from watchoptical.internal.makeratdb import makeratdb
-from watchoptical.internal.runwatchmakers import WatchMakersConfig
+from watchoptical.internal.generatemc.generatemc import GenerateMCConfig, generatemc
+from watchoptical.internal.generatemc.makeratdb import makeratdb
+from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
 
 
 class TestGenerateMCWithTweakedOpticalModel(unittest.TestCase):

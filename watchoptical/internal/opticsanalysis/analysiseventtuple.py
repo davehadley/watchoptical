@@ -7,13 +7,14 @@ from cloudpickle import cloudpickle
 from dask.bag import Bag
 from pandas import DataFrame
 
-from watchoptical.internal.generatemc import GenerateMCConfig
-from watchoptical.internal.mctoanalysis import AnalysisFile, mctoanalysis
-from watchoptical.internal.runwatchmakerssensitivityanalysis import (
+from watchoptical.internal.generatemc.generatemc import GenerateMCConfig
+from watchoptical.internal.generatemc.mctoanalysis import AnalysisFile, mctoanalysis
+from watchoptical.internal.generatemc.runwatchmakerssensitivityanalysis import (
+    WatchMakersSensitivityAnalysisConfig,
     WatchMakersSensitivityResult,
-    loadwatchmakerssensitvity,
+    runwatchmakerssensitivityanalysis,
 )
-from watchoptical.internal.wmdataset import WatchmanDataset
+from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
 
 
 class AnalysisEventTuple(NamedTuple):
@@ -44,7 +45,11 @@ class AnalysisEventTuple(NamedTuple):
             )
             # .set_index(["mcid", "subid"])
         )
-        sensitivity = loadwatchmakerssensitvity(analysisfile.producedfrom.rootdirectory)
+        sensitivity = runwatchmakerssensitivityanalysis(
+            WatchMakersSensitivityAnalysisConfig(
+                analysisfile.producedfrom.rootdirectory
+            )
+        )
         generatemcconfig = _loadgeneratemcconfig(analysisfile)
         return AnalysisEventTuple(
             anal, bonsai, analysisfile, sensitivity, generatemcconfig

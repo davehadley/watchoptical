@@ -1,11 +1,13 @@
 import os
 from argparse import ArgumentParser, Namespace
 
-from watchoptical.internal.client import ClientType, client
+from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
 from watchoptical.internal.opticsanalysis.plot import PlotMode, plot
 from watchoptical.internal.opticsanalysis.runopticsanalysis import shelvedopticsanalysis
-from watchoptical.internal.utils import searchforrootfilesexcludinganalysisfiles
-from watchoptical.internal.wmdataset import WatchmanDataset
+from watchoptical.internal.utils.client import ClientType, client
+from watchoptical.internal.utils.filepathutils import (
+    searchforrootfilesexcludinganalysisfiles,
+)
 
 
 def parsecml() -> Namespace:
@@ -27,7 +29,7 @@ def parsecml() -> Namespace:
         "-c",
         type=ClientType,
         choices=list(ClientType),
-        default=ClientType.LOCAL,
+        default=ClientType.SINGLE,
         help="Where to run jobs.",
     )
     parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])

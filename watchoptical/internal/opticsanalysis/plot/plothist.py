@@ -2,9 +2,9 @@ import os
 
 import matplotlib.pyplot as plt
 
-from watchoptical.internal import timeconstants
 from watchoptical.internal.histoutils import categoryhistplot
 from watchoptical.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
+from watchoptical.internal.utils import timeconstants
 
 
 def plothist(data: OpticsAnalysisResult, dest: str = "plots") -> None:

@@ -5,7 +5,8 @@ from typing import Dict, Iterable, Iterator, NamedTuple, Optional, Tuple, Union
 
 from toolz import groupby, pipe
 
-from watchoptical.internal.utils import findfiles, hashfromstrcol
+from watchoptical.internal.utils.filepathutils import findfiles
+from watchoptical.internal.utils.stringutils import hashfromstrcol
 
 
 class RatPacBonsaiPair(NamedTuple):
@@ -56,6 +57,7 @@ class WatchmanDataset:
         iterpairs = groupby(
             lambda s: (os.path.basename(os.path.dirname(s)), os.path.basename(s)), files
         ).values()
+        iterpairs = self._validatepairs(iterpairs)
         sortedpairs = (
             ((left, right) if self._isbonsai(right) else (right, left))
             for left, right in iterpairs
@@ -64,6 +66,25 @@ class WatchmanDataset:
 
     def _isbonsai(self, filename: str) -> bool:
         return bool(re.match(".*bonsai_root.*$", filename))
+
+    def _validatepairs(
+        self, pairs: Iterable[Iterable[str]]
+    ) -> Iterable[Tuple[str, str]]:
+        failed = []
+        for p in pairs:
+            result = tuple(p)
+            try:
+                (left, right) = result
+                yield (left, right)
+            except ValueError:
+                failed.append(result)
+        if len(failed):
+            raise ValueError(
+                "Invalid Watchman Dataset. "
+                f"{len(failed)} mis-matched files found. "
+                "A matching pair is required.",
+                failed,
+            )
 
     @property
     def _id(self):
