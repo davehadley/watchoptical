@@ -1,5 +1,5 @@
 import os
-from typing import Any, Callable, Iterable, List, Tuple
+from typing import Any, Callable, Iterable, Optional, Sequence
 
 from matplotlib import pyplot as plt
 from tabulate import tabulate
@@ -47,10 +47,8 @@ def _simplescatterplot(
 def _simplescattertable(
     key: str, data: CategoryMean, ylabel: str = "", dest: str = "plots/scatter"
 ):
-    table: List[Tuple[Any, ...]] = [
-        ("Attenuation", "Event Type", f"{ylabel} Mean", f"{ylabel} Error")
-    ]
-    table += [
+    headers = [("Attenuation", "Event Type", f"{ylabel} Mean", f"{ylabel} Error")]
+    table = [
         (
             item.category.attenuation,
             item.category.eventtype,
@@ -60,11 +58,13 @@ def _simplescattertable(
         for item in data
     ]
     fname = f"{dest}{os.sep}{key}.txt"
-    _dumptable(fname, table)
+    _dumptable(fname, table, headers=headers)
     return
 
 
-def _dumptable(fname: str, table: Iterable[Iterable[Any]]):
+def _dumptable(
+    fname: str, table: Iterable[Iterable[Any]], headers: Optional[Sequence[Any]] = None
+):
     os.makedirs(os.path.dirname(fname), exist_ok=True)
     with open(fname, "w") as f:
-        f.write(tabulate(table, headers="firstrow"))
+        f.write(tabulate(table, headers=headers if headers else "firstrow"))
