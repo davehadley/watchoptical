@@ -6,6 +6,7 @@ import pytest
 from watchoptical.internal.generatemc.generatemc import GenerateMCConfig, generatemc
 from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
 from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
+from watchoptical.internal.stringconstants import StringConstants
 from watchoptical.internal.utils.client import ClientType, client
 from watchoptical.internal.utils.filepathutils import (
     searchforrootfilesexcludinganalysisfiles,
@@ -24,7 +25,8 @@ def signaldatasetfixture() -> WatchmanDataset:
                 GenerateMCConfig(
                     WatchMakersConfig(directory=dirname, numevents=20),
                     numjobs=1,
-                    filenamefilter=lambda n: "IBD_LIQUID_pn" in n,
+                    filenamefilter=lambda n: StringConstants.WATCHMAKERS_SIGNAL_PATTERN
+                    in n,
                 )
             ).compute()
     return WatchmanDataset(searchforrootfilesexcludinganalysisfiles([dirname]))

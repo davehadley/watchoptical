@@ -8,6 +8,7 @@ import dask.distributed
 from watchoptical.internal.generatemc.generatemc import GenerateMCConfig, generatemc
 from watchoptical.internal.generatemc.makeratdb import makeratdb
 from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
+from watchoptical.internal.generatemc.watchmakersfilenameutils import issignalfile
 
 
 class TestGenerateMCWithTweakedOpticalModel(unittest.TestCase):
@@ -24,7 +25,7 @@ class TestGenerateMCWithTweakedOpticalModel(unittest.TestCase):
                     GenerateMCConfig(
                         WatchMakersConfig(directory=d, numevents=1),
                         numjobs=1,
-                        filenamefilter=lambda f: "IBD_LIQUID_pn" in f,
+                        filenamefilter=issignalfile,
                         injectratdb=ratdb,
                     )
                 )
