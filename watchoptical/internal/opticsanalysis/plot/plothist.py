@@ -1,6 +1,6 @@
 import os
 
-import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 
 from watchoptical.internal.histoutils import categoryhistplot
 from watchoptical.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
@@ -24,7 +24,7 @@ def _xlabel(key: str) -> str:
 def _plothist(data: OpticsAnalysisResult, dest):
     for key, h in data.hist.items():
         for yscale in ("linear", "log"):
-            fig = plt.figure()
+            fig = Figure()
             ax = fig.add_subplot(111)
             ax = categoryhistplot(
                 h,  # type: ignore
