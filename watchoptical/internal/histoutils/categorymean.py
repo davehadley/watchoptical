@@ -12,7 +12,15 @@ class CategoryMean(Collection):
 
     class Item(NamedTuple):
         category: "CategoryMean.Category"
-        moment: "CategoryMean.Moment"
+        mean: "CategoryMean.Moment"
+
+        @property
+        def meanvalue(self) -> float:
+            return self.mean.value
+
+        @property
+        def meanerror(self) -> float:
+            return np.sqrt(self.mean.variance) / np.sqrt(self.mean.sum_of_weights)
 
     def __init__(self):
         self._points: DefaultDict[

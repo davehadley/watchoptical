@@ -7,6 +7,7 @@ from typing import Any, Callable, Optional
 from watchoptical.internal.generatemc.generatemc import GenerateMCConfig, generatemc
 from watchoptical.internal.generatemc.makeratdb import makeratdb
 from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
+from watchoptical.internal.stringconstants import StringConstants
 from watchoptical.internal.utils.client import ClientType, client
 from watchoptical.internal.utils.filepathutils import expandpath
 
@@ -98,9 +99,9 @@ def _getconfigdir(args: Namespace) -> str:
 
 def _filenamefilterfromargs(args: Namespace) -> Optional[Callable[[str], bool]]:
     if args.signal_only:
-        return lambda f: "IBD_LIQUID_pn" in f
+        return lambda f: StringConstants.WATCHMAKERS_SIGNAL_PATTERN in f
     elif args.background_only:
-        return lambda f: "IBD_LIQUID" not in f
+        return lambda f: StringConstants.WATCHMAKERS_SIGNAL_PATTERN not in f
     else:
         return None
 

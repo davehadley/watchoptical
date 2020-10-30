@@ -11,6 +11,7 @@ from watchoptical.internal.generatemc.mctoanalysis import (
     mctoanalysis,
 )
 from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
+from watchoptical.internal.generatemc.watchmakersfilenameutils import issignalfile
 from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
 
 
@@ -30,7 +31,7 @@ class TestMCToAnalysis(unittest.TestCase):
                 generatemc(
                     GenerateMCConfig(
                         WatchMakersConfig(numevents=10, directory=cls.directory),
-                        filenamefilter=lambda name: "IBD_LIQUID_pn" in name,
+                        filenamefilter=issignalfile,
                     )
                 ).compute()
 
