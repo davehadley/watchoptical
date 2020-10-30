@@ -30,8 +30,6 @@ def _getpoints(
     data: CategoryMean, xtransform: Callable[[CategoryMean.Item], float]
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     X = np.array([xtransform(d) for d in data])
-    Y = np.array([d.moment.value for d in data])
-    Yerr = np.array(
-        [np.sqrt(d.moment.variance) / np.sqrt(d.moment.sum_of_weights) for d in data]
-    )
+    Y = np.array([d.meanvalue for d in data])
+    Yerr = np.array([d.meanerror for d in data])
     return (X, Y, Yerr)

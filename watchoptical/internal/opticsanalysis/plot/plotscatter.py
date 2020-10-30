@@ -1,7 +1,8 @@
 import os
-from typing import Callable
+from typing import Any, Callable, Iterable, List, Tuple
 
 from matplotlib import pyplot as plt
+from tabulate import tabulate
 
 from watchoptical.internal.histoutils import CategoryMean, categorymeanplot
 from watchoptical.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
@@ -14,6 +15,7 @@ def plotscatter(data: OpticsAnalysisResult, dest: str = "plots") -> None:
 def _plotscatter(data: OpticsAnalysisResult, dest: str) -> None:
     for key, cm in data.scatter.items():
         _simplescatterplot(key, cm, lambda item: item.category.attenuation, dest=dest)
+        _simplescattertable(key, cm, dest=dest)
 
 
 def _simplescatterplot(
@@ -40,3 +42,29 @@ def _simplescatterplot(
     fname = f"{dest}{os.sep}{key}.png"
     os.makedirs(os.path.dirname(fname), exist_ok=True)
     fig.savefig(fname)
+
+
+def _simplescattertable(
+    key: str, data: CategoryMean, ylabel: str = "", dest: str = "plots/scatter"
+):
+    table: List[Tuple[Any, ...]] = [
+        ("Attenuation", "Event Type", f"{ylabel} Mean", f"{ylabel} Error")
+    ]
+    table += [
+        (
+            item.category.attenuation,
+            item.category.eventtype,
+            item.meanvalue,
+            item.meanerror,
+        )
+        for item in data
+    ]
+    fname = f"{dest}{os.sep}{key}.txt"
+    _dumptable(fname, table)
+    return
+
+
+def _dumptable(fname: str, table: Iterable[Iterable[Any]]):
+    os.makedirs(os.path.dirname(fname), exist_ok=True)
+    with open(fname, "w") as f:
+        f.write(tabulate(table, headers="firstrow"))
