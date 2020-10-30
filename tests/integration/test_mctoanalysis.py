@@ -1,9 +1,8 @@
 import glob
 import os
 import tempfile
-import unittest
 
-import dask.distributed
+import pytest
 
 from watchoptical.internal.generatemc.generatemc import GenerateMCConfig, generatemc
 from watchoptical.internal.generatemc.mctoanalysis import (
@@ -13,38 +12,31 @@ from watchoptical.internal.generatemc.mctoanalysis import (
 from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
 from watchoptical.internal.generatemc.watchmakersfilenameutils import issignalfile
 from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
+from watchoptical.internal.utils.client import ClientType, client
 
 
-class TestMCToAnalysis(unittest.TestCase):
+@pytest.fixture
+def smallsignaldataset() -> WatchmanDataset:
     directory = (
-        f"{tempfile.gettempdir()}{os.sep}tmp_watchoptical_unittest_testmctoanalysis"
+        f"{tempfile.gettempdir()}"
+        f"{os.sep}"
+        f"tmp_watchoptical_unittest_testmctoanalysis"
     )
     filenamepattern = f"{directory}{os.sep}*{os.sep}*{os.sep}*.root"
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        if len(glob.glob(cls.filenamepattern)) == 0:
-            # we need some MC file to work with
-            with dask.distributed.Client(
-                n_workers=1, threads_per_worker=1, memory_limit="4GB"
-            ):
-                generatemc(
-                    GenerateMCConfig(
-                        WatchMakersConfig(numevents=10, directory=cls.directory),
-                        filenamefilter=issignalfile,
-                    )
-                ).compute()
-
-    def test_mctoanalysis(self):
-        with dask.distributed.Client(
-            n_workers=1, threads_per_worker=1, memory_limit="1GB"
-        ):
-            dataset = WatchmanDataset([self.filenamepattern])
-            config = MCToAnalysisConfig(directory=tempfile.mkdtemp())
-            results = mctoanalysis(dataset, config).compute()
-            self.assertTrue(len(results) > 0)
-            self.assertTrue(all(os.path.exists(f.filename) for f in results))
+    if len(glob.glob(filenamepattern)) == 0:
+        with client(ClientType.LOCAL):
+            generatemc(
+                GenerateMCConfig(
+                    WatchMakersConfig(numevents=10, directory=directory),
+                    filenamefilter=issignalfile,
+                )
+            ).compute()
+    return WatchmanDataset([filenamepattern])
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_mctoanalysis(smallsignaldataset):
+    with client(ClientType.SINGLE):
+        config = MCToAnalysisConfig(directory=tempfile.mkdtemp())
+        results = mctoanalysis(smallsignaldataset, config).compute()
+        assert len(results) > 0
+        assert all(os.path.exists(f.filename) for f in results)
