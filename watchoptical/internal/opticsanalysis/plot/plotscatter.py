@@ -47,7 +47,7 @@ def _simplescatterplot(
 def _simplescattertable(
     key: str, data: CategoryMean, ylabel: str = "", dest: str = "plots/scatter"
 ):
-    headers = [("Attenuation", "Event Type", f"{ylabel} Mean", f"{ylabel} Error")]
+    headers = ["Attenuation", "Event Type", f"{ylabel} Mean", f"{ylabel} Error"]
     table = [
         (
             item.category.attenuation,
