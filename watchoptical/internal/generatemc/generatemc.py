@@ -98,8 +98,7 @@ def _rungeant4(
             match = re.search(f".* -o (root_.*{uid}.root) .*", scripttext)
             assert match is not None
             filename = os.sep.join((cwd, match.group(1)))
-            if config.filenamefilter is None or config.filenamefilter(filename):
-                subprocess.call(scripttext, shell=True, cwd=cwd)
+            subprocess.check_call(scripttext, shell=True, cwd=cwd)
     return tuple(glob.glob(filename))
 
 
@@ -184,7 +183,12 @@ def generatemc(config: GenerateMCConfig) -> Bag:
     cwd = scripts.directory
     return (
         dask.bag.from_sequence(
-            ((s, cwd, config) for _ in range(config.numjobs) for s in scripts.scripts),
+            (
+                (s, cwd, config)
+                for _ in range(config.numjobs)
+                for s in scripts.scripts
+                if config.filenamefilter is None or config.filenamefilter(s)
+            ),
             npartitions=config.npartitions,
             partition_size=config.partition_size,
         )
