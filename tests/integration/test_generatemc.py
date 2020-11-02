@@ -30,7 +30,7 @@ class TestGenerateMC(unittest.TestCase):
                 self.assertTrue(len(results) > 0)
                 self.assertTrue(all(os.path.exists(f) for r in results for f in r))
 
-    # @unittest.skip("Some backgrounds fail due to Watchmakers bugs.")
+    @unittest.skip("Some backgrounds fail due to Watchmakers bugs.")
     def test_generatemc_background(self):
         with dask.distributed.Client(
             n_workers=1, threads_per_worker=1, memory_limit="4GB"
@@ -45,7 +45,7 @@ class TestGenerateMC(unittest.TestCase):
                 )
                 # it is slow to run all so just pick a random background
                 results = random.choice(jobs.to_delayed()).compute()
-                results = jobs.compute()
+                # results = jobs.compute()
                 self.assertTrue(len(results) > 0)
                 self.assertTrue(all(os.path.exists(f) for r in results for f in r))
 
