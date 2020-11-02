@@ -12,6 +12,7 @@ from watchoptical.internal.generatemc.mctoanalysis import (
 from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
 from watchoptical.internal.generatemc.watchmakersfilenameutils import issignalfile
 from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
+from watchoptical.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
 from watchoptical.internal.utils.client import ClientType, client
 
 
@@ -38,5 +39,7 @@ def test_mctoanalysis(smallsignaldataset):
     with client(ClientType.SINGLE):
         config = MCToAnalysisConfig(directory=tempfile.mkdtemp())
         results = mctoanalysis(smallsignaldataset, config).compute()
+        anal = [AnalysisEventTuple.load(f).anal for f in results]
         assert len(results) > 0
         assert all(os.path.exists(f.filename) for f in results)
+        assert all("pmt_t" in a.columns for a in anal)
