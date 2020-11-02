@@ -98,7 +98,7 @@ def _rungeant4(
             match = re.search(f".* -o (root_.*{uid}.root) .*", scripttext)
             assert match is not None
             filename = os.sep.join((cwd, match.group(1)))
-            subprocess.check_call(scripttext, shell=True, cwd=cwd)
+            subprocess.call(scripttext, shell=True, cwd=cwd)
     return tuple(glob.glob(filename))
 
 
