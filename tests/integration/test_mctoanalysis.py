@@ -42,10 +42,19 @@ def test_mctoanalysis(smallsignaldataset):
         anal = [AnalysisEventTuple.load(f).anal for f in results]
         assert len(results) > 0
         assert all(os.path.exists(f.filename) for f in results)
-        assert all("pmt_t" in a.columns for a in anal)
-        assert all("pmt_x" in a.columns for a in anal)
-        assert all("pmt_y" in a.columns for a in anal)
-        assert all("pmt_z" in a.columns for a in anal)
-        assert all("mc_pdgcode" in a.columns for a in anal)
-        assert all("mc_t_start" in a.columns for a in anal)
-        assert all("mc_t_end" in a.columns for a in anal)
+        columns = [
+            "pmt_t",
+            "pmt_x",
+            "pmt_y",
+            "pmt_z",
+            "mc_pdgcode",
+            "mc_t_start",
+            "mc_t_end",
+            "mc_x_start",
+            "mc_x_end",
+            "mc_y_start",
+            "mc_y_end",
+            "mc_z_start",
+            "mc_z_end",
+        ]
+        assert all([col in a.columns for a in anal for col in columns])
