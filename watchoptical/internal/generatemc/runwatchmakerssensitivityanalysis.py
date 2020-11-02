@@ -54,6 +54,7 @@ def _run_watchmakers_script(directory: str, step: WatchMakersSensitivityStep) ->
             "--lassen",
             step.value,
             "--enableRoot",
+            "--lightSim",
         ],
         text=True,
         cwd=directory,
