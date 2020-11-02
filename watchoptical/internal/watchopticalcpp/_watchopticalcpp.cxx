@@ -144,6 +144,78 @@ std::vector<double> getmc_t_end(std::vector<RAT::DS::MC>& mc) {
     return result;
 }
 
+std::vector<double> getmc_x_start(std::vector<RAT::DS::MC>& mc) {
+    std::vector<double> result;
+    for(auto& m: mc) {
+        for(int i = 0; i < m.GetMCParticleCount(); ++i) {
+            auto& particle = *(m.GetMCParticle(i));
+            auto value = particle.GetPosition().X();
+            result.push_back(value);
+        }
+    }
+    return result;
+}
+
+std::vector<double> getmc_x_end(std::vector<RAT::DS::MC>& mc) {
+    std::vector<double> result;
+    for(auto& m: mc) {
+        for(int i = 0; i < m.GetMCParticleCount(); ++i) {
+            auto& particle = *(m.GetMCParticle(i));
+            auto value = particle.GetEndPosition().X();
+            result.push_back(value);
+        }
+    }
+    return result;
+}
+
+std::vector<double> getmc_y_start(std::vector<RAT::DS::MC>& mc) {
+    std::vector<double> result;
+    for(auto& m: mc) {
+        for(int i = 0; i < m.GetMCParticleCount(); ++i) {
+            auto& particle = *(m.GetMCParticle(i));
+            auto value = particle.GetPosition().Y();
+            result.push_back(value);
+        }
+    }
+    return result;
+}
+
+std::vector<double> getmc_y_end(std::vector<RAT::DS::MC>& mc) {
+    std::vector<double> result;
+    for(auto& m: mc) {
+        for(int i = 0; i < m.GetMCParticleCount(); ++i) {
+            auto& particle = *(m.GetMCParticle(i));
+            auto value = particle.GetEndPosition().Y();
+            result.push_back(value);
+        }
+    }
+    return result;
+}
+
+std::vector<double> getmc_z_start(std::vector<RAT::DS::MC>& mc) {
+    std::vector<double> result;
+    for(auto& m: mc) {
+        for(int i = 0; i < m.GetMCParticleCount(); ++i) {
+            auto& particle = *(m.GetMCParticle(i));
+            auto value = particle.GetPosition().Z();
+            result.push_back(value);
+        }
+    }
+    return result;
+}
+
+std::vector<double> getmc_z_end(std::vector<RAT::DS::MC>& mc) {
+    std::vector<double> result;
+    for(auto& m: mc) {
+        for(int i = 0; i < m.GetMCParticleCount(); ++i) {
+            auto& particle = *(m.GetMCParticle(i));
+            auto value = particle.GetEndPosition().Z();
+            result.push_back(value);
+        }
+    }
+    return result;
+}
+
 RAT::DS::PMTInfo load_pmt_info(std::string ratpacfilename) {
     TFile file(ratpacfilename.c_str());
     TTreeReader reader("runT", &file);
@@ -170,6 +242,12 @@ void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, st
     .Define("mc_pdgcode", ::getmc_pdgcode, {"mc"})
     .Define("mc_t_start", ::getmc_t_start, {"mc"})
     .Define("mc_t_end", ::getmc_t_end, {"mc"})
+    .Define("mc_x_start", ::getmc_x_start, {"mc"})
+    .Define("mc_x_end", ::getmc_x_end, {"mc"})
+    .Define("mc_y_start", ::getmc_y_start, {"mc"})
+    .Define("mc_y_end", ::getmc_y_end, {"mc"})
+    .Define("mc_z_start", ::getmc_z_start, {"mc"})
+    .Define("mc_z_end", ::getmc_z_end, {"mc"})
     ;
     pipeline.Snapshot("watchopticalanalysis", analysisfile, {
         "total_charge", 
@@ -183,6 +261,12 @@ void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, st
         "mc_pdgcode",
         "mc_t_start",
         "mc_t_end",
+        "mc_x_start",
+        "mc_x_end",
+        "mc_y_start",
+        "mc_y_end",
+        "mc_z_start",
+        "mc_z_end",
     });
     return;
 }
