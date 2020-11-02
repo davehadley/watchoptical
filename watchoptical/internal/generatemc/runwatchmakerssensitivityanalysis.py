@@ -1,5 +1,4 @@
 import os
-import re
 import subprocess
 from dataclasses import dataclass
 from enum import Enum
@@ -79,8 +78,24 @@ def _write_logs(logs: List[str], directory: str) -> str:
 
 def _parse_watchmakers_result_txt(filename: str) -> WatchMakersSensitivityResult:
     text = open(filename).readlines()[0]
-    pattern = "^.+ .+ .+ .+ (.*?) (.+?) (.+?) (.+?)$"
-    (s, b, t3sigma, metric) = map(
-        float, re.match(pattern, text).groups()  # type: ignore
-    )
+
+    # Watchmakers sensitivty.py line 548:
+    # _res = "%s %4.1f %3d %3d %4.3f %4.3f %4.3f %4.3f %4.1f %4.1f %4.2f %4.2f" % (
+    # _cover,_maxOff_dtw2,_maxOffnx2,_maxOffnx2-_maxOffset2,_maxSignal2,_maxSignalErr2,
+    # _maxBkgd2,_maxBkgdErr2,T3SIGMA,metric,_maxSoverB2*5.47722,_maxSoverBErr2*5.47722)
+    (
+        _cover,
+        _maxOff_dtw2,
+        _maxOffnx2,
+        _maxOffnx2_minus_maxOffset2,
+        _maxSignal2,
+        _maxSignalErr2,
+        _maxBkgd2,
+        _maxBkgdErr2,
+        _T3SIGMA,
+        _metric,
+        _maxSoverB2_times_5_47722,
+        _maxSoverBErr2_times_5_47722,
+    ) = text.split()
+    (s, b, t3sigma, metric) = map(float, (_maxSignal2, _maxBkgd2, _T3SIGMA, _metric))
     return WatchMakersSensitivityResult(s=s, b=b, t3sigma=t3sigma, metric=metric)
