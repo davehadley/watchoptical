@@ -44,6 +44,7 @@ def _run_watchmakers_script(directory: str, numevents: int = 2500):
             "--lassen",
             "-e",
             str(numevents),
+            "--lightSim",
         ],
         cwd=directory,
     )
