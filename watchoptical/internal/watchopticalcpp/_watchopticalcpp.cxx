@@ -108,8 +108,39 @@ std::vector<double> getpmt_eventid(std::vector<RAT::DS::EV>& ev) {
     return result;
 }
 
-std::vector<double> getmc_t(std::vector<RAT::DS::MC>& ev) {
+std::vector<double> getmc_pdgcode(std::vector<RAT::DS::MC>& mc) {
     std::vector<double> result;
+    for(auto& m: mc) {
+        for(int i = 0; i < m.GetMCParticleCount(); ++i) {
+            auto& particle = *(m.GetMCParticle(i));
+            auto value = particle.GetPDGCode();
+            result.push_back(value);
+        }
+    }
+    return result;
+}
+
+std::vector<double> getmc_t_start(std::vector<RAT::DS::MC>& mc) {
+    std::vector<double> result;
+    for(auto& m: mc) {
+        for(int i = 0; i < m.GetMCParticleCount(); ++i) {
+            auto& particle = *(m.GetMCParticle(i));
+            auto value = particle.GetTime();
+            result.push_back(value);
+        }
+    }
+    return result;
+}
+
+std::vector<double> getmc_t_end(std::vector<RAT::DS::MC>& mc) {
+    std::vector<double> result;
+    for(auto& m: mc) {
+        for(int i = 0; i < m.GetMCParticleCount(); ++i) {
+            auto& particle = *(m.GetMCParticle(i));
+            auto value = particle.GetEndTime();
+            result.push_back(value);
+        }
+    }
     return result;
 }
 
@@ -136,7 +167,9 @@ void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, st
     .Define("pmt_q", ::getpmt_charge)
     .Define("pmt_id", ::getpmt_id)
     .Define("pmt_eventid", ::getpmt_eventid)
-    .Define("mc_t", ::getmc_t, {"mc"})
+    .Define("mc_pdgcode", ::getmc_pdgcode, {"mc"})
+    .Define("mc_t_start", ::getmc_t_start, {"mc"})
+    .Define("mc_t_end", ::getmc_t_end, {"mc"})
     ;
     pipeline.Snapshot("watchopticalanalysis", analysisfile, {
         "total_charge", 
@@ -146,7 +179,10 @@ void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, st
         "pmt_z", 
         "pmt_q", 
         "pmt_id", 
-        "pmt_eventid"
+        "pmt_eventid",
+        "mc_pdgcode",
+        "mc_t_start",
+        "mc_t_end",
     });
     return;
 }

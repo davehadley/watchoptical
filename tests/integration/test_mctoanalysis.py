@@ -46,3 +46,6 @@ def test_mctoanalysis(smallsignaldataset):
         assert all("pmt_x" in a.columns for a in anal)
         assert all("pmt_y" in a.columns for a in anal)
         assert all("pmt_z" in a.columns for a in anal)
+        assert all("mc_pdgcode" in a.columns for a in anal)
+        assert all("mc_t_start" in a.columns for a in anal)
+        assert all("mc_t_end" in a.columns for a in anal)
