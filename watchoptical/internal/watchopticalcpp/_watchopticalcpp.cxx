@@ -216,6 +216,30 @@ std::vector<double> getmc_z_end(std::vector<RAT::DS::MC>& mc) {
     return result;
 }
 
+std::vector<double> getmc_ek_start(std::vector<RAT::DS::MC>& mc) {
+    std::vector<double> result;
+    for(auto& m: mc) {
+        for(int i = 0; i < m.GetMCParticleCount(); ++i) {
+            auto& particle = *(m.GetMCParticle(i));
+            auto value = particle.GetKE();
+            result.push_back(value);
+        }
+    }
+    return result;
+}
+
+std::vector<double> getmc_ek_end(std::vector<RAT::DS::MC>& mc) {
+    std::vector<double> result;
+    for(auto& m: mc) {
+        for(int i = 0; i < m.GetMCParticleCount(); ++i) {
+            auto& particle = *(m.GetMCParticle(i));
+            auto value = particle.GetEndKE();
+            result.push_back(value);
+        }
+    }
+    return result;
+}
+
 RAT::DS::PMTInfo load_pmt_info(std::string ratpacfilename) {
     TFile file(ratpacfilename.c_str());
     TTreeReader reader("runT", &file);
@@ -248,6 +272,8 @@ void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, st
     .Define("mc_y_end", ::getmc_y_end, {"mc"})
     .Define("mc_z_start", ::getmc_z_start, {"mc"})
     .Define("mc_z_end", ::getmc_z_end, {"mc"})
+    .Define("mc_ek_start", ::getmc_ek_start, {"mc"})
+    .Define("mc_ek_end", ::getmc_ek_end, {"mc"})
     ;
     pipeline.Snapshot("watchopticalanalysis", analysisfile, {
         "total_charge", 
@@ -267,6 +293,8 @@ void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, st
         "mc_y_end",
         "mc_z_start",
         "mc_z_end",
+        "mc_ek_start",
+        "mc_ek_end",
     });
     return;
 }

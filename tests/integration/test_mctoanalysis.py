@@ -56,5 +56,7 @@ def test_mctoanalysis(smallsignaldataset):
             "mc_y_end",
             "mc_z_start",
             "mc_z_end",
+            "mc_ek_start",
+            "mc_ek_end",
         ]
         assert all([col in a.columns for a in anal for col in columns])
