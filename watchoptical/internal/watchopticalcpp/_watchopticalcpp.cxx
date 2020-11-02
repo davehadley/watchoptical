@@ -52,6 +52,30 @@ std::vector<double> getpmt_x(std::vector<RAT::DS::EV>& ev, RAT::DS::PMTInfo& pmt
     return result;
 }
 
+std::vector<double> getpmt_y(std::vector<RAT::DS::EV>& ev, RAT::DS::PMTInfo& pmtinfo) {
+    std::vector<double> result;
+    for(auto& e : ev) {
+        for(int i = 0; i < e.GetPMTCount(); ++i) {
+            auto pmt = e.GetPMT(i);
+            auto y = pmtinfo.GetPosition(pmt->GetID()).Y();
+            result.push_back(y);
+        }
+    }
+    return result;
+}
+
+std::vector<double> getpmt_z(std::vector<RAT::DS::EV>& ev, RAT::DS::PMTInfo& pmtinfo) {
+    std::vector<double> result;
+    for(auto& e : ev) {
+        for(int i = 0; i < e.GetPMTCount(); ++i) {
+            auto pmt = e.GetPMT(i);
+            auto z = pmtinfo.GetPosition(pmt->GetID()).Z();
+            result.push_back(z);
+        }
+    }
+    return result;
+}
+
 std::vector<double> getpmt_charge(std::vector<RAT::DS::EV>& ev) {
     std::vector<double> result;
     for(auto& e : ev) {
@@ -107,6 +131,8 @@ void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, st
     .Define("total_charge", ::gettotalcharge)
     .Define("pmt_t", ::getpmt_time)
     .Define("pmt_x", [&](std::vector<RAT::DS::EV>& ev) { return getpmt_x(ev, pmtinfo); })
+    .Define("pmt_y", [&](std::vector<RAT::DS::EV>& ev) { return getpmt_y(ev, pmtinfo); })
+    .Define("pmt_z", [&](std::vector<RAT::DS::EV>& ev) { return getpmt_z(ev, pmtinfo); })
     .Define("pmt_q", ::getpmt_charge)
     .Define("pmt_id", ::getpmt_id)
     .Define("pmt_eventid", ::getpmt_eventid)
@@ -115,7 +141,9 @@ void convert_ratpacbonsai_to_analysis(std::string ratpac, std::string bonsai, st
     pipeline.Snapshot("watchopticalanalysis", analysisfile, {
         "total_charge", 
         "pmt_t", 
-        "pmt_x", 
+        "pmt_x",
+        "pmt_y",
+        "pmt_z", 
         "pmt_q", 
         "pmt_id", 
         "pmt_eventid"
