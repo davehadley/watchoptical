@@ -44,5 +44,5 @@ def test_mctoanalysis(smallsignaldataset):
         assert all(os.path.exists(f.filename) for f in results)
         assert all("pmt_t" in a.columns for a in anal)
         assert all("pmt_x" in a.columns for a in anal)
-        # assert all("pmt_y" in a.columns for a in anal)
-        # assert all("pmt_z" in a.columns for a in anal)
+        assert all("pmt_y" in a.columns for a in anal)
+        assert all("pmt_z" in a.columns for a in anal)
