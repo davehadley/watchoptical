@@ -37,7 +37,7 @@ class AnalysisEventTuple(NamedTuple):
     @classmethod
     def load(cls, analysisfile: AnalysisFile) -> "AnalysisEventTuple":
         anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].pandas.df(
-            ["pmt_*"]
+            ["pmt_*", "mc_*", "total_*"], flatten=False
         )
         bonsai = (
             uproot.open(analysisfile.producedfrom.bonsaifile)["data"].pandas.df(
