@@ -15,6 +15,7 @@ from watchoptical.internal.histoutils.categoryselectionstats import (
     CategorySelectionStats,
 )
 from watchoptical.internal.histoutils.selection import Selection
+from watchoptical.internal.ignoreerrors import ignoreerrors
 from watchoptical.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
 from watchoptical.internal.opticsanalysis.eventtype import eventtypefromfile
 from watchoptical.internal.opticsanalysis.selectiondefs import SelectionDefs
@@ -162,6 +163,7 @@ def _makeselectiontable(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
         ).fill(category, tree.bonsai, tree.exposure)
 
 
+@ignoreerrors
 def _analysis(tree: AnalysisEventTuple) -> OpticsAnalysisResult:
     # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
     result = OpticsAnalysisResult()
@@ -176,6 +178,7 @@ def runopticsanalysis(dataset: WatchmanDataset) -> Bag:
     hist = (
         AnalysisEventTuple.fromWatchmanDataset(dataset)
         .map(_analysis)
+        .filter(lambda r: r is not None)
         .reduction(sumlist, sumlist)
     )
     return hist
