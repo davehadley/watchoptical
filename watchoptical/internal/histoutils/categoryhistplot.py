@@ -24,5 +24,5 @@ def categoryhistplot(
     )
     for item in hist:
         histogram = transformhistogram(item)
-        mplhep.histplot(histogram, label=formatlabel(item), **kwargs)
+        mplhep.histplot(histogram, label=formatlabel(item), ax=ax, **kwargs)
     return ax
