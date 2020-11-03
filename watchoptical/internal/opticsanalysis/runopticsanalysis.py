@@ -15,7 +15,6 @@ from watchoptical.internal.histoutils.categoryselectionstats import (
     CategorySelectionStats,
 )
 from watchoptical.internal.histoutils.selection import Selection
-from watchoptical.internal.ignoreerrors import ignoreerrors
 from watchoptical.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
 from watchoptical.internal.opticsanalysis.eventtype import eventtypefromfile
 from watchoptical.internal.opticsanalysis.selectiondefs import SelectionDefs
@@ -134,7 +133,7 @@ def _weightedmeandict() -> DefaultDict[Category, bh.accumulators.WeightedMean]:
 def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
     category = Category.fromAnalysisEventTuple(tree)
     if category.eventtype == "IBD":
-        totalq = tree.anal.pmt_q.groupby("entry").sum().array
+        totalq = tree.anal.pmt.pmt_q.groupby("entry").sum().array
         # histogram total Q
         store.hist["ibd_total_charge_by_attenuation"] = ExposureWeightedHistogram(
             bh.axis.Regular(300, 0.0, 150.0)
@@ -163,7 +162,6 @@ def _makeselectiontable(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
         ).fill(category, tree.bonsai, tree.exposure)
 
 
-@ignoreerrors
 def _analysis(tree: AnalysisEventTuple) -> OpticsAnalysisResult:
     # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
     result = OpticsAnalysisResult()

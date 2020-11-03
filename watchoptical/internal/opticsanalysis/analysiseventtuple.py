@@ -17,8 +17,23 @@ from watchoptical.internal.generatemc.runwatchmakerssensitivityanalysis import (
 from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
 
 
+class AnalysisData(NamedTuple):
+    pmt: DataFrame
+    mc: DataFrame
+    total: DataFrame
+
+    @classmethod
+    def fromAnalysisFile(cls, analysisfile: AnalysisFile) -> "AnalysisData":
+        data = uproot.open(analysisfile.filename)["watchopticalanalysis"]
+        dfs = [
+            data.pandas.df([pattern], flatten=True)
+            for pattern in ["pmt_*", "mc_*", "total_*"]
+        ]
+        return AnalysisData(*dfs)
+
+
 class AnalysisEventTuple(NamedTuple):
-    anal: DataFrame
+    anal: AnalysisData
     bonsai: DataFrame
     analysisfile: AnalysisFile
     sensitivity: WatchMakersSensitivityResult
@@ -36,9 +51,7 @@ class AnalysisEventTuple(NamedTuple):
 
     @classmethod
     def load(cls, analysisfile: AnalysisFile) -> "AnalysisEventTuple":
-        anal = uproot.open(analysisfile.filename)["watchopticalanalysis"].pandas.df(
-            ["pmt_*", "mc_*", "total_*"], flatten=False
-        )
+        anal = AnalysisData.fromAnalysisFile(analysisfile)
         bonsai = (
             uproot.open(analysisfile.producedfrom.bonsaifile)["data"].pandas.df(
                 flatten=False
