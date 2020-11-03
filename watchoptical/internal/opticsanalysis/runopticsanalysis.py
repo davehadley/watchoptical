@@ -69,7 +69,7 @@ class Category(NamedTuple):
 
 def _eventtypecategory(tree: AnalysisEventTuple) -> str:
     et = eventtypefromfile(tree.analysisfile)
-    result = "IBD" if "IBD" in et else "Background"
+    result = "IBD" if "ibd" in et else "Background"
     return result
 
 
