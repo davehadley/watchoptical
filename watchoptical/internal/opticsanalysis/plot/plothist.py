@@ -38,7 +38,6 @@ def _plothist(data: OpticsAnalysisResult, dest):
             ax.set_xlabel(_xlabel(key))
             ax.legend()
             fig.tight_layout()
-            fig.tight_layout()
             fname = f"{dest}{os.sep}{key}_{yscale}.png"
             os.makedirs(os.path.dirname(fname), exist_ok=True)
             fig.savefig(fname)
