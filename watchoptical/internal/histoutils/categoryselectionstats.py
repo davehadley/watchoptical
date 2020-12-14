@@ -1,11 +1,24 @@
 from collections import defaultdict
 from copy import deepcopy
-from typing import Any, Collection, DefaultDict, Iterator, NamedTuple, Optional, Union
+from functools import reduce
+from operator import add
+from typing import (
+    Any,
+    Collection,
+    DefaultDict,
+    Iterator,
+    List,
+    NamedTuple,
+    Optional,
+    Union,
+)
 
 import numpy as np
+from tabulate import tabulate
 
 from watchoptical.internal.histoutils.selection import Selection
 from watchoptical.internal.histoutils.selectionstats import SelectionStats
+from watchoptical.internal.utils.safedivide import safedivide
 
 
 class CategorySelectionStats(Collection):
@@ -48,3 +61,44 @@ class CategorySelectionStats(Collection):
             except KeyError:
                 result._container[key] = deepcopy(value)
         return result
+
+    def __str__(self):
+        return str(tabulate(_table(self)))
+
+
+def _table(catstats: CategorySelectionStats) -> List[List[Any]]:
+    total = reduce(add, (item.selectionstats for item in catstats))
+    table: List[List[Any]] = [
+        [
+            "Category" "#",
+            "Name",
+            "Selected",
+            "Efficiency",
+            "Purity",
+            "Cumulative Selected",
+            "Cumulative Efficiency",
+            "Cumulative Purity",
+        ]
+    ]
+    for (category, stats) in enumerate(catstats):
+        for index, (item, totalitem) in enumerate(zip(stats, total)):
+            individualpurity = safedivide(
+                item.individual.numpassed, totalitem.individual.numpassed, 0.0
+            )
+            cumulativepurity = safedivide(
+                item.individual.numpassed, totalitem.cumulative.numpassed, 0.0
+            )
+            table.append(
+                [
+                    str(category),
+                    str(index),
+                    item.cut.name if item.cut.name else f"Cut {index}",
+                    item.individual.numpassed,
+                    item.individual.efficiency,
+                    individualpurity,
+                    item.cumulative.numpassed,
+                    item.cumulative.efficiency,
+                    cumulativepurity,
+                ]
+            )
+    return table
