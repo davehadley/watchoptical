@@ -63,3 +63,4 @@ source ${CONDAACTIVATE}
 source activate ${WATCHOPTICALCONDAENV}
 
 export RATROOT=${WATCHOPTICALWORKSPACE}/build/rat-pac
+export PATH=${WATCHOPTICALWORKSPACE}/build/bonsai:${RATROOT}/bin:${PATH}

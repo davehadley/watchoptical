@@ -34,6 +34,16 @@ This should build `rat-pac` (<https://github.com/AIT-WATCHMAN/WMUtils>),
 `watchmakers` (<ttps://github.com/AIT-WATCHMAN/watchmakers/>) and 
 `FRED` / `bonsai` (<https://github.com/AIT-WATCHMAN/FRED>).
 
+Check that that was successful with:
+
+```bash
+python test-environment.py
+```
+
+If that script produces errors, then something when wrong.
+
+If you are still having trouble contact @davehadley.
+
 ## Old Installation Instructions
 
 Install the WATCHMAN software following the instructions at:
