@@ -24,7 +24,7 @@ pipeline {
             steps {
                 sh '''#!/usr/bin/env bash
                 source setup-environment.sh
-                ./build.sh
+                python build.py
                 '''
             }
         }
