@@ -7,3 +7,6 @@
 [submodule "external/rat-pac"]
 	path = external/rat-pac
 	url = git@github.com:davehadley/rat-pac.git
+[submodule "external/bonsai"]
+	path = external/bonsai
+	url = git@github.com:davehadley/bonsai.git
