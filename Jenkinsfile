@@ -39,24 +39,6 @@ pipeline {
         }
         stage('watchoptical') { 
             stages {
-                stage('Build ROOT Extensions') {
-                    steps {
-                        echo 'Install watchoptical'
-                        sh '''#!/usr/bin/env bash
-                        source setup-environment.sh
-                        pip install -e ./watchoptical
-                        '''
-                    }
-                }
-                stage('Build watchoptical') {
-                    steps {
-                        echo 'Build watchoptical'
-                        sh '''#!/usr/bin/env bash
-                        source setup-environment.sh
-                        pip install ./watchoptical
-                        '''
-                    }
-                }
                 stage('Test watchoptical') {
                     stages {
                         stage('pytest') {
