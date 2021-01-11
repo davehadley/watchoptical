@@ -48,32 +48,23 @@ pipeline {
                         '''
                     }
                 }
-                stage('Build NCFGD') {
+                stage('Build watchoptical') {
                     steps {
-                        echo 'Build NCFGD'
+                        echo 'Build watchoptical'
                         sh '''#!/usr/bin/env bash
                         source setup-environment.sh
-                        pip install ./ncfgd
+                        pip install ./watchoptical
                         '''
                     }
                 }
-                stage('Build NCFGD Runner') {
-                    steps {
-                        echo 'Build NCFGD Runner'
-                        sh '''#!/usr/bin/env bash
-                        source setup-environment.sh
-                        pip install ./ncfgdrunner
-                        '''
-                    }
-                }
-                stage('Test ROOT Extensions') {
+                stage('Test watchoptical') {
                     stages {
-                        stage('Pytest') {
+                        stage('pytest') {
                             steps {
-                                echo 'Testing ROOT Extensions'
+                                echo 'Testing watchoptical'
                                 sh '''#!/usr/bin/env bash
                                 source setup-environment.sh
-                                pytest ncfgdrootext/tests
+                                pytest tests
                                 '''
                             }
                         }
@@ -83,7 +74,7 @@ pipeline {
                                     steps {
                                         sh '''#!/usr/bin/env bash
                                         source setup-environment.sh
-                                        black --check ncfgdrootext/src/ ncfgdrootext/tests
+                                        black --check watchoptical tests
                                         '''
                                     }
                                 }
@@ -91,7 +82,7 @@ pipeline {
                                     steps {
                                         sh '''#!/usr/bin/env bash
                                         source setup-environment.sh
-                                        mypy --no-strict-optional --ignore-missing-imports ncfgdrootext/src/ ncfgdrootext/tests
+                                        mypy --no-strict-optional --ignore-missing-imports watchoptical tests
                                         '''
                                     }
                                 }
@@ -99,89 +90,7 @@ pipeline {
                                     steps {
                                         sh '''#!/usr/bin/env bash
                                         source setup-environment.sh
-                                        flake8 ncfgdrootext/src/ ncfgdrootext/tests
-                                        '''
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Test NCFGD') {
-                    stages {
-                        stage('Pytest') {
-                            steps {
-                                echo 'Testing NCFGD'
-                                sh '''#!/usr/bin/env bash
-                                source setup-environment.sh
-                                pytest ncfgd/tests
-                                '''
-                            }
-                        }
-                        stage('Lint') {
-                            stages {
-                                stage('Black') {
-                                    steps {
-                                        sh '''#!/usr/bin/env bash
-                                        source setup-environment.sh
-                                        black --check ncfgd/src/ncfgd ncfgd/tests
-                                        '''
-                                    }
-                                }
-                                stage('MyPy') {
-                                    steps {
-                                        sh '''#!/usr/bin/env bash
-                                        source setup-environment.sh
-                                        mypy --no-strict-optional --ignore-missing-imports ncfgd/src/ncfgd ncfgd/tests
-                                        '''
-                                    }
-                                }
-                                stage('Flake8') {
-                                    steps {
-                                        sh '''#!/usr/bin/env bash
-                                        source setup-environment.sh
-                                        flake8 ncfgd/src/ncfgd ncfgd/tests
-                                        '''
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Test NCFGD Runner') {
-                    stages {
-                        stage('Pytest') {
-                            steps {
-                                echo 'Testing NCFGD Runer'
-                                sh '''#!/usr/bin/env bash
-                                source setup-environment.sh
-                                pytest ncfgdrunner/tests
-                                '''
-                            }
-                        }
-                        stage('Lint') {
-                            stages {
-                                stage('Black') {
-                                    steps {
-                                        sh '''#!/usr/bin/env bash
-                                        source setup-environment.sh
-                                        black --check ncfgdrunner/src ncfgd/tests
-                                        '''
-                                    }
-                                }
-                                stage('MyPy') {
-                                    steps {
-                                        sh '''#!/usr/bin/env bash
-                                        source setup-environment.sh
-                                        mypy --no-strict-optional --ignore-missing-imports ncfgdrunner/src ncfgdrunner/tests
-                                        '''
-                                    }
-                                }
-                                stage('Flake8') {
-                                    steps {
-                                        sh '''#!/usr/bin/env bash
-                                        source setup-environment.sh
-                                        flake8 ncfgdrunner/src ncfgdrunner/tests
+                                        flake8 watchoptical tests
                                         '''
                                     }
                                 }
