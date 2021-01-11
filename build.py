@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os
+from pathlib import Path
 from subprocess import check_call
 
 
@@ -10,7 +10,7 @@ def run(cmd, title):
     return
 
 
-os.mkdir("build", exist_ok=True)
+Path("build").mkdir(exist_ok=True)
 
 
 def buildratpac():
@@ -18,7 +18,7 @@ def buildratpac():
         [
             "cmake",
             "-Bbuild/rat-pac",
-            "externals/ratpac",
+            "external/ratpac",
             "-DCMAKE_CXX_STANDARD=17",
         ],
         "CMake rat-pac",
@@ -27,12 +27,25 @@ def buildratpac():
     return
 
 
+def buildbonsai():
+    run(
+        [
+            "cmake",
+            "-Bbuild/bonsai",
+            "external/bonsai",
+            "-DCMAKE_CXX_STANDARD=17",
+        ],
+        "CMake bonsai",
+    )
+    return
+
 def buildwatchoptical():
     run(["pip" "install" "-e" "./watchoptical"], "Install watchoptical")
 
 
 def main():
     buildratpac()
+    buildbonsai()
     buildwatchoptical()
 
 

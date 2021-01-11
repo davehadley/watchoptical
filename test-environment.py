@@ -12,6 +12,7 @@ def testcommand(cmd, title):
 testcommand(["env"], "Environemnt Variables")
 testcommand(["root", "-q", "-l"], "Check ROOT")
 testcommand(["rat", "--help"], "Check RAT")
+testcommand(["bonsai", "--help"], "Check bonsai")
 
 print("--- Check watchoptical")
 import watchoptical

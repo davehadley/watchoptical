@@ -8,6 +8,13 @@ Clone the git repository with:
 git clone  --recurse-submodules git@github.com:davehadley/watchoptical.git
 ```
 
+If you have an old version of git you may have to run:
+
+```
+git clone git@github.com:davehadley/watchoptical.git
+git submodule update --init --recursive
+```
+
 Setup up the environment with:
 
 ```bash
@@ -15,6 +22,7 @@ source setup-environment.sh
 ```
 
 Run this setup script each time that you want to work with the package.
+It may be slow the first time that it is run, but it should run quickly.
 
 Build the package and dependencies with:
 
