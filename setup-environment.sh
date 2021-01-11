@@ -61,3 +61,5 @@ fi
 source ${CONDAACTIVATE}
 #${CONDA} activate ${WATCHOPTICALCONDAENV}
 source activate ${WATCHOPTICALCONDAENV}
+
+export RATROOT=${WATCHOPTICALWORKSPACE}/build/rat-pac
