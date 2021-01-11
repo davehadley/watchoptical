@@ -295,7 +295,6 @@ dependencies:
     - toml==0.10.1
     - toolz==0.11.1
     - virtualenv==20.0.33
-    - watchoptical==0.2.0
     - zict==2.0.0
 prefix: /home/epp/phskaj/.conda/envs/watchoptical
 

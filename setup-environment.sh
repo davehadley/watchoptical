@@ -51,7 +51,7 @@ then
 fi
 
 # If environment does not exist, create it
-WATCHOPTICALCONDAENV=${WATCHOPTICALWORKSPACE}/env/WATCHOPTICAL
+WATCHOPTICALCONDAENV=${WATCHOPTICALWORKSPACE}/env/watchoptical
 if [ ! -d "${WATCHOPTICALCONDAENV}" ]
 then 
     ${CONDA} env create -f environment.yml --prefix ${WATCHOPTICALCONDAENV}
