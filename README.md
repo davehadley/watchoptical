@@ -2,6 +2,32 @@
 
 ## Installation
 
+Clone the git repository with:
+
+```bash
+git clone  --recurse-submodules git@github.com:davehadley/watchoptical.git
+```
+
+Setup up the environment with:
+
+```bash
+source setup-environment.sh
+```
+
+Run this setup script each time that you want to work with the package.
+
+Build the package and dependencies with:
+
+```bash
+python build.py
+```
+
+This should build `rat-pac` (<https://github.com/AIT-WATCHMAN/WMUtils>), 
+`watchmakers` (<ttps://github.com/AIT-WATCHMAN/watchmakers/>) and 
+`FRED` / `bonsai` (<https://github.com/AIT-WATCHMAN/FRED>).
+
+## Old Installation Instructions
+
 Install the WATCHMAN software following the instructions at:
     
 1. WMUtils https://github.com/AIT-WATCHMAN/WMUtils 
