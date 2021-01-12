@@ -3,10 +3,10 @@
 	url = https://github.com/pybind/pybind11.git
 [submodule "external/watchmakers"]
 	path = external/watchmakers
-	url = git@github.com:davehadley/watchmakers.git
+	url = https://github.com:davehadley/watchmakers.git
 [submodule "external/rat-pac"]
 	path = external/rat-pac
-	url = git@github.com:davehadley/rat-pac.git
+	url = https://github.com:davehadley/rat-pac.git
 [submodule "external/bonsai"]
 	path = external/bonsai
-	url = git@github.com:davehadley/bonsai.git
+	url = https://github.com:davehadley/bonsai.git
