@@ -19,7 +19,4 @@ def _dumpselectiontable(name: str, stats: CategorySelectionStats, dest: str = "p
 
 
 def _selectiontabletostring(name: str, stats: CategorySelectionStats) -> str:
-    return "\n".join(
-        f"Category:{item.category}\n" f"Cuts:\n{item.selectionstats}\n"
-        for item in stats
-    )
+    return str(stats)

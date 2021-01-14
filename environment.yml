@@ -1,0 +1,15 @@
+name: watchoptical
+channels:
+  - conda-forge
+dependencies:
+  # specifying the gcc version exactly seems to speed up conda resolver 
+  - gcc_impl_linux-64==7.3.0=hd420e75_5
+  - gcc_linux-64==7.3.0=h553295d_17
+  - cmake=3.18
+  - root=6.18
+  - geant4=10.6
+  - python=3.8
+  - pip=20.3
+  - scikit-build
+prefix: /home/epp/phskaj/.conda/envs/watchoptical
+

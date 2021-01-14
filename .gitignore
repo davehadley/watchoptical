@@ -1,3 +1,5 @@
+miniconda/
+env/
 .vscode/
 run/
 pip-wheel-metadata/

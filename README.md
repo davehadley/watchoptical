@@ -2,32 +2,47 @@
 
 ## Installation
 
-Install the WATCHMAN software following the instructions at:
-    
-1. WMUtils https://github.com/AIT-WATCHMAN/WMUtils 
-2. watchmakers https://github.com/AIT-WATCHMAN/watchmakers/
-3. Standalone BONSAI https://github.com/AIT-WATCHMAN/bonsai/
-    1. watchoptical requires a ${BONSAIDIR} environment variable to find
-    the correct BONSAI version. You should set this in your environment setup. 
-
-Check out this package:
+Clone the git repository with:
 
 ```bash
-git clone https://github.com/davehadley/watchoptical
-cd watchoptical
-./post-clone.sh
-pip install .
+git clone  --recurse-submodules git@github.com:davehadley/watchoptical.git
 ```
 
-If you want to do development work on this package do:
+If you have an old version of git you may have to run:
+
+```
+git clone git@github.com:davehadley/watchoptical.git
+git submodule update --init --recursive
+```
+
+Setup up the environment with:
+
 ```bash
-python setup.py develop
+source setup-environment.sh
 ```
 
-Note editable installs with `pip` do not work on my system:
+Run this setup script each time that you want to work with the package.
+It may be slow the first time that it is run, but it should run quickly.
+
+Build the package and dependencies with:
+
+```bash
+python build.py
 ```
-pip install -e .
+
+This should build `rat-pac` (<https://github.com/AIT-WATCHMAN/WMUtils>), 
+`watchmakers` (<ttps://github.com/AIT-WATCHMAN/watchmakers/>) and 
+`FRED` / `bonsai` (<https://github.com/AIT-WATCHMAN/FRED>).
+
+Check that that was successful with:
+
+```bash
+python test-environment.py
 ```
+
+If that script produces errors, then something when wrong.
+
+If you are still having trouble contact @davehadley.
 
 ### Testing you Installation
 
@@ -71,4 +86,35 @@ Inspect datasets on the command line with:
 
 ```bash
 python3 -m watchoptical.scripts.inspect path/to/input/files
+```
+
+## Old Installation Instructions
+
+These instructions are redundant as the external packages are now included in watch optical.
+
+Install the WATCHMAN software following the instructions at:
+    
+1. WMUtils https://github.com/AIT-WATCHMAN/WMUtils 
+2. watchmakers https://github.com/AIT-WATCHMAN/watchmakers/
+3. Standalone BONSAI https://github.com/AIT-WATCHMAN/bonsai/
+    1. watchoptical requires a ${BONSAIDIR} environment variable to find
+    the correct BONSAI version. You should set this in your environment setup. 
+
+Check out this package:
+
+```bash
+git clone https://github.com/davehadley/watchoptical
+cd watchoptical
+./post-clone.sh
+pip install .
+```
+
+If you want to do development work on this package do:
+```bash
+python setup.py develop
+```
+
+Note editable installs with `pip` do not work on my system:
+```
+pip install -e .
 ```

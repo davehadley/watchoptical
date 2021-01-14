@@ -69,7 +69,7 @@ class Category(NamedTuple):
 
 def _eventtypecategory(tree: AnalysisEventTuple) -> str:
     et = eventtypefromfile(tree.analysisfile)
-    result = "IBD" if "IBD" in et else "Background"
+    result = "IBD" if "ibd" in et else "Background"
     return result
 
 
@@ -97,6 +97,20 @@ def _makebonsaihistogram(
     return histo
 
 
+def _makebonsaiscatter(
+    tree: AnalysisEventTuple,
+    x: Callable[[DataFrame], Any],
+    w: Optional[Callable[[DataFrame], Any]] = None,
+    selection: Selection = SelectionDefs.nominal.value,
+    subevent: int = 0,
+) -> CategoryMean:
+    category = Category.fromAnalysisEventTuple(tree)
+    data = selection(tree.bonsai).groupby("mcid").nth(subevent)
+    xv = np.asarray(x(data))
+    wv = np.ones(shape=xv.shape) if not w else np.asarray(w(data))
+    return CategoryMean().fill(category, xv, weight=wv * tree.exposure)
+
+
 def _makebasichistograms(
     tree: AnalysisEventTuple, hist: MutableMapping[str, ExposureWeightedHistogram]
 ):
@@ -106,6 +120,19 @@ def _makebasichistograms(
         name = "_".join((variable.name, selection.name, "subevent" + str(subevent)))
         hist[name] = _makebonsaihistogram(
             tree, variable.value.binning, variable.value, selection=selection.value
+        )
+    return
+
+
+def _makebasicscatter(
+    tree: AnalysisEventTuple, scatter: MutableMapping[str, CategoryMean]
+):
+    for (selection, variable, subevent) in itertools.product(
+        SelectionDefs, VariableDefs, (None, 0, 1)
+    ):
+        name = "_".join((variable.name, selection.name, "subevent" + str(subevent)))
+        scatter[name] = _makebonsaiscatter(
+            tree, variable.value, selection=selection.value
         )
     return
 
@@ -133,7 +160,7 @@ def _weightedmeandict() -> DefaultDict[Category, bh.accumulators.WeightedMean]:
 def _makebasicattenuationscatter(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
     category = Category.fromAnalysisEventTuple(tree)
     if category.eventtype == "IBD":
-        totalq = tree.anal.pmt_q.groupby("entry").sum().array
+        totalq = tree.anal.pmt.pmt_q.groupby("entry").sum().array
         # histogram total Q
         store.hist["ibd_total_charge_by_attenuation"] = ExposureWeightedHistogram(
             bh.axis.Regular(300, 0.0, 150.0)
@@ -163,9 +190,9 @@ def _makeselectiontable(tree: AnalysisEventTuple, store: OpticsAnalysisResult):
 
 
 def _analysis(tree: AnalysisEventTuple) -> OpticsAnalysisResult:
-    # histo.fill(category, tree.exposure, tree.bonsai.n9.array)
     result = OpticsAnalysisResult()
     _makebasichistograms(tree, result.hist)
+    _makebasicscatter(tree, result.scatter)
     _makebasicattenuationscatter(tree, result)
     _makesensitivityscatter(tree, result)
     _makeselectiontable(tree, result)
@@ -176,6 +203,7 @@ def runopticsanalysis(dataset: WatchmanDataset) -> Bag:
     hist = (
         AnalysisEventTuple.fromWatchmanDataset(dataset)
         .map(_analysis)
+        .filter(lambda r: r is not None)
         .reduction(sumlist, sumlist)
     )
     return hist
