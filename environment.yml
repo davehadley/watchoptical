@@ -10,7 +10,6 @@ dependencies:
   - geant4=10.6
   - python=3.8
   - pip=20.3
-  - pip:
-    - scikit-build
+  - scikit-build
 prefix: /home/epp/phskaj/.conda/envs/watchoptical
 

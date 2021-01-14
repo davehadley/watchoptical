@@ -41,10 +41,10 @@ setup(
         "tabulate",
         "cloudpickle",
         "scipy",
+        "sqlitedict",
     ],
-    tests_require=["pytest"],
     extras_require={
-        "dev": ["pre-commit>=2.7.1", "flake8", "mypy", "black"],
+        "dev": ["pre-commit>=2.7.1", "flake8", "mypy", "black", "pytest"],
     },
     zip_safe=False,
     classifiers=[
