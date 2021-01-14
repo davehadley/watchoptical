@@ -24,7 +24,7 @@ pipeline {
             steps {
                 sh '''#!/usr/bin/env bash
                 source setup-environment.sh
-                pipenv run python build.py
+                python build.py
                 '''
             }
         }
@@ -33,7 +33,7 @@ pipeline {
                 echo 'Test Environment'
                 sh '''#!/usr/bin/env bash
                 source setup-environment.sh
-                pipenv run python test-environment.py
+                python test-environment.py
                 '''
             }
         }
@@ -46,7 +46,7 @@ pipeline {
                                 echo 'Testing watchoptical'
                                 sh '''#!/usr/bin/env bash
                                 source setup-environment.sh
-                                pipenv run pytest tests
+                                pytest tests
                                 '''
                             }
                         }
@@ -56,7 +56,7 @@ pipeline {
                                     steps {
                                         sh '''#!/usr/bin/env bash
                                         source setup-environment.sh
-                                        pipenv run black --check watchoptical tests
+                                        black --check watchoptical tests
                                         '''
                                     }
                                 }
@@ -64,7 +64,7 @@ pipeline {
                                     steps {
                                         sh '''#!/usr/bin/env bash
                                         source setup-environment.sh
-                                        pipenv run mypy --no-strict-optional --ignore-missing-imports watchoptical tests
+                                        mypy --no-strict-optional --ignore-missing-imports watchoptical tests
                                         '''
                                     }
                                 }
@@ -72,7 +72,7 @@ pipeline {
                                     steps {
                                         sh '''#!/usr/bin/env bash
                                         source setup-environment.sh
-                                        pipenv run flake8 watchoptical tests
+                                        flake8 watchoptical tests
                                         '''
                                     }
                                 }
