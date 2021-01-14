@@ -20,6 +20,8 @@ distributed = "*"
 dask-jobqueue = "*"
 sqlitedict = "*"
 tabulate = "*"
+numpy = "*"
+docopt = "*"
 
 [dev-packages]
 flake8 = "*"
