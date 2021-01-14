@@ -48,6 +48,7 @@ then
     then
         echo "ERROR: cannot find conda command!"
     fi
+    pipenv install --dev --python=$(conda run which python) --site-packages
 fi
 
 # If environment does not exist, create it
