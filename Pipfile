@@ -7,7 +7,7 @@ name = "pypi"
 uproot = "*"
 bokeh = "*"
 boost-histogram = "*"
-dask = {extras = ["bag"], version = "*"}
+dask = {extras = ["bag", "distributed"], version = "*"}
 matplotlib = "*"
 mplhep = "*"
 pandas = "*"
