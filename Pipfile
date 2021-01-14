@@ -7,7 +7,7 @@ name = "pypi"
 uproot = "*"
 bokeh = "*"
 boost-histogram = "*"
-dask = {extras = ["bag", "distributed"], version = "*"}
+dask = {extras = ["bag", "distributed", "jobqueue"], version = "*"}
 matplotlib = "*"
 mplhep = "*"
 pandas = "*"
@@ -16,13 +16,20 @@ scikit-build = "*"
 scipy = "*"
 toolz = "*"
 cloudpickle = "*"
+distributed = "*"
+dask-jobqueue = "*"
+sqlitedict = "*"
+tabulate = "*"
 
 [dev-packages]
 flake8 = "*"
 mypy = "*"
-black = "*"
 pre-commit = "*"
 pytest = "*"
+black = "*"
 
 [requires]
 python_version = "3.8"
+
+[pipenv]
+allow_prereleases = true
