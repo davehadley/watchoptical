@@ -1,6 +1,6 @@
 # watchoptical : WATCHMAN Optical Calibration Analysis Software
 
-## Installation
+## Checking out the code
 
 Clone the git repository with:
 
@@ -14,6 +14,15 @@ If you have an old version of git you may have to run:
 git clone git@github.com:davehadley/watchoptical.git
 git submodule update --init --recursive
 ```
+
+The git submodules in this repository use https authentication.
+If you prefer to use ssh authentication with github, you may wish to consider applying this setting:
+
+```bash
+git config --global url.ssh://git@github.com/.insteadOf https://github.com/
+```
+
+## Installation
 
 Setup up the environment with:
 
@@ -44,7 +53,7 @@ If that script produces errors, then something when wrong.
 
 If you are still having trouble contact @davehadley.
 
-### Testing you Installation
+### Testing your Installation
 
 From the `watchoptical` directory run:
 ```bash
@@ -88,33 +97,10 @@ Inspect datasets on the command line with:
 python3 -m watchoptical.scripts.inspect path/to/input/files
 ```
 
-## Old Installation Instructions
+## Development Instructions
 
-These instructions are redundant as the external packages are now included in watch optical.
-
-Install the WATCHMAN software following the instructions at:
-    
-1. WMUtils https://github.com/AIT-WATCHMAN/WMUtils 
-2. watchmakers https://github.com/AIT-WATCHMAN/watchmakers/
-3. Standalone BONSAI https://github.com/AIT-WATCHMAN/bonsai/
-    1. watchoptical requires a ${BONSAIDIR} environment variable to find
-    the correct BONSAI version. You should set this in your environment setup. 
-
-Check out this package:
-
-```bash
-git clone https://github.com/davehadley/watchoptical
-cd watchoptical
-./post-clone.sh
-pip install .
+Please install the pre-commit hooks before doing any development work.
+You can install this by running the command:
 ```
-
-If you want to do development work on this package do:
-```bash
-python setup.py develop
-```
-
-Note editable installs with `pip` do not work on my system:
-```
-pip install -e .
+pre-commit install
 ```
