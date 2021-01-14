@@ -22,8 +22,12 @@ setup(
     author_email="d.r.hadley@warwick.ac.uk",
     license="MIT",
     packages=find_packages(include=["watchoptical*"]),
+
     install_requires=[
-        "dask[delayed]>=2.20.0",
+        "matplotlib",
+        "peroose",
+        "bokeh",
+        "dask[bag,delayed,distributed]>=2.20.0",
         "dask-jobqueue>=0.7.1",
         "toolz>=0.10.0",
         "distributed>=2.20.0",
@@ -35,10 +39,12 @@ setup(
         "mplhep",
         "uproot",
         "tabulate",
+        "cloudpickle",
+        "scipy",
+        "sqlitedict",
     ],
-    tests_require=["pytest"],
     extras_require={
-        "dev": ["pre-commit>=2.7.1"],
+        "dev": ["pre-commit>=2.7.1", "flake8", "mypy", "black", "pytest"],
     },
     zip_safe=False,
     classifiers=[
