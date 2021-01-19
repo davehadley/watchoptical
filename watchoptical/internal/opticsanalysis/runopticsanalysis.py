@@ -66,6 +66,9 @@ class Category(NamedTuple):
             _scatteringfromtree(tree),
         )
 
+    def __str__(self):
+        return f"({self.eventtype}, att={self.attenuation}, scat={self.scattering})"
+
 
 def _eventtypecategory(tree: AnalysisEventTuple) -> str:
     et = eventtypefromfile(tree.analysisfile)

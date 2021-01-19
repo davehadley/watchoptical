@@ -38,11 +38,11 @@ class SelectionDefs(Enum):
     nominal = Selection(
         name="nominal",
         cuts=(
-            Cut(_fiducialvolumecut),
-            Cut(_goodpositioncut),
-            Cut(_innerhitscut),
-            Cut(_vetohitscut),
-            Cut(_hascoincidence),
+            Cut(_fiducialvolumecut, "In FV"),
+            Cut(_goodpositioncut, "Has good position"),
+            Cut(_innerhitscut, "Inner hits"),
+            Cut(_vetohitscut, "Veto hits"),
+            Cut(_hascoincidence, "Coincidence"),
         ),
     )
 
