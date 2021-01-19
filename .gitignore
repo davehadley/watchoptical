@@ -1,3 +1,5 @@
+plots/
+*.db
 miniconda/
 env/
 .vscode/
