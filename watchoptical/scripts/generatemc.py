@@ -27,7 +27,7 @@ def _parsecml() -> Namespace:
         "-c",
         type=ClientType,
         choices=list(ClientType),
-        default=ClientType.SINGLE,
+        default=ClientType.CLUSTER,
         help="Where to run jobs.",
     )
     parser.add_argument("--signal-only", action="store_true")

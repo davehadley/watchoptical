@@ -210,5 +210,5 @@ def runopticsanalysis(dataset: WatchmanDataset) -> Bag:
 
 
 @cachedcallable(lambda d: f"opticsanalysis/{d.name}")
-def shelvedopticsanalysis(dataset: WatchmanDataset) -> OpticsAnalysisResult:
+def cachedopticsanalysis(dataset: WatchmanDataset) -> OpticsAnalysisResult:
     return runopticsanalysis(dataset).compute()

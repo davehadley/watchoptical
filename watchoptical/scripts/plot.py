@@ -3,7 +3,7 @@ from argparse import ArgumentParser, Namespace
 
 from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
 from watchoptical.internal.opticsanalysis.plot import PlotMode, plot
-from watchoptical.internal.opticsanalysis.runopticsanalysis import shelvedopticsanalysis
+from watchoptical.internal.opticsanalysis.runopticsanalysis import cachedopticsanalysis
 from watchoptical.internal.utils.client import ClientType, client
 from watchoptical.internal.utils.filepathutils import (
     searchforrootfilesexcludinganalysisfiles,
@@ -29,7 +29,7 @@ def parsecml() -> Namespace:
         "-c",
         type=ClientType,
         choices=list(ClientType),
-        default=ClientType.SINGLE,
+        default=ClientType.LOCAL,
         help="Where to run jobs.",
     )
     parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])
@@ -45,7 +45,7 @@ def main():
         if not ("IBDNeutron" in f or "IBDPosition" in f)
     )
     with client(args.client):
-        result = shelvedopticsanalysis(dataset, forcecall=args.force)
+        result = cachedopticsanalysis(dataset, forcecall=args.force)
     plot(data=result, dest=os.sep.join((args.directory, "plots")), mode=args.plot)
     return
 
