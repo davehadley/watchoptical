@@ -88,7 +88,7 @@ def _table(catstats: CategorySelectionStats) -> List[List[Any]]:
                 item.individual.numpassed, totalitem.individual.numpassed, 0.0
             )
             cumulativepurity = safedivide(
-                item.individual.numpassed, totalitem.cumulative.numpassed, 0.0
+                item.cumulative.numpassed, totalitem.cumulative.numpassed, 0.0
             )
             table.append(
                 [
