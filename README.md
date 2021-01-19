@@ -64,7 +64,7 @@ pytest tests
 
 To generate MC do:
 ```bash
-python3 -m watchoptical.scripts.generatemc --num-events=1000 --target=local
+python3 -m watchoptical.scripts.generatemc --client=cluster
 ```
 For more options see:
 ```bash
