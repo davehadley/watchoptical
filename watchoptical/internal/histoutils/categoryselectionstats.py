@@ -81,7 +81,7 @@ def _table(catstats: CategorySelectionStats) -> List[List[Any]]:
         ]
     ]
     for (category, stats) in enumerate(catstats):
-        for index, (item, totalitem) in enumerate(zip(stats, total)):
+        for index, (item, totalitem) in enumerate(zip(stats.selectionstats, total)):
             individualpurity = safedivide(
                 item.individual.numpassed, totalitem.individual.numpassed, 0.0
             )
