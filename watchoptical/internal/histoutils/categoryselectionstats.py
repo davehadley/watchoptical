@@ -70,7 +70,9 @@ def _table(catstats: CategorySelectionStats) -> List[List[Any]]:
     total = reduce(add, (item.selectionstats for item in catstats))
     table: List[List[Any]] = [
         [
-            "Category" "#",
+            "Cat #",
+            "Category",
+            "Cut #",
             "Name",
             "Selected",
             "Efficiency",
@@ -80,8 +82,8 @@ def _table(catstats: CategorySelectionStats) -> List[List[Any]]:
             "Cumulative Purity",
         ]
     ]
-    for (category, stats) in enumerate(catstats):
-        for index, (item, totalitem) in enumerate(zip(stats.selectionstats, total)):
+    for categoryindex, (category, stats) in enumerate(catstats):
+        for index, (item, totalitem) in enumerate(zip(stats, total)):
             individualpurity = safedivide(
                 item.individual.numpassed, totalitem.individual.numpassed, 0.0
             )
@@ -90,15 +92,16 @@ def _table(catstats: CategorySelectionStats) -> List[List[Any]]:
             )
             table.append(
                 [
-                    str(category),
+                    f"{categoryindex}",
+                    f"{category}",
                     str(index),
                     item.cut.name if item.cut.name else f"Cut {index}",
-                    item.individual.numpassed,
-                    item.individual.efficiency,
-                    individualpurity,
-                    item.cumulative.numpassed,
-                    item.cumulative.efficiency,
-                    cumulativepurity,
+                    "%.3e" % item.individual.numpassed,
+                    "%.3f" % item.individual.efficiency,
+                    "%.3f" % individualpurity,
+                    "%.3e" % item.cumulative.numpassed,
+                    "%.3f" % item.cumulative.efficiency,
+                    "%.3f" % cumulativepurity,
                 ]
             )
     return table
