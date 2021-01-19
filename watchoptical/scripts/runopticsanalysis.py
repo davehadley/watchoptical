@@ -2,7 +2,7 @@ import os
 from argparse import ArgumentParser, Namespace
 
 from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
-from watchoptical.internal.opticsanalysis.runopticsanalysis import shelvedopticsanalysis
+from watchoptical.internal.opticsanalysis.runopticsanalysis import cachedopticsanalysis
 from watchoptical.internal.utils.client import ClientType, client
 from watchoptical.internal.utils.filepathutils import (
     searchforrootfilesexcludinganalysisfiles,
@@ -39,7 +39,7 @@ def main():
         if not ("IBDNeutron" in f or "IBDPosition" in f)
     )
     with client(args.client):
-        shelvedopticsanalysis(dataset, forcecall=True)
+        cachedopticsanalysis(dataset, forcecall=True)
     return
 
 
