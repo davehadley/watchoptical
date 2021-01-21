@@ -5,7 +5,7 @@
 Clone the git repository with:
 
 ```bash
-git clone  --recurse-submodules git@github.com:davehadley/watchoptical.git
+git clone  --recurse-submodules git@github.com:davehadley/watchopticalmc.git
 ```
 
 If you have an old version of git you may have to run:
@@ -64,17 +64,17 @@ pytest tests
 
 To generate MC do:
 ```bash
-python3 -m watchoptical.scripts.generatemc --client=cluster
+python3 -m watchopticalmc.scripts.generatemc --client=cluster
 ```
 For more options see:
 ```bash
-python3 -m watchoptical.scripts.generatemc --help
+python3 -m watchopticalmc.scripts.generatemc --help
 ```
 
 ## Running the Standard WATCHMAN WatchMakers sensitivity analysis 
 
 ```bash
-python3 -m watchoptical.scripts.runsensitivityanalysis path/to/input/files
+python3 -m watchopticalmc.scripts.runsensitivityanalysis path/to/input/files
 ```
 
 ## Analyzing WATCHMAN Data 
@@ -82,19 +82,19 @@ python3 -m watchoptical.scripts.runsensitivityanalysis path/to/input/files
 First run the analysis script on the files that you generated in the previous step:
 
 ```bash
-python3 -m watchoptical.scripts.runanalysis path/to/input/files/*.root
+python3 -m watchopticalmc.scripts.runanalysis path/to/input/files/*.root
 ```
 
 Make plots from the output with:
 
 ```bash
-python3 -m watchoptical.scripts.plot path/to/input/files/*.root
+python3 -m watchopticalmc.scripts.plot path/to/input/files/*.root
 ```
 
 Inspect datasets on the command line with:
 
 ```bash
-python3 -m watchoptical.scripts.inspectfiles path/to/input/files
+python3 -m watchopticalmc.scripts.inspectfiles path/to/input/files
 ```
 
 ## Development Instructions

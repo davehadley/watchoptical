@@ -3,12 +3,12 @@ import os
 import unittest
 from tempfile import TemporaryDirectory
 
-from watchoptical.internal.generatemc.runwatchmakers import (
+from watchopticalmc.internal.generatemc.runwatchmakers import (
     WatchMakersConfig,
     generatejobscripts,
 )
-from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
-from watchoptical.internal.utils.filepathutils import touchfile
+from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
+from watchopticalmc.internal.utils.filepathutils import touchfile
 
 
 class TestWMDataset(unittest.TestCase):
