@@ -9,7 +9,9 @@ from toolz import groupby
 from watchopticalmc.internal.histoutils.categoryselectionstats import (
     CategorySelectionStats,
 )
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
+from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
+    OpticsAnalysisResult,
+)
 from watchopticalmc.internal.utils.safedivide import safedivide
 
 

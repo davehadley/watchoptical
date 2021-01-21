@@ -2,7 +2,9 @@ import os
 from argparse import ArgumentParser, Namespace
 
 from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import cachedopticsanalysis
+from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
+    cachedopticsanalysis,
+)
 from watchopticalmc.internal.utils.client import ClientType, client
 from watchopticalmc.internal.utils.filepathutils import (
     searchforrootfilesexcludinganalysisfiles,

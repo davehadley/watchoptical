@@ -8,7 +8,9 @@ from watchopticalmc.internal.opticsanalysis.plot.dumpselectiontables import (
 from watchopticalmc.internal.opticsanalysis.plot.plotattenuation import plotattenuation
 from watchopticalmc.internal.opticsanalysis.plot.plothist import plothist
 from watchopticalmc.internal.opticsanalysis.plot.plotscatter import plotscatter
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
+from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
+    OpticsAnalysisResult,
+)
 
 
 class PlotMode(Enum):

@@ -6,7 +6,10 @@ from typing import Optional
 import dask
 from dask.bag import Bag
 
-from watchopticalmc.internal.generatemc.wmdataset import RatPacBonsaiPair, WatchmanDataset
+from watchopticalmc.internal.generatemc.wmdataset import (
+    RatPacBonsaiPair,
+    WatchmanDataset,
+)
 from watchopticalmc.internal.utils.filepathutils import temporaryworkingdirectory
 from watchopticalmc.internal.watchopticalcpp import convert_ratpacbonsai_to_analysis
 

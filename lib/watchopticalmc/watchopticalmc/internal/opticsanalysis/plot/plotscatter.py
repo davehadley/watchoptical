@@ -5,7 +5,9 @@ from matplotlib import pyplot as plt
 from tabulate import tabulate
 
 from watchopticalmc.internal.histoutils import CategoryMean, categorymeanplot
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
+from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
+    OpticsAnalysisResult,
+)
 
 
 def plotscatter(data: OpticsAnalysisResult, dest: str = "plots") -> None:

@@ -3,7 +3,9 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
+from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
+    OpticsAnalysisResult,
+)
 
 
 def plotattenuation(data: OpticsAnalysisResult, dest: str = "plots") -> None:

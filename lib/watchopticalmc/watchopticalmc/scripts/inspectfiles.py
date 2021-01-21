@@ -13,7 +13,9 @@ import watchopticalmc
 from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
 from watchopticalmc.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
 from watchopticalmc.internal.opticsanalysis.plot import PlotMode
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import OpticsAnalysisResult
+from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
+    OpticsAnalysisResult,
+)
 from watchopticalmc.internal.utils.cache import cacheget
 from watchopticalmc.internal.utils.client import ClientType
 from watchopticalmc.internal.utils.filepathutils import (
