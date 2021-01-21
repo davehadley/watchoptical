@@ -14,9 +14,9 @@ scriptdir=$(dirname ${script})
 
 if [ -z "${WORKSPACE}" ];
 then
-    WATCHOPTICALWORKSPACE=$(CDPATH= cd -- "${scriptdir}" && pwd -P)
+    export WATCHOPTICALWORKSPACE=$(CDPATH= cd -- "${scriptdir}" && pwd -P)
 else
-    WATCHOPTICALWORKSPACE=${WORKSPACE}
+    export WATCHOPTICALWORKSPACE=${WORKSPACE}
 fi
 
 CONDABIN=${WATCHOPTICALWORKSPACE}/miniconda/bin
