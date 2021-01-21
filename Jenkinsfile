@@ -37,16 +37,16 @@ pipeline {
                 '''
             }
         }
-        stage('watchoptical') { 
+        stage('watchopticalmc') { 
             stages {
-                stage('Test watchoptical') {
+                stage('Test watchopticalmc') {
                     stages {
                         stage('pytest') {
                             steps {
-                                echo 'Testing watchoptical'
+                                echo 'Testing watchopticalmc'
                                 sh '''#!/usr/bin/env bash
                                 source setup-environment.sh
-                                pytest tests
+                                pytest lib/watchopticalmc/tests
                                 '''
                             }
                         }
@@ -56,7 +56,7 @@ pipeline {
                                     steps {
                                         sh '''#!/usr/bin/env bash
                                         source setup-environment.sh
-                                        black --check watchoptical tests
+                                        black --check lib/watchopticalmc/watchoptical lib/watchopticalmc/tests
                                         '''
                                     }
                                 }
@@ -64,7 +64,7 @@ pipeline {
                                     steps {
                                         sh '''#!/usr/bin/env bash
                                         source setup-environment.sh
-                                        mypy --no-strict-optional --ignore-missing-imports watchoptical tests
+                                        mypy --no-strict-optional --ignore-missing-imports lib/watchopticalmc/watchoptical lib/watchopticalmc/tests
                                         '''
                                     }
                                 }
@@ -72,7 +72,7 @@ pipeline {
                                     steps {
                                         sh '''#!/usr/bin/env bash
                                         source setup-environment.sh
-                                        flake8 watchoptical tests
+                                        flake8 lib/watchopticalmc/watchoptical lib/watchopticalmc/tests
                                         '''
                                     }
                                 }
