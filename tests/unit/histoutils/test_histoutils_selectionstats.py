@@ -4,9 +4,9 @@ from itertools import zip_longest
 import numpy as np
 from pandas import DataFrame
 
-from watchoptical.internal.histoutils.cut import Cut
-from watchoptical.internal.histoutils.selection import Selection
-from watchoptical.internal.histoutils.selectionstats import SelectionStats
+from watchopticalmc.internal.histoutils.cut import Cut
+from watchopticalmc.internal.histoutils.selection import Selection
+from watchopticalmc.internal.histoutils.selectionstats import SelectionStats
 
 
 class TestSelectionStats(unittest.TestCase):
