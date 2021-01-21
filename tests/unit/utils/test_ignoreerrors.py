@@ -1,4 +1,4 @@
-from watchopticalmc.internal.ignoreerrors import ignoreerrors
+from watchoptical.internal.ignoreerrors import ignoreerrors
 
 
 def test_ignoreerrors_with_exception():

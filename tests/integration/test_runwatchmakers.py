@@ -2,8 +2,8 @@ import os
 import unittest
 from tempfile import TemporaryDirectory
 
-from watchopticalmc.internal.generatemc import runwatchmakers
-from watchopticalmc.internal.generatemc.runwatchmakers import (
+from watchoptical.internal.generatemc import runwatchmakers
+from watchoptical.internal.generatemc.runwatchmakers import (
     WatchMakersConfig,
     generatejobscripts,
 )
@@ -11,9 +11,9 @@ from watchopticalmc.internal.generatemc.runwatchmakers import (
 
 class TestRunWatchMakers(unittest.TestCase):
     def test_watchoptical_imports_without_error(self):
-        import watchopticalmc
+        import watchoptical
 
-        self.assertTrue(watchopticalmc)
+        self.assertTrue(watchoptical)
 
     def test_environment(self):
         self.assertTrue(os.path.exists(runwatchmakers.path_to_watchmakers_script()))

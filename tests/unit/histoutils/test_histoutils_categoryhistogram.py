@@ -3,7 +3,7 @@ import unittest
 import boost_histogram as bh
 import numpy as np
 
-from watchopticalmc.internal.histoutils import CategoryHistogram
+from watchoptical.internal.histoutils import CategoryHistogram
 
 
 class TestHistoUtilsCategoryHistogram(unittest.TestCase):

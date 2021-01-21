@@ -3,9 +3,9 @@ import unittest
 
 class TestWatchOpticalPackage(unittest.TestCase):
     def test_watchoptical_imports_without_error(self):
-        import watchopticalmc
+        import watchoptical
 
-        self.assertTrue(watchopticalmc)
+        self.assertTrue(watchoptical)
 
 
 if __name__ == "__main__":

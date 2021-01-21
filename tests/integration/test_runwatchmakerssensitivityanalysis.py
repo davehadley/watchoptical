@@ -3,13 +3,13 @@ import tempfile
 import unittest
 from tempfile import TemporaryDirectory
 
-from watchopticalmc.internal.generatemc.generatemc import GenerateMCConfig, generatemc
-from watchopticalmc.internal.generatemc.runwatchmakers import WatchMakersConfig
-from watchopticalmc.internal.generatemc.runwatchmakerssensitivityanalysis import (
+from watchoptical.internal.generatemc.generatemc import GenerateMCConfig, generatemc
+from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
+from watchoptical.internal.generatemc.runwatchmakerssensitivityanalysis import (
     WatchMakersSensitivityAnalysisConfig,
     runwatchmakerssensitivityanalysis,
 )
-from watchopticalmc.internal.utils.client import ClientType, client
+from watchoptical.internal.utils.client import ClientType, client
 
 
 class TestRunWatchMakersSensitivityAnalysis(unittest.TestCase):
