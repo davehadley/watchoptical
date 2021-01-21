@@ -17,7 +17,9 @@ from watchopticalmc.internal.utils.filepathutils import (
 def signaldatasetfixture() -> WatchmanDataset:
     with client(ClientType.SINGLE):
         dirname = (
-            f"{tempfile.gettempdir()}{os.sep}tmp_watchoptical_unittest_signaldataset"
+            f"{tempfile.gettempdir()}"
+            "{os.sep}wm{os.sep}tmp{os.sep}"
+            "tmp_watchoptical_unittest_signaldataset"
         )
         if not os.path.exists(dirname):
             os.makedirs(dirname, exist_ok=True)
