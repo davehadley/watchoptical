@@ -6,13 +6,13 @@ from skbuild import setup
 with open("README.md", "r") as readme:
     long_description = readme.read()
 
-with open("watchopticalmc/_version.py") as fp:
+with open("watchoptical/_version.py") as fp:
     version: Dict[str, Any] = {}
     exec(fp.read(), version)
     version = version["__version__"]
 
 setup(
-    name="watchopticalmc",
+    name="watchoptical",
     version=version,
     description="WATCHMAN Optical Calibration Analysis Software",
     long_description=long_description,
@@ -21,7 +21,7 @@ setup(
     author="David Hadley",
     author_email="d.r.hadley@warwick.ac.uk",
     license="MIT",
-    packages=find_packages(include=["watchopticalmc*"]),
+    packages=find_packages(include=["watchoptical*"]),
 
     install_requires=[
         "matplotlib",

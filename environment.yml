@@ -1,4 +1,4 @@
-name: watchopticalmc
+name: watchoptical
 channels:
   - conda-forge
 dependencies:
@@ -11,5 +11,5 @@ dependencies:
   - python=3.8
   - pip=20.3
   - scikit-build
-prefix: /home/epp/phskaj/.conda/envs/watchopticalmc
+prefix: /home/epp/phskaj/.conda/envs/watchoptical
 

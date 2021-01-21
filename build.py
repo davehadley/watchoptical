@@ -44,7 +44,7 @@ def buildbonsai():
     return
 
 def buildwatchoptical():
-    run(["pip", "install", "-e", ".[dev]"], "Install watchopticalmc")
+    run(["pip", "install", "-e", ".[dev]"], "Install watchoptical")
 
 
 def main():
