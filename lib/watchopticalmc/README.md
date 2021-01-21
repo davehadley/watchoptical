@@ -47,17 +47,17 @@ TODO this should be moved to a separate package.
 First run the analysis script on the files that you generated in the previous step:
 
 ```bash
-python3 -m watchoptical.scripts.runanalysis path/to/input/files/*.root
+python3 -m watchopticalmc.scripts.runanalysis path/to/input/files/*.root
 ```
 
 Make plots from the output with:
 
 ```bash
-python3 -m watchoptical.scripts.plot path/to/input/files/*.root
+python3 -m watchopticalmc.scripts.plot path/to/input/files/*.root
 ```
 
 Inspect datasets on the command line with:
 
 ```bash
-python3 -m watchoptical.scripts.inspectfiles path/to/input/files
+python3 -m watchopticalmc.scripts.inspectfiles path/to/input/files
 ```

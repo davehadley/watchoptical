@@ -5,9 +5,9 @@ from tempfile import TemporaryDirectory
 
 import dask.distributed
 
-from watchoptical.internal.generatemc.generatemc import GenerateMCConfig, generatemc
-from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
-from watchoptical.internal.generatemc.watchmakersfilenameutils import (
+from watchopticalmc.internal.generatemc.generatemc import GenerateMCConfig, generatemc
+from watchopticalmc.internal.generatemc.runwatchmakers import WatchMakersConfig
+from watchopticalmc.internal.generatemc.watchmakersfilenameutils import (
     isbackgroundfile,
     issignalfile,
 )

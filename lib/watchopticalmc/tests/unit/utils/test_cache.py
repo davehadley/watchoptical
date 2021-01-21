@@ -5,13 +5,13 @@ from unittest import TestCase
 
 import numpy as np
 
-from watchoptical.internal.utils.cache import (
+from watchopticalmc.internal.utils.cache import (
     Cache,
     cachedcall,
     cachedcallable,
     cacheget,
 )
-from watchoptical.internal.utils.filepathutils import temporaryworkingdirectory
+from watchopticalmc.internal.utils.filepathutils import temporaryworkingdirectory
 
 
 def _dummyfunction():

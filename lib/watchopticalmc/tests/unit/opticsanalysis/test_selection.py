@@ -1,9 +1,9 @@
 import pytest
 from numpy import dtype
 
-from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
-from watchoptical.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
-from watchoptical.internal.opticsanalysis.selectiondefs import SelectionDefs
+from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
+from watchopticalmc.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
+from watchopticalmc.internal.opticsanalysis.selectiondefs import SelectionDefs
 
 
 @pytest.mark.parametrize("selection", list(SelectionDefs))
