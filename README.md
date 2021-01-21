@@ -40,7 +40,7 @@ python build.py
 ```
 
 This should build `rat-pac` (<https://github.com/AIT-WATCHMAN/WMUtils>), 
-`watchmakers` (<ttps://github.com/AIT-WATCHMAN/watchmakers/>) and 
+`watchmakers` (<https://github.com/AIT-WATCHMAN/watchmakers/>) and 
 `FRED` / `bonsai` (<https://github.com/AIT-WATCHMAN/FRED>).
 
 Check that that was successful with:
@@ -57,45 +57,16 @@ If you are still having trouble contact @davehadley.
 
 From the `watchoptical` directory run:
 ```bash
-pytest tests
+test-lib.py
 ```
 
-## Generating WATCHMAN MC
+### Package Structure
 
-To generate MC do:
-```bash
-python3 -m watchoptical.scripts.generatemc --client=cluster
-```
-For more options see:
-```bash
-python3 -m watchoptical.scripts.generatemc --help
-```
+Python packages that do most of the work are located in the `lib` directory.
+These packages include:
+- watchopticalmc : generates Watchman MC
+See their individual README.md for usage instructions.
 
-## Running the Standard WATCHMAN WatchMakers sensitivity analysis 
-
-```bash
-python3 -m watchoptical.scripts.runsensitivityanalysis path/to/input/files
-```
-
-## Analyzing WATCHMAN Data 
-
-First run the analysis script on the files that you generated in the previous step:
-
-```bash
-python3 -m watchoptical.scripts.runanalysis path/to/input/files/*.root
-```
-
-Make plots from the output with:
-
-```bash
-python3 -m watchoptical.scripts.plot path/to/input/files/*.root
-```
-
-Inspect datasets on the command line with:
-
-```bash
-python3 -m watchoptical.scripts.inspectfiles path/to/input/files
-```
 
 ## Development Instructions
 
