@@ -4,16 +4,16 @@ import tempfile
 
 import pytest
 
-from watchoptical.internal.generatemc.generatemc import GenerateMCConfig, generatemc
-from watchoptical.internal.generatemc.mctoanalysis import (
+from watchopticalmc.internal.generatemc.generatemc import GenerateMCConfig, generatemc
+from watchopticalmc.internal.generatemc.mctoanalysis import (
     MCToAnalysisConfig,
     mctoanalysis,
 )
-from watchoptical.internal.generatemc.runwatchmakers import WatchMakersConfig
-from watchoptical.internal.generatemc.watchmakersfilenameutils import issignalfile
-from watchoptical.internal.generatemc.wmdataset import WatchmanDataset
-from watchoptical.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
-from watchoptical.internal.utils.client import ClientType, client
+from watchopticalmc.internal.generatemc.runwatchmakers import WatchMakersConfig
+from watchopticalmc.internal.generatemc.watchmakersfilenameutils import issignalfile
+from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
+from watchopticalmc.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
+from watchopticalmc.internal.utils.client import ClientType, client
 
 
 @pytest.fixture

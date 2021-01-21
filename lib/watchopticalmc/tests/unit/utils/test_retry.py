@@ -1,4 +1,4 @@
-from watchoptical.internal.utils.retry import retry
+from watchopticalmc.internal.utils.retry import retry
 
 
 class _DummyException(Exception):
