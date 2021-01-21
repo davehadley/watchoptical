@@ -22,7 +22,6 @@ setup(
     author_email="d.r.hadley@warwick.ac.uk",
     license="MIT",
     packages=find_packages(include=["watchopticalmc*"]),
-
     install_requires=[
         "matplotlib",
         "peroose",
