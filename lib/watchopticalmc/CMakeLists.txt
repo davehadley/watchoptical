@@ -29,4 +29,4 @@ target_link_libraries(_watchopticalcpp PRIVATE ${RATROOT}/lib/libRATEvent.so)
 target_include_directories(_watchopticalcpp PRIVATE ${RATROOT}/include)
 target_link_options(_watchopticalcpp PRIVATE -Wl,--no-as-needed)
 
-install(TARGETS _watchopticalcpp LIBRARY DESTINATION watchoptical/internal/watchopticalcpp)
+install(TARGETS _watchopticalcpp LIBRARY DESTINATION watchopticalmc/internal/watchopticalcpp)

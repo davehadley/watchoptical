@@ -20,7 +20,7 @@ from watchopticalmc.internal.utils.client import ClientType, client
 def smallsignaldataset() -> WatchmanDataset:
     directory = (
         f"{tempfile.gettempdir()}"
-        f"{os.sep}"
+        f"{os.sep}wm{os.sep}tmp{os.sep}"
         f"tmp_watchoptical_unittest_testmctoanalysis"
     )
     filenamepattern = f"{directory}{os.sep}*{os.sep}*{os.sep}*.root"
