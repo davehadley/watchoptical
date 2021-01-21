@@ -18,7 +18,7 @@ def signaldatasetfixture() -> WatchmanDataset:
     with client(ClientType.SINGLE):
         dirname = (
             f"{tempfile.gettempdir()}"
-            "{os.sep}wm{os.sep}tmp{os.sep}"
+            f"{os.sep}wm{os.sep}tmp{os.sep}"
             "tmp_watchoptical_unittest_signaldataset"
         )
         if not os.path.exists(dirname):
