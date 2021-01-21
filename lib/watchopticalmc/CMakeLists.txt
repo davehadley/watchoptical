@@ -22,7 +22,7 @@ set(RATROOT $ENV{RATROOT})
 
 # pybind11
 set(PYBIND11_CPP_STANDARD -std=c++11)
-add_subdirectory(pybind11)
+find_package(pybind11 REQUIRED)
 pybind11_add_module(_watchopticalcpp watchoptical/internal/watchopticalcpp/_watchopticalcpp.cxx)
 target_link_libraries(_watchopticalcpp PRIVATE ${ROOT_LIBRARIES})
 target_link_libraries(_watchopticalcpp PRIVATE ${RATROOT}/lib/libRATEvent.so)
