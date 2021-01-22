@@ -3,7 +3,7 @@ from numpy import dtype
 
 from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
 from watchopticalmc.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
-from watchopticalmc.internal.opticsanalysis.selectiondefs import SelectionDefs
+from watchopticalanalysis.internal.selectiondefs import SelectionDefs
 
 
 @pytest.mark.parametrize("selection", list(SelectionDefs))
