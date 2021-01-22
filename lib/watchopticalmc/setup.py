@@ -14,7 +14,7 @@ with open("watchopticalmc/_version.py") as fp:
 setup(
     name="watchopticalmc",
     version=version,
-    description="WATCHMAN Optical Calibration Analysis Software",
+    description="Generates MC for WATCHMAN Optical Calibration analysis",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/davehadley/watchoptical",
@@ -53,5 +53,5 @@ setup(
         "Operating System :: POSIX",
         "Intended Audience :: Science/Research",
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.8",
 )
