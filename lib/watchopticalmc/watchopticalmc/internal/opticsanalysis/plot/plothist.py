@@ -2,11 +2,11 @@ import os
 
 from matplotlib.figure import Figure
 
-from watchopticalmc.internal.histoutils import categoryhistplot
+from watchopticalutils.histoutils import categoryhistplot
 from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
     OpticsAnalysisResult,
 )
-from watchopticalmc.internal.utils import timeconstants
+from watchopticalutils import timeconstants
 
 
 def plothist(data: OpticsAnalysisResult, dest: str = "plots") -> None:

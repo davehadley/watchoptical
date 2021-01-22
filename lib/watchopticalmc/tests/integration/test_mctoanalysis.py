@@ -13,7 +13,7 @@ from watchopticalmc.internal.generatemc.runwatchmakers import WatchMakersConfig
 from watchopticalmc.internal.generatemc.watchmakersfilenameutils import issignalfile
 from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
 from watchopticalmc.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
-from watchopticalmc.internal.utils.client import ClientType, client
+from watchopticalutils.client import ClientType, client
 
 
 @pytest.fixture

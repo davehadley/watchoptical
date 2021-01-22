@@ -10,7 +10,7 @@ from watchopticalmc.internal.generatemc.wmdataset import (
     RatPacBonsaiPair,
     WatchmanDataset,
 )
-from watchopticalmc.internal.utils.filepathutils import temporaryworkingdirectory
+from watchopticalutils.filepathutils import temporaryworkingdirectory
 from watchopticalmc.internal.watchopticalcpp import convert_ratpacbonsai_to_analysis
 
 

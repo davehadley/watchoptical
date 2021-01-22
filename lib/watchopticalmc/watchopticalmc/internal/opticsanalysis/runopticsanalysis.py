@@ -10,17 +10,17 @@ from dask.bag import Bag
 from pandas import DataFrame
 
 from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
-from watchopticalmc.internal.histoutils import CategoryMean, ExposureWeightedHistogram
-from watchopticalmc.internal.histoutils.categoryselectionstats import (
+from watchopticalutils.histoutils import CategoryMean, ExposureWeightedHistogram
+from watchopticalutils.histoutils.categoryselectionstats import (
     CategorySelectionStats,
 )
-from watchopticalmc.internal.histoutils.selection import Selection
+from watchopticalutils.histoutils.selection import Selection
 from watchopticalmc.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
 from watchopticalmc.internal.opticsanalysis.eventtype import eventtypefromfile
 from watchopticalmc.internal.opticsanalysis.selectiondefs import SelectionDefs
 from watchopticalmc.internal.opticsanalysis.variable import VariableDefs
-from watchopticalmc.internal.utils.cache import cachedcallable
-from watchopticalmc.internal.utils.collectionutils import sumlist, summap
+from watchopticalutils.cache import cachedcallable
+from watchopticalutils.collectionutils import sumlist, summap
 
 
 def _add_accum(left, right):

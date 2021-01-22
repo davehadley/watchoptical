@@ -1,6 +1,6 @@
 from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
 from watchopticalmc.internal.opticsanalysis.runopticsanalysis import runopticsanalysis
-from watchopticalmc.internal.utils.filepathutils import temporaryworkingdirectory
+from watchopticalutils.filepathutils import temporaryworkingdirectory
 
 
 def test_runopticsanalysis_completes_without_error(

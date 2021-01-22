@@ -6,14 +6,9 @@ from skbuild import setup
 with open("README.md", "r") as readme:
     long_description = readme.read()
 
-with open("watchopticalmc/_version.py") as fp:
-    version: Dict[str, Any] = {}
-    exec(fp.read(), version)
-    version = version["__version__"]
-
 setup(
     name="watchopticalmc",
-    version=version,
+    version="0.3.0",
     description="Generates MC for WATCHMAN Optical Calibration analysis",
     long_description=long_description,
     long_description_content_type="text/markdown",

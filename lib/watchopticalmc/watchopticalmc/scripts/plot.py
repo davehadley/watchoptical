@@ -6,8 +6,8 @@ from watchopticalmc.internal.opticsanalysis.plot import PlotMode, plot
 from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
     cachedopticsanalysis,
 )
-from watchopticalmc.internal.utils.client import ClientType, client
-from watchopticalmc.internal.utils.filepathutils import (
+from watchopticalutils.client import ClientType, client
+from watchopticalutils.filepathutils import (
     searchforrootfilesexcludinganalysisfiles,
 )
 

@@ -7,8 +7,8 @@ from watchopticalmc.internal.generatemc.generatemc import GenerateMCConfig, gene
 from watchopticalmc.internal.generatemc.runwatchmakers import WatchMakersConfig
 from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
 from watchopticalmc.internal.stringconstants import StringConstants
-from watchopticalmc.internal.utils.client import ClientType, client
-from watchopticalmc.internal.utils.filepathutils import (
+from watchopticalutils.client import ClientType, client
+from watchopticalutils.filepathutils import (
     searchforrootfilesexcludinganalysisfiles,
 )
 

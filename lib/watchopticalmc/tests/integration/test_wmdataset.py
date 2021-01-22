@@ -8,7 +8,7 @@ from watchopticalmc.internal.generatemc.runwatchmakers import (
     generatejobscripts,
 )
 from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
-from watchopticalmc.internal.utils.filepathutils import touchfile
+from watchopticalutils.filepathutils import touchfile
 
 
 class TestWMDataset(unittest.TestCase):
