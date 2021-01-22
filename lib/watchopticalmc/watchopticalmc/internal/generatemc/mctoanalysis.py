@@ -11,7 +11,7 @@ from watchopticalmc.internal.generatemc.wmdataset import (
     WatchmanDataset,
 )
 from watchopticalutils.filepathutils import temporaryworkingdirectory
-from watchopticalmc.internal.watchopticalcpp import convert_ratpacbonsai_to_analysis
+from watchopticalcpp import convert_ratpacbonsai_to_analysis
 
 
 @dataclass(frozen=True)
