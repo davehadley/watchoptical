@@ -48,7 +48,7 @@ def buildbonsai():
 def buildwatchoptical():
     run(["pip", "install", "--no-input", "-e", "./lib/watchopticalcpp"], title="Install watchopticalcpp")
     run(["poetry", "install"], title="Install watchopticalutils", cwd="./lib/watchopticalutils")
-    run(["poetry", "install", "./lib/watchopticalmc"], title="Install watchopticalmc")
+    run(["poetry", "install"], title="Install watchopticalmc", cwd="./lib/watchopticalmc")
     run(["poetry", "install"], title="Install watchopticalanalysis", cwd="./lib/watchopticalanalysis")
 
 
