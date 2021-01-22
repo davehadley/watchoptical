@@ -55,6 +55,8 @@ WATCHOPTICALCONDAENV=${WATCHOPTICALWORKSPACE}/env/watchoptical
 if [ ! -d "${WATCHOPTICALCONDAENV}" ]
 then 
     ${CONDA} env create -f environment.yml --prefix ${WATCHOPTICALCONDAENV}
+    # struggled to get poetry to work in the environment file so get it from pip
+    pip install poetry
 fi
 
 # Activate the environment
