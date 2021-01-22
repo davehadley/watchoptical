@@ -3,7 +3,7 @@ import unittest
 import boost_histogram as bh
 import numpy as np
 
-from watchopticalmc.internal.histoutils import ExposureWeightedHistogram
+from watchopticalanalysis.internal.histoutils import ExposureWeightedHistogram
 
 
 class TestHistoUtilsExposureWeightedHistogram(unittest.TestCase):
