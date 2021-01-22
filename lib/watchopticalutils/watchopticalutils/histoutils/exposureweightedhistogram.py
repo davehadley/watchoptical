@@ -5,7 +5,7 @@ from typing import Any, Collection, DefaultDict, Iterator, NamedTuple, Optional,
 import boost_histogram as bh
 import numpy as np
 
-from watchopticalmc.internal.histoutils.categoryhistogram import CategoryHistogram
+from watchopticalutils.histoutils.categoryhistogram import CategoryHistogram
 
 
 class ExposureWeightedHistogram(Collection):

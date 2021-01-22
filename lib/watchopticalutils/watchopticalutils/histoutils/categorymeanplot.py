@@ -4,8 +4,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 
-from watchopticalmc.internal.histoutils import CategoryMean
-from watchopticalmc.internal.histoutils.categoryhistogram import CategoryHistogram
+from watchopticalutils.histoutils import CategoryMean
+from watchopticalutils.histoutils.categoryhistogram import CategoryHistogram
 
 
 def categorymeanplot(

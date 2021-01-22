@@ -5,7 +5,7 @@ import mplhep
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 
-from watchopticalmc.internal.histoutils.categoryhistogram import CategoryHistogram
+from watchopticalutils.histoutils.categoryhistogram import CategoryHistogram
 
 
 def categoryhistplot(
