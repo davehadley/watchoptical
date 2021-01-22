@@ -16,9 +16,9 @@ from typing import (
 import numpy as np
 from tabulate import tabulate
 
-from watchopticalmc.internal.histoutils.selection import Selection
-from watchopticalmc.internal.histoutils.selectionstats import SelectionStats
-from watchopticalmc.internal.utils.safedivide import safedivide
+from watchopticalutils.histoutils.selection import Selection
+from watchopticalutils.histoutils.selectionstats import SelectionStats
+from watchopticalutils.safedivide import safedivide
 
 
 class CategorySelectionStats(Collection):

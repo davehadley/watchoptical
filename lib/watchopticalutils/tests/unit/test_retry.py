@@ -1,4 +1,4 @@
-from watchopticalmc.internal.utils.retry import retry
+from watchopticalutils.retry import retry
 
 
 class _DummyException(Exception):

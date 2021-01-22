@@ -6,8 +6,8 @@ import numpy as np
 from pandas import DataFrame
 from tabulate import tabulate
 
-from watchopticalmc.internal.histoutils.cut import Cut
-from watchopticalmc.internal.histoutils.selection import Selection
+from watchopticalutils.histoutils.cut import Cut
+from watchopticalutils.histoutils.selection import Selection
 
 
 @dataclass(frozen=True)

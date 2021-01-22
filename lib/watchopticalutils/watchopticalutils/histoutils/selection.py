@@ -4,7 +4,7 @@ from typing import NamedTuple, Tuple
 
 import numpy as np
 
-from watchopticalmc.internal.histoutils.cut import Cut
+from watchopticalutils.histoutils.cut import Cut
 
 
 class Selection(NamedTuple):

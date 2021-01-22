@@ -5,13 +5,13 @@ from unittest import TestCase
 
 import numpy as np
 
-from watchopticalmc.internal.utils.cache import (
+from watchopticalutils.cache import (
     Cache,
     cachedcall,
     cachedcallable,
     cacheget,
 )
-from watchopticalmc.internal.utils.filepathutils import temporaryworkingdirectory
+from watchopticalutils.filepathutils import temporaryworkingdirectory
 
 
 def _dummyfunction():

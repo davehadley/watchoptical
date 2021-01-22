@@ -1,4 +1,4 @@
-from watchopticalmc.internal.ignoreerrors import ignoreerrors
+from watchopticalutils.ignoreerrors import ignoreerrors
 
 
 def test_ignoreerrors_with_exception():
