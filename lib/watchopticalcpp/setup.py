@@ -17,8 +17,7 @@ setup(
     author_email="d.r.hadley@warwick.ac.uk",
     license="MIT",
     packages=find_packages(include=["watchopticalcpp*"]),
-    install_requires=[
-    ],
+    install_requires=[],
     extras_require={
         "dev": ["pre-commit>=2.7.1", "flake8", "mypy", "black", "pytest"],
     },
