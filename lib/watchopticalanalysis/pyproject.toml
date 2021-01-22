@@ -6,6 +6,7 @@ authors = ["David Hadley <davehadley@users.noreply.github.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+watchopticalmc = {path = "../../lib/watchopticalmc"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
