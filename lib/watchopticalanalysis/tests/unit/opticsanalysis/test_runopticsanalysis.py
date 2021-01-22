@@ -1,5 +1,5 @@
 from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import runopticsanalysis
+from watchopticalanalysis.internal.runopticsanalysis import runopticsanalysis
 from watchopticalutils.filepathutils import temporaryworkingdirectory
 
 
