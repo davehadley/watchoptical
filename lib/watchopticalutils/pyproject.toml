@@ -11,7 +11,6 @@ sqlitedict = "^1.7.0"
 dask = {extras = ["distributed", "bag"], version = "^2021.1.0"}
 dask_jobqueue = "^0.7.2"
 distributed = "^2021.1.0"
-functoolz = "^0.4"
 toolz = "^0.11.1"
 boost_histogram = "^0.11.1"
 numpy = "^1.19.5"
