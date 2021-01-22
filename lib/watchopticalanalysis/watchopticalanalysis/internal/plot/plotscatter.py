@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from tabulate import tabulate
 
 from watchopticalutils.histoutils import CategoryMean, categorymeanplot
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
+from watchopticalanalysis.internal.runopticsanalysis import (
     OpticsAnalysisResult,
 )
 

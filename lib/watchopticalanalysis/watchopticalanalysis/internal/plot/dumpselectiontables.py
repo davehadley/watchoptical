@@ -9,7 +9,7 @@ from toolz import groupby
 from watchopticalutils.histoutils.categoryselectionstats import (
     CategorySelectionStats,
 )
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
+from watchopticalanalysis.internal.runopticsanalysis import (
     OpticsAnalysisResult,
 )
 from watchopticalutils.safedivide import safedivide

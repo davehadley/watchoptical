@@ -3,7 +3,7 @@ import os
 from matplotlib.figure import Figure
 
 from watchopticalutils.histoutils import categoryhistplot
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
+from watchopticalanalysis.internal.runopticsanalysis import (
     OpticsAnalysisResult,
 )
 from watchopticalutils import timeconstants

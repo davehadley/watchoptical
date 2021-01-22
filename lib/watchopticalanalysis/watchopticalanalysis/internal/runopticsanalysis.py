@@ -17,8 +17,8 @@ from watchopticalutils.histoutils.categoryselectionstats import (
 from watchopticalutils.histoutils.selection import Selection
 from watchopticalmc.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
 from watchopticalmc.internal.opticsanalysis.eventtype import eventtypefromfile
-from watchopticalmc.internal.opticsanalysis.selectiondefs import SelectionDefs
-from watchopticalmc.internal.opticsanalysis.variable import VariableDefs
+from watchopticalanalysis.internal.selectiondefs import SelectionDefs
+from watchopticalanalysis.internal.variable import VariableDefs
 from watchopticalutils.cache import cachedcallable
 from watchopticalutils.collectionutils import sumlist, summap
 
