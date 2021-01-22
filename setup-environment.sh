@@ -60,15 +60,15 @@ fi
 # Activate the environment
 source ${CONDAACTIVATE}
 
+#${CONDA} activate ${WATCHOPTICALCONDAENV}
+source activate ${WATCHOPTICALCONDAENV}
+
 if ! command -v poetry &> /dev/null
 then
     # struggled to get poetry to work in the environment file so get it from pip
     pip install poetry
 fi
 
-
-#${CONDA} activate ${WATCHOPTICALCONDAENV}
-source activate ${WATCHOPTICALCONDAENV}
 
 export RATROOT=${WATCHOPTICALWORKSPACE}/build/rat-pac
 export RATSHARE=${WATCHOPTICALWORKSPACE}/external/rat-pac
