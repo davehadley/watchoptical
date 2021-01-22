@@ -2,13 +2,13 @@ from enum import Enum
 from functools import partial
 from typing import Optional
 
-from watchopticalmc.internal.opticsanalysis.plot.dumpselectiontables import (
+from watchopticalanalysis.internal.plot.dumpselectiontables import (
     dumpselectiontables,
 )
-from watchopticalmc.internal.opticsanalysis.plot.plotattenuation import plotattenuation
-from watchopticalmc.internal.opticsanalysis.plot.plothist import plothist
-from watchopticalmc.internal.opticsanalysis.plot.plotscatter import plotscatter
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
+from watchopticalanalysis.internal.plot.plotattenuation import plotattenuation
+from watchopticalanalysis.internal.plot.plothist import plothist
+from watchopticalanalysis.internal.plot.plotscatter import plotscatter
+from watchopticalanalysis.internal.runopticsanalysis import (
     OpticsAnalysisResult,
 )
 

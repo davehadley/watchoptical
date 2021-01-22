@@ -26,6 +26,7 @@ cloudpickle = "^1.6.0"
 scipy = "^1.6.0"
 sqlitedict = "^1.7.0"
 watchopticalutils = {path = "../../lib/watchopticalutils"}
+watchopticalcpp = {path = "../../lib/watchopticalcpp"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.1"

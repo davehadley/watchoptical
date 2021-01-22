@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
+from watchopticalanalysis.internal.runopticsanalysis import (
     OpticsAnalysisResult,
 )
 
