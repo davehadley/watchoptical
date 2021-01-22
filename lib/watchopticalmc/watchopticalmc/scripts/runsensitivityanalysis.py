@@ -11,8 +11,8 @@ from watchopticalmc.internal.generatemc.runwatchmakerssensitivityanalysis import
     WatchMakersSensitivityResult,
     runwatchmakerssensitivityanalysis,
 )
-from watchopticalmc.internal.utils.client import ClientType, client
-from watchopticalmc.internal.utils.filepathutils import expandpath
+from watchopticalutils.client import ClientType, client
+from watchopticalutils.filepathutils import expandpath
 
 
 def _parsecml() -> Namespace:

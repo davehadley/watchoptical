@@ -9,7 +9,7 @@ from watchopticalmc.internal.generatemc.runwatchmakerssensitivityanalysis import
     WatchMakersSensitivityAnalysisConfig,
     runwatchmakerssensitivityanalysis,
 )
-from watchopticalmc.internal.utils.client import ClientType, client
+from watchopticalutils.client import ClientType, client
 
 
 class TestRunWatchMakersSensitivityAnalysis(unittest.TestCase):

@@ -6,8 +6,8 @@ from watchopticalmc.internal.generatemc.mctoanalysis import (
     mctoanalysis,
 )
 from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
-from watchopticalmc.internal.utils.client import ClientType, client
-from watchopticalmc.internal.utils.filepathutils import (
+from watchopticalutils.client import ClientType, client
+from watchopticalutils.filepathutils import (
     searchforrootfilesexcludinganalysisfiles,
 )
 

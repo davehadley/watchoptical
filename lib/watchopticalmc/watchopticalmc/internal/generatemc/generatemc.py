@@ -22,11 +22,11 @@ from watchopticalmc.internal.generatemc.runwatchmakers import (
     generatejobscripts,
 )
 from watchopticalmc.internal.generatemc.wmdataset import RatPacBonsaiPair
-from watchopticalmc.internal.utils.filepathutils import (
+from watchopticalutils.filepathutils import (
     expandpath,
     temporaryworkingdirectory,
 )
-from watchopticalmc.internal.utils.retry import retry
+from watchopticalutils.retry import retry
 
 
 @dataclass(frozen=True)

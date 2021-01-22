@@ -6,13 +6,13 @@ from typing import Iterable, List
 from tabulate import tabulate
 from toolz import groupby
 
-from watchopticalmc.internal.histoutils.categoryselectionstats import (
+from watchopticalutils.histoutils.categoryselectionstats import (
     CategorySelectionStats,
 )
 from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
     OpticsAnalysisResult,
 )
-from watchopticalmc.internal.utils.safedivide import safedivide
+from watchopticalutils.safedivide import safedivide
 
 
 def dumpselectiontables(data: OpticsAnalysisResult, dest: str = "plots"):

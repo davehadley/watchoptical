@@ -4,7 +4,7 @@ from typing import Any, Callable, Iterable, Optional, Sequence
 from matplotlib import pyplot as plt
 from tabulate import tabulate
 
-from watchopticalmc.internal.histoutils import CategoryMean, categorymeanplot
+from watchopticalutils.histoutils import CategoryMean, categorymeanplot
 from watchopticalmc.internal.opticsanalysis.runopticsanalysis import (
     OpticsAnalysisResult,
 )
