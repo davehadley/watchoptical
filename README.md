@@ -57,7 +57,7 @@ If you are still having trouble contact @davehadley.
 
 From the `watchoptical` directory run:
 ```bash
-test-lib.py
+python test-lib.py
 ```
 
 ### Package Structure
