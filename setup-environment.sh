@@ -69,3 +69,7 @@ export PATH=${WATCHOPTICALWORKSPACE}/build/bonsai:${RATROOT}/bin:${PATH}
 export BONSAIDIR=${WATCHOPTICALWORKSPACE}/build/bonsai
 export LD_LIBRARY_PATH=${BONSAIDIR}:${RATROOT}/lib:${LD_LIBRARY_PATH}
 export WATCHENV=${WATCHOPTICALWORKSPACE}/external/watchmakers
+
+# stop pip asking for a password 
+# see: https://github.com/jaraco/keyring#disabling-keyring
+PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
