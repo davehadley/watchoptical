@@ -3,8 +3,8 @@ import unittest
 import numpy as np
 from pandas import DataFrame
 
-from watchopticalanalysis.internal.histoutils.cut import Cut
-from watchopticalanalysis.internal.histoutils.selection import Selection
+from watchopticalmc.internal.histoutils.cut import Cut
+from watchopticalmc.internal.histoutils.selection import Selection
 
 
 class TestSelection(unittest.TestCase):
