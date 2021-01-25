@@ -1,7 +1,7 @@
 import os
 from argparse import ArgumentParser, Namespace
 
-from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
+from watchopticalmc import WatchmanDataset
 from watchopticalanalysis.internal.plot import PlotMode, plot
 from watchopticalanalysis.internal.runopticsanalysis import (
     cachedopticsanalysis,

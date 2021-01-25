@@ -1,8 +1,7 @@
 import pytest
 from numpy import dtype
 
-from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
-from watchopticalmc.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
+from watchopticalmc import WatchmanDataset, AnalysisEventTuple
 from watchopticalanalysis.internal.selectiondefs import SelectionDefs
 
 

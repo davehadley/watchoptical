@@ -9,14 +9,14 @@ import numpy as np
 from dask.bag import Bag
 from pandas import DataFrame
 
-from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
+from watchopticalmc import WatchmanDataset
 from watchopticalutils.histoutils import CategoryMean, ExposureWeightedHistogram
 from watchopticalutils.histoutils.categoryselectionstats import (
     CategorySelectionStats,
 )
 from watchopticalutils.histoutils.selection import Selection
-from watchopticalmc.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
-from watchopticalmc.internal.opticsanalysis.eventtype import eventtypefromfile
+from watchopticalmc import AnalysisEventTuple
+from watchopticalanalysis.internal.eventtype import eventtypefromfile
 from watchopticalanalysis.internal.selectiondefs import SelectionDefs
 from watchopticalanalysis.internal.variable import VariableDefs
 from watchopticalutils.cache import cachedcallable
