@@ -45,7 +45,8 @@ def main():
         analysisfiles = mctoanalysis(
             dataset, config=MCToAnalysisConfig(directory=args.directory)
         ).compute()
-    AnalysisDataset(sourcedataset=dataset, 
+    AnalysisDataset(
+        sourcedataset=dataset,
         analysisfiles=list(analysisfiles),
         directory=Path(args.directory),
         inputfiles=[Path(p) for p in args.inputfiles],
