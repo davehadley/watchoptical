@@ -21,13 +21,16 @@ def signaldatasetfixture() -> Path:
             "tmp_watchoptical_unittest_signaldataset_2"
         )
         if not os.path.exists(dirname):
-            subprocess.run(["python", 
-            "-m", 
-            "watchopticalmc",
-            "--signal-only",
-            "--num-events-per-job=20",
-            "--num-jobs=1",
-            "--client=local",
-            f"--directory={dirname}",
-            ])
+            subprocess.run(
+                [
+                    "python",
+                    "-m",
+                    "watchopticalmc",
+                    "--signal-only",
+                    "--num-events-per-job=20",
+                    "--num-jobs=1",
+                    "--client=local",
+                    f"--directory={dirname}",
+                ]
+            )
     return AnalysisDataset.load(Path(dirname) / "analysisdataset.pickle")

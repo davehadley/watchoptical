@@ -1,9 +1,9 @@
-
 from argparse import ArgumentParser, Namespace
 from watchopticalutils.client import ClientType
 from subprocess import run
 from pathlib import Path
 import os
+
 
 def _parsecml() -> Namespace:
     parser = ArgumentParser(description="Generate WATCHMAN MC files")
@@ -49,12 +49,20 @@ def _parsecml() -> Namespace:
     )
     return parser.parse_args()
 
+
 def main():
     args = _parsecml()
-    configurations = [(att, scat) for att in args.attenuation.split(",") for scat in args.attenuation.split(",")]
+    configurations = [
+        (att, scat)
+        for att in args.attenuation.split(",")
+        for scat in args.attenuation.split(",")
+    ]
     # generate MC
     for (attenuation, scattering) in configurations:
-        cmd = ["python", "-m", "watchopticalmc.scripts.generatemc", 
+        cmd = [
+            "python",
+            "-m",
+            "watchopticalmc.scripts.generatemc",
             f"--num-jobs={args.num_jobs}",
             f"--num-events-per-job={args.num_events_per_job}",
             f"--attenuation={attenuation}",
@@ -69,15 +77,28 @@ def main():
         run(cmd, check=True)
     # run sensitivity analysis
     for directory in Path(args.directory).glob("watchmanmc_*"):
-        run(["python", "-m", "watchopticalmc.scripts.runsensitivityanalysis", 
-            f"--client={args.client.value}", 
-            directory], check=True
-            )
+        run(
+            [
+                "python",
+                "-m",
+                "watchopticalmc.scripts.runsensitivityanalysis",
+                f"--client={args.client.value}",
+                directory,
+            ],
+            check=True,
+        )
     # create analysis files
-    run(["python", "-m", "watchopticalmc.scripts.mctoanalysis",
-    f"--directory={args.directory}",
-    f"--client={args.client.value}",
-    args.directory,], check=True)
+    run(
+        [
+            "python",
+            "-m",
+            "watchopticalmc.scripts.mctoanalysis",
+            f"--directory={args.directory}",
+            f"--client={args.client.value}",
+            args.directory,
+        ],
+        check=True,
+    )
     return
 
 

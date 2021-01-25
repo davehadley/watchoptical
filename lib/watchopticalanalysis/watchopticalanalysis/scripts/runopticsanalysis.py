@@ -28,7 +28,9 @@ def parsecml() -> Namespace:
         default=ClientType.CLUSTER,
         help="Where to run jobs.",
     )
-    parser.add_argument("inputdataset", type=str, default=os.getcwd()+"/analysisdataset.pickle")
+    parser.add_argument(
+        "inputdataset", type=str, default=os.getcwd() + "/analysisdataset.pickle"
+    )
     parser.add_argument("--force", "-f", action="store_true")
     return parser.parse_args()
 

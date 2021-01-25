@@ -76,7 +76,9 @@ class AnalysisEventTuple(NamedTuple):
 
     @classmethod
     def fromAnalysisDataset(cls, dataset: AnalysisDataset) -> Bag:
-        return dask.bag.from_sequence(dataset.analysisfiles).map(AnalysisEventTuple.load)
+        return dask.bag.from_sequence(dataset.analysisfiles).map(
+            AnalysisEventTuple.load
+        )
 
     @property
     def macro(self) -> str:
