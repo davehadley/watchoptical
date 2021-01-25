@@ -10,6 +10,8 @@ from watchopticalutils.client import ClientType, client
 from watchopticalutils.filepathutils import (
     searchforrootfilesexcludinganalysisfiles,
 )
+from watchopticalmc import AnalysisDataset
+from pathlib import Path
 
 
 def parsecml() -> Namespace:
@@ -40,9 +42,14 @@ def main():
     args = parsecml()
     dataset = WatchmanDataset(searchforrootfilesexcludinganalysisfiles(args.inputfiles))
     with client(args.client):
-        mctoanalysis(
+        analysisfiles = mctoanalysis(
             dataset, config=MCToAnalysisConfig(directory=args.directory)
         ).compute()
+    AnalysisDataset(sourcedataset=dataset, 
+        analysisfiles=list(analysisfiles),
+        directory=Path(args.directory),
+        inputfiles=[Path(p) for p in args.inputfiles],
+    ).write(Path(args.directory) / "analysisdataset.pickle")
     return
 
 
