@@ -3,33 +3,31 @@ import tempfile
 
 import pytest
 
-# TODO: don't rely on internal implementation
-from watchopticalmc.internal.generatemc.generatemc import GenerateMCConfig, generatemc
-from watchopticalmc.internal.generatemc.runwatchmakers import WatchMakersConfig
-from watchopticalmc import WatchmanDataset
-from watchopticalmc.internal.stringconstants import StringConstants
+from watchopticalmc import AnalysisDataset
 from watchopticalutils.client import ClientType, client
 from watchopticalutils.filepathutils import (
     searchforrootfilesexcludinganalysisfiles,
 )
+import subprocess
+from pathlib import Path
 
 
-@pytest.fixture(scope="module")
-def signaldatasetfixture() -> WatchmanDataset:
+@pytest.fixture()
+def signaldatasetfixture() -> Path:
     with client(ClientType.SINGLE):
         dirname = (
             f"{tempfile.gettempdir()}"
             f"{os.sep}wm{os.sep}tmp{os.sep}"
-            "tmp_watchoptical_unittest_signaldataset"
+            "tmp_watchoptical_unittest_signaldataset_2"
         )
         if not os.path.exists(dirname):
-            os.makedirs(dirname, exist_ok=True)
-            generatemc(
-                GenerateMCConfig(
-                    WatchMakersConfig(directory=dirname, numevents=20),
-                    numjobs=1,
-                    filenamefilter=lambda n: StringConstants.WATCHMAKERS_SIGNAL_PATTERN
-                    in n,
-                )
-            ).compute()
-    return WatchmanDataset(searchforrootfilesexcludinganalysisfiles([dirname]))
+            subprocess.run(["python", 
+            "-m", 
+            "watchopticalmc",
+            "--signal-only",
+            "--num-events-per-job=20",
+            "--num-jobs=1",
+            "--client=local",
+            f"--directory={dirname}",
+            ])
+    return AnalysisDataset.load(Path(dirname) / "analysisdataset.pickle")
