@@ -18,9 +18,15 @@ def checkbonsai():
     return
 
 def checkwatchoptical():
-    print("--- Check watchoptical")
-    import watchoptical
-    print(watchoptical)
+    print("--- Check watchopticalcpp")
+    import watchopticalcpp
+    print(watchopticalcpp)
+    print("--- Check watchopticalmc")
+    import watchopticalmc
+    print(watchopticalmc)
+    print("--- Check watchopticalanalysis")
+    import watchopticalanalysis
+    print(watchopticalanalysis)
 
 if __name__ == "__main__":
     testcommand(["env"], "Environemnt Variables")
