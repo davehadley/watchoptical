@@ -1,4 +1,4 @@
-from typing import TypeVar, Callable, Generic, Iterable
+from typing import TypeVar, Callable, Generic, Iterable, Tuple
 from watchopticalmc import AnalysisEventTuple
 from watchopticalutils.collectionutils import sumlist
 from abc import ABC, abstractmethod
@@ -18,13 +18,25 @@ class Algorithm(ABC, Generic[T, U]):
     def finish(self, result: T) -> U:
         pass
 
-def process(algorithms: Iterable[Algorithm], dataset: Bag, force: bool=False):
+def apply_algorithms(algorithms: Iterable[Algorithm], dataset: Bag) -> Tuple:
     algorithms = list(algorithms)
     def fold(*args, **kwargs):
         return tuple(left + right for left, right in zip(*args))
     def finish(*args, **kwargs):
-        print(f"finish-> {args} {kwargs}")
-        return tuple(alg.finish(r) for (alg, r) in zip(algorithms, args)) 
+        return tuple(alg.finish(r) for (alg, r) in zip(algorithms, args))
+    reduced = (dataset
+        .map(lambda data: tuple(alg.apply(data) for alg in algorithms))
+        .fold(fold).compute())
+    result = tuple(a.finish(r) for r, a in zip(reduced, algorithms))
+    assert len(result) == len(algorithms)
+    return result
+
+def apply_cached_algorithms(cache: algorithms: Iterable[Algorithm], dataset: Bag) -> Tuple:
+    algorithms = list(algorithms)
+    def fold(*args, **kwargs):
+        return tuple(left + right for left, right in zip(*args))
+    def finish(*args, **kwargs):
+        return tuple(alg.finish(r) for (alg, r) in zip(algorithms, args))
     reduced = (dataset
         .map(lambda data: tuple(alg.apply(data) for alg in algorithms))
         .fold(fold).compute())
