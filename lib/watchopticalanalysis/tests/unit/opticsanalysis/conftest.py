@@ -3,9 +3,10 @@ import tempfile
 
 import pytest
 
+# TODO: don't rely on internal implementation
 from watchopticalmc.internal.generatemc.generatemc import GenerateMCConfig, generatemc
 from watchopticalmc.internal.generatemc.runwatchmakers import WatchMakersConfig
-from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
+from watchopticalmc import WatchmanDataset
 from watchopticalmc.internal.stringconstants import StringConstants
 from watchopticalutils.client import ClientType, client
 from watchopticalutils.filepathutils import (
