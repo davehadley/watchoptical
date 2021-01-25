@@ -1,7 +1,7 @@
 import os
 from argparse import ArgumentParser, Namespace
 
-from watchopticalmc import WatchmanDataset
+from watchopticalmc import AnalysisDataset, WatchmanDataset
 from watchopticalanalysis.internal.runopticsanalysis import (
     cachedopticsanalysis,
 )
@@ -28,18 +28,14 @@ def parsecml() -> Namespace:
         default=ClientType.CLUSTER,
         help="Where to run jobs.",
     )
-    parser.add_argument("inputfiles", nargs="+", type=str, default=[os.getcwd()])
+    parser.add_argument("inputdataset", type=str, default=os.getcwd()+"/analysisdataset.pickle")
     parser.add_argument("--force", "-f", action="store_true")
     return parser.parse_args()
 
 
 def main():
     args = parsecml()
-    dataset = WatchmanDataset(
-        f
-        for f in searchforrootfilesexcludinganalysisfiles(args.inputfiles)
-        if not ("IBDNeutron" in f or "IBDPosition" in f)
-    )
+    dataset = AnalysisDataset.load(args.dataset)
     with client(args.client):
         cachedopticsanalysis(dataset, forcecall=True)
     return

@@ -15,7 +15,7 @@ from watchopticalutils.histoutils.categoryselectionstats import (
     CategorySelectionStats,
 )
 from watchopticalutils.histoutils.selection import Selection
-from watchopticalmc import AnalysisEventTuple
+from watchopticalmc import AnalysisDataset, AnalysisEventTuple
 from watchopticalanalysis.internal.eventtype import eventtypefromfile
 from watchopticalanalysis.internal.selectiondefs import SelectionDefs
 from watchopticalanalysis.internal.variable import VariableDefs
@@ -202,9 +202,9 @@ def _analysis(tree: AnalysisEventTuple) -> OpticsAnalysisResult:
     return result
 
 
-def runopticsanalysis(dataset: WatchmanDataset) -> Bag:
+def runopticsanalysis(dataset: AnalysisDataset) -> Bag:
     hist = (
-        AnalysisEventTuple.fromWatchmanDataset(dataset)
+        AnalysisEventTuple.fromAnalysisDataset(dataset)
         .map(_analysis)
         .filter(lambda r: r is not None)
         .reduction(sumlist, sumlist)
@@ -213,5 +213,5 @@ def runopticsanalysis(dataset: WatchmanDataset) -> Bag:
 
 
 @cachedcallable(lambda d: f"opticsanalysis/{d.name}")
-def cachedopticsanalysis(dataset: WatchmanDataset) -> OpticsAnalysisResult:
+def cachedopticsanalysis(dataset: AnalysisDataset) -> OpticsAnalysisResult:
     return runopticsanalysis(dataset).compute()

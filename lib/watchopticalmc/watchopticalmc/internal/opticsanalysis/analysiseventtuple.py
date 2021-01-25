@@ -7,6 +7,7 @@ from cloudpickle import cloudpickle
 from dask.bag import Bag
 from pandas import DataFrame
 
+from watchopticalmc.internal.opticsanalysis.analysisdataset import AnalysisDataset
 from watchopticalmc.internal.generatemc.generatemc import GenerateMCConfig
 from watchopticalmc.internal.generatemc.mctoanalysis import AnalysisFile, mctoanalysis
 from watchopticalmc.internal.generatemc.runwatchmakerssensitivityanalysis import (
@@ -15,6 +16,7 @@ from watchopticalmc.internal.generatemc.runwatchmakerssensitivityanalysis import
     runwatchmakerssensitivityanalysis,
 )
 from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
+import dask.bag
 
 
 class AnalysisData(NamedTuple):
@@ -71,6 +73,10 @@ class AnalysisEventTuple(NamedTuple):
     @classmethod
     def fromWatchmanDataset(cls, dataset: WatchmanDataset) -> Bag:
         return mctoanalysis(dataset).map(AnalysisEventTuple.load)
+
+    @classmethod
+    def fromAnalysisDataset(cls, dataset: AnalysisDataset) -> Bag:
+        return dask.bag.from_sequence(dataset.analysisfiles).map(AnalysisEventTuple.load)
 
     @property
     def macro(self) -> str:
