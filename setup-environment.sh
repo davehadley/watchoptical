@@ -66,7 +66,7 @@ source activate ${WATCHOPTICALCONDAENV}
 if ! command -v poetry &> /dev/null
 then
     # struggled to get poetry to work in the environment file so get it from pip
-    pip install poetry
+    pip install poetry black mypy flake8
 fi
 
 
