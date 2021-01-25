@@ -10,6 +10,10 @@ U = TypeVar("U")
 
 
 class Algorithm(ABC, Generic[T, U]):
+    def key(self) -> Optional[str]:
+        """Unique key used to retrieve from cache."""
+        return None
+
     @abstractmethod
     def apply(self, data: AnalysisEventTuple) -> T:
         pass
@@ -22,11 +26,8 @@ class Algorithm(ABC, Generic[T, U]):
 def apply_algorithms(algorithms: Iterable[Algorithm], dataset: Bag) -> Tuple:
     algorithms = list(algorithms)
 
-    def fold(*args, **kwargs):
+    def fold(*args):
         return tuple(left + right for left, right in zip(*args))
-
-    def finish(*args, **kwargs):
-        return tuple(alg.finish(r) for (alg, r) in zip(algorithms, args))
 
     reduced = (
         dataset.map(lambda data: tuple(alg.apply(data) for alg in algorithms))
@@ -41,6 +42,24 @@ def apply_algorithms(algorithms: Iterable[Algorithm], dataset: Bag) -> Tuple:
 def cached_apply_algorithms(
     algorithms: Iterable[Algorithm], dataset: Bag, cache: Optional[Cache] = None
 ) -> Tuple:
-    # if cache is None:
-    #    cache = Cache()
-    return apply_algorithms(algorithms, dataset)
+    algorithms = {k: v for k, v in enumerate(algorithms)}
+    result = {}
+    notcached = {}
+    if cache is None:
+        cache = Cache()
+    with cache as db:
+        for k, v in algorithms.items():
+            try:
+                result[k] = db[v.key()]
+            except KeyError:
+                notcached[k] = v
+    notcached = tuple(notcached.items())
+    # compute results that have not cached value
+    newresults = apply_algorithms((v for _, v in notcached), dataset)
+    # write the new results back to the cache
+    with cache as db:
+        for ((k, v), r) in zip(notcached, newresults):
+            cache[v.key()] = r
+            result[k] = r
+    # return the result in the correct format
+    return tuple(v for _, v in sorted(result.items()))

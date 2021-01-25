@@ -1,4 +1,5 @@
-from typing import Any
+from tempfile import NamedTemporaryFile
+from typing import Any, Optional
 
 import dask.bag
 from watchopticalanalysis.algorithm import (
@@ -7,6 +8,7 @@ from watchopticalanalysis.algorithm import (
     cached_apply_algorithms,
 )
 from watchopticalmc import AnalysisEventTuple
+from watchopticalutils.cache import Cache
 from watchopticalutils.client import ClientType, client
 
 # from watchopticalutils.client import Client, client
@@ -25,10 +27,14 @@ class RetInt(Algorithm[int, int]):
 
 
 class Identity(Algorithm[Any, Any]):
-    def __init__(self):
+    def __init__(self, key: str = None):
+        self._key = key
         super().__init__()
         self.apply_count = 0
         self.finish_count = 0
+
+    def key(self) -> Optional[str]:
+        return self._key
 
     def apply(self, data: AnalysisEventTuple) -> Any:
         self.apply_count += 1
@@ -77,21 +83,23 @@ def test_process_two_alg_with_data():
 
 def test_cached_algorithm():
     with client(ClientType.SINGLE):
-        algs1 = [Identity(), Identity()]
-        dataset = dask.bag.from_sequence(["A", "B", "C", "D"])
-        result1 = cached_apply_algorithms(algs1, dataset)
-        algs2 = [Identity(), Identity()]
-        result2 = cached_apply_algorithms(algs2, dataset)
-        assert all(
-            [
-                algs1[0].apply_count == 4,
-                algs1[1].apply_count == 4,
-                algs2[0].apply_count == 0,
-                algs2[1].apply_count == 0,
-                algs1[0].finish_count == 1,
-                algs1[1].finish_count == 1,
-                algs2[0].finish_count == 1,
-                algs2[1].finish_count == 1,
-            ]
-        )
-        assert result1 == result2
+        with NamedTemporaryFile() as f:
+            cache = Cache(f.name)
+            algs1 = [Identity("k1"), Identity("k2")]
+            dataset = dask.bag.from_sequence(["A", "B", "C", "D"])
+            result1 = cached_apply_algorithms(algs1, dataset, cache=cache)
+            algs2 = [Identity("k1"), Identity("k2")]
+            result2 = cached_apply_algorithms(algs2, dataset, cache=cache)
+            assert all(
+                [
+                    algs1[0].apply_count == 4,
+                    algs1[1].apply_count == 4,
+                    algs2[0].apply_count == 0,
+                    algs2[1].apply_count == 0,
+                    algs1[0].finish_count == 1,
+                    algs1[1].finish_count == 1,
+                    algs2[0].finish_count == 1,
+                    algs2[1].finish_count == 1,
+                ]
+            )
+            assert result1 == result2
