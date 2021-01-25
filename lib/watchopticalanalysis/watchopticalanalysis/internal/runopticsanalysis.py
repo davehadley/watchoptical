@@ -8,19 +8,15 @@ import boost_histogram as bh
 import numpy as np
 from dask.bag import Bag
 from pandas import DataFrame
-
-from watchopticalmc import WatchmanDataset
-from watchopticalutils.histoutils import CategoryMean, ExposureWeightedHistogram
-from watchopticalutils.histoutils.categoryselectionstats import (
-    CategorySelectionStats,
-)
-from watchopticalutils.histoutils.selection import Selection
-from watchopticalmc import AnalysisDataset, AnalysisEventTuple
 from watchopticalanalysis.internal.eventtype import eventtypefromfile
 from watchopticalanalysis.internal.selectiondefs import SelectionDefs
 from watchopticalanalysis.internal.variable import VariableDefs
+from watchopticalmc import AnalysisDataset, AnalysisEventTuple
 from watchopticalutils.cache import cachedcallable
 from watchopticalutils.collectionutils import sumlist, summap
+from watchopticalutils.histoutils import CategoryMean, ExposureWeightedHistogram
+from watchopticalutils.histoutils.categoryselectionstats import CategorySelectionStats
+from watchopticalutils.histoutils.selection import Selection
 
 
 def _add_accum(left, right):
