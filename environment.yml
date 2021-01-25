@@ -5,11 +5,12 @@ dependencies:
   # specifying the gcc version exactly seems to speed up conda resolver 
   - gcc_impl_linux-64==7.3.0=hd420e75_5
   - gcc_linux-64==7.3.0=h553295d_17
-  - cmake=3.18
-  - root=6.18
-  - geant4=10.6
-  - python=3.8
-  - pip=20.3
-  - scikit-build
+  - cmake==3.18.4=h1f3970d_0
+  - root==6.18.04=py38hc9266a3_28
+  - geant4==10.6.3=h0f64581_0
+  - python==3.8.3=cpython_he5300dc_0
+  - pip==20.3.3=pyhd8ed1ab_0
+  - scikit-build==0.11.1=py38h950e882_2
+  - pybind11=2.6.1=py38h82cb98a_0
 prefix: /home/epp/phskaj/.conda/envs/watchoptical
 

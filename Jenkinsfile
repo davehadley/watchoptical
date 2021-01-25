@@ -37,49 +37,22 @@ pipeline {
                 '''
             }
         }
-        stage('watchoptical') { 
-            stages {
-                stage('Test watchoptical') {
-                    stages {
-                        stage('pytest') {
-                            steps {
-                                echo 'Testing watchoptical'
-                                sh '''#!/usr/bin/env bash
-                                source setup-environment.sh
-                                pytest tests
-                                '''
-                            }
-                        }
-                        stage('Lint') {
-                            stages {
-                                stage('Black') {
-                                    steps {
-                                        sh '''#!/usr/bin/env bash
-                                        source setup-environment.sh
-                                        black --check watchoptical tests
-                                        '''
-                                    }
-                                }
-                                stage('MyPy') {
-                                    steps {
-                                        sh '''#!/usr/bin/env bash
-                                        source setup-environment.sh
-                                        mypy --no-strict-optional --ignore-missing-imports watchoptical tests
-                                        '''
-                                    }
-                                }
-                                stage('Flake8') {
-                                    steps {
-                                        sh '''#!/usr/bin/env bash
-                                        source setup-environment.sh
-                                        flake8 watchoptical tests
-                                        '''
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+        stage('Integration Tests') {
+            steps {
+                echo 'Running tests'
+                sh '''#!/usr/bin/env bash
+                source setup-environment.sh
+                python test-lib.py
+                '''
+            }
+        }
+        stage('Linters') { 
+            steps {
+                echo 'Running linter'
+                sh '''#!/usr/bin/env bash
+                source setup-environment.sh
+                python test-lint.py
+                '''
             }
         }
     }

@@ -1,6 +1,6 @@
 # watchoptical : WATCHMAN Optical Calibration Analysis Software
 
-## Installation
+## Checking out the code
 
 Clone the git repository with:
 
@@ -14,6 +14,15 @@ If you have an old version of git you may have to run:
 git clone git@github.com:davehadley/watchoptical.git
 git submodule update --init --recursive
 ```
+
+The git submodules in this repository use https authentication.
+If you prefer to use ssh authentication with github, you may wish to consider applying this setting:
+
+```bash
+git config --global url.ssh://git@github.com/.insteadOf https://github.com/
+```
+
+## Installation
 
 Setup up the environment with:
 
@@ -31,7 +40,7 @@ python build.py
 ```
 
 This should build `rat-pac` (<https://github.com/AIT-WATCHMAN/WMUtils>), 
-`watchmakers` (<ttps://github.com/AIT-WATCHMAN/watchmakers/>) and 
+`watchmakers` (<https://github.com/AIT-WATCHMAN/watchmakers/>) and 
 `FRED` / `bonsai` (<https://github.com/AIT-WATCHMAN/FRED>).
 
 Check that that was successful with:
@@ -44,77 +53,25 @@ If that script produces errors, then something when wrong.
 
 If you are still having trouble contact @davehadley.
 
-### Testing you Installation
+### Testing your Installation
 
 From the `watchoptical` directory run:
 ```bash
-pytest tests
+python test-lib.py
 ```
 
-## Generating WATCHMAN MC
+### Package Structure
 
-To generate MC do:
-```bash
-python3 -m watchoptical.scripts.generatemc --num-events=1000 --target=local
+Python packages that do most of the work are located in the `lib` directory.
+These packages include:
+- watchopticalmc : generates Watchman MC
+See their individual README.md for usage instructions.
+
+
+## Development Instructions
+
+Please install the pre-commit hooks before doing any development work.
+You can install this by running the command:
 ```
-For more options see:
-```bash
-python3 -m watchoptical.scripts.generatemc --help
-```
-
-## Running the Standard WATCHMAN WatchMakers sensitivity analysis 
-
-```bash
-python3 -m watchoptical.scripts.runsensitivityanalysis path/to/input/files
-```
-
-## Analyzing WATCHMAN Data 
-
-First run the analysis script on the files that you generated in the previous step:
-
-```bash
-python3 -m watchoptical.scripts.runanalysis path/to/input/files/*.root
-```
-
-Make plots from the output with:
-
-```bash
-python3 -m watchoptical.scripts.plot path/to/input/files/*.root
-```
-
-Inspect datasets on the command line with:
-
-```bash
-python3 -m watchoptical.scripts.inspect path/to/input/files
-```
-
-## Old Installation Instructions
-
-These instructions are redundant as the external packages are now included in watch optical.
-
-Install the WATCHMAN software following the instructions at:
-    
-1. WMUtils https://github.com/AIT-WATCHMAN/WMUtils 
-2. watchmakers https://github.com/AIT-WATCHMAN/watchmakers/
-3. Standalone BONSAI https://github.com/AIT-WATCHMAN/bonsai/
-    1. watchoptical requires a ${BONSAIDIR} environment variable to find
-    the correct BONSAI version. You should set this in your environment setup. 
-
-Check out this package:
-
-```bash
-git clone https://github.com/davehadley/watchoptical
-cd watchoptical
-./post-clone.sh
-pip install .
-```
-
-If you want to do development work on this package do:
-```bash
-python setup.py develop
-```
-
-Note editable installs with `pip` do not work on my system:
-```
-pip install -e .
+pre-commit install
 ```
