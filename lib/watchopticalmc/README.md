@@ -40,24 +40,22 @@ python3 -m watchopticalmc.scripts.generatemc --help
 python3 -m watchopticalmc.scripts.runsensitivityanalysis path/to/input/files
 ```
 
-## Analyzing WATCHMAN Data 
+## Analysis files
 
-TODO this should be moved to a separate package.
-
-First run the analysis script on the files that you generated in the previous step:
-
+Finally run:
 ```bash
-python3 -m watchopticalmc.scripts.runanalysis path/to/input/files/*.root
+python3 -m watchopticalmc.scripts.mctoanalysis path/to/input/files
 ```
+to generate files for analysis.
 
-Make plots from the output with:
+## Do it all in one step
 
+The three previous steps may be run with:
 ```bash
-python3 -m watchopticalmc.scripts.plot path/to/input/files/*.root
+python3 -m watchopticalmc 
 ```
-
-Inspect datasets on the command line with:
-
+See:
 ```bash
-python3 -m watchopticalmc.scripts.inspectfiles path/to/input/files
+python3 -m watchopticalmc --help
 ```
+for its arguments.
