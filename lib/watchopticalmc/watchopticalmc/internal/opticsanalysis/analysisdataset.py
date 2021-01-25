@@ -1,12 +1,9 @@
-from watchopticalmc.internal.generatemc.mctoanalysis import AnalysisFile
-from watchopticalmc.internal.generatemc.wmdataset import (
-    WatchmanDataset,
-    RatPacBonsaiPair,
-)
 from pathlib import Path
-from typing import List
-from typing import NamedTuple
+from typing import List, NamedTuple
+
 import cloudpickle
+from watchopticalmc.internal.generatemc.mctoanalysis import AnalysisFile
+from watchopticalmc.internal.generatemc.wmdataset import WatchmanDataset
 
 
 class AnalysisDataset(NamedTuple):

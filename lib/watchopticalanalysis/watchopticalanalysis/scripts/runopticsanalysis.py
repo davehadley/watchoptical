@@ -1,14 +1,9 @@
 import os
 from argparse import ArgumentParser, Namespace
 
-from watchopticalmc import AnalysisDataset, WatchmanDataset
-from watchopticalanalysis.internal.runopticsanalysis import (
-    cachedopticsanalysis,
-)
+from watchopticalanalysis.internal.runopticsanalysis import cachedopticsanalysis
+from watchopticalmc import AnalysisDataset
 from watchopticalutils.client import ClientType, client
-from watchopticalutils.filepathutils import (
-    searchforrootfilesexcludinganalysisfiles,
-)
 
 
 def parsecml() -> Namespace:

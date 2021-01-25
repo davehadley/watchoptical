@@ -1,19 +1,15 @@
 import os
+import subprocess
 import tempfile
+from pathlib import Path
 
 import pytest
-
 from watchopticalmc import AnalysisDataset
 from watchopticalutils.client import ClientType, client
-from watchopticalutils.filepathutils import (
-    searchforrootfilesexcludinganalysisfiles,
-)
-import subprocess
-from pathlib import Path
 
 
 @pytest.fixture()
-def signaldatasetfixture() -> Path:
+def signaldatasetfixture() -> AnalysisDataset:
     with client(ClientType.SINGLE):
         dirname = (
             f"{tempfile.gettempdir()}"
