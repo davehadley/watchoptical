@@ -2,13 +2,13 @@ import itertools
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Any, Callable, DefaultDict, MutableMapping, NamedTuple, Optional
+from typing import Any, Callable, DefaultDict, MutableMapping, Optional
 
 import boost_histogram as bh
 import numpy as np
 from dask.bag import Bag
 from pandas import DataFrame
-from watchopticalanalysis.internal.eventtype import eventtypefromfile
+from watchopticalanalysis.category import Category
 from watchopticalanalysis.internal.selectiondefs import SelectionDefs
 from watchopticalanalysis.internal.variable import VariableDefs
 from watchopticalmc import AnalysisDataset, AnalysisEventTuple
@@ -47,29 +47,6 @@ class OpticsAnalysisResult:
         return (
             f"OpticsAnalysisResult({len(self.hist)} hist, {len(self.scatter)} scatter)"
         )
-
-
-class Category(NamedTuple):
-    eventtype: str
-    attenuation: float
-    scattering: float
-
-    @classmethod
-    def fromAnalysisEventTuple(cls, tree: AnalysisEventTuple) -> "Category":
-        return Category(
-            _eventtypecategory(tree),
-            _attenuationfromtree(tree),
-            _scatteringfromtree(tree),
-        )
-
-    def __str__(self):
-        return f"({self.eventtype}, att={self.attenuation}, scat={self.scattering})"
-
-
-def _eventtypecategory(tree: AnalysisEventTuple) -> str:
-    et = eventtypefromfile(tree.analysisfile)
-    result = "IBD" if "ibd" in et else "Background"
-    return result
 
 
 def _hascoincidence(data):
@@ -134,22 +111,6 @@ def _makebasicscatter(
             tree, variable.value, selection=selection.value
         )
     return
-
-
-def _attenuationfromtree(tree: AnalysisEventTuple) -> float:
-    if tree.generatemcconfig.injectratdb is not None:
-        for v in tree.generatemcconfig.injectratdb.values():
-            if v.config.attenuation is not None:
-                return v.config.attenuation
-    return 1.0
-
-
-def _scatteringfromtree(tree: AnalysisEventTuple) -> float:
-    if tree.generatemcconfig.injectratdb is not None:
-        for v in tree.generatemcconfig.injectratdb.values():
-            if v.config.scattering is not None:
-                return v.config.scattering
-    return 1.0
 
 
 def _weightedmeandict() -> DefaultDict[Category, bh.accumulators.WeightedMean]:

@@ -38,7 +38,8 @@ def parsecml() -> Namespace:
         "-c",
         "--client",
         help="Where to run jobs.",
-        choices=ClientType,
+        type=ClientType,
+        choices=list(ClientType),
         default=ClientType.LOCAL,
     )
     parser.add_argument(
