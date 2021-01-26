@@ -19,7 +19,7 @@ class SelectionTables(Algorithm["SelectionTables.Result", None]):
     """Makes cutflow tables of each selection."""
 
     def __init__(self, output: Path) -> None:
-        self.output = output
+        self._output = output
         super().__init__()
 
     class Result:
@@ -37,7 +37,7 @@ class SelectionTables(Algorithm["SelectionTables.Result", None]):
         return self.Result(stats=stats)
 
     def finish(self, result: "SelectionTables.Result") -> None:
-        _dumpselectiontables(result, dest=str(self.output))
+        _dumpselectiontables(result, dest=str(self._output))
         return
 
 
