@@ -145,4 +145,21 @@ def _calcmu(histogram: BootstrapHistogram) -> Tuple[float, float]:
 
 
 def _calcsigma(histogram: BootstrapHistogram) -> Tuple[float, float]:
-    return _calcmu(histogram)
+    def binnedstd(h):
+        try:
+            values = h.axes[0].centers
+            weights = h.view()
+            mu = np.average(values, weights=weights)
+            var = np.average((values - mu) ** 2, weights=weights)
+            return np.sqrt(var)
+        except ZeroDivisionError:
+            return np.NaN
+
+    std = binnedstd(histogram.nominal)
+    err = np.std(
+        [
+            binnedstd(histogram.samples[:, sample])
+            for sample in range(histogram.numsamples)
+        ]
+    )
+    return (std, err)
