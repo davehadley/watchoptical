@@ -18,6 +18,7 @@ mplhep = "^0.2.12"
 matplotlib = "^3.3.3"
 tabulate = "^0.8.7"
 pandas = "^1.2.1"
+bootstraphistogram = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

@@ -41,6 +41,19 @@ test = ["pytest", "pytest-benchmark"]
 
 [[package]]
 category = "main"
+description = "Poisson bootstrap histogram."
+name = "bootstraphistogram"
+optional = false
+python-versions = ">=3.6.1,<4.0.0"
+version = "0.6.0"
+
+[package.dependencies]
+boost-histogram = ">=0.7.0"
+matplotlib = ">=3.1,<4.0"
+numpy = ">=1.19.0,<2.0.0"
+
+[[package]]
+category = "main"
 description = "Python package for providing Mozilla's CA Bundle."
 name = "certifi"
 optional = false
@@ -97,7 +110,7 @@ description = "Parallel PyData with Task Scheduling"
 name = "dask"
 optional = false
 python-versions = ">=3.6"
-version = "2021.1.0"
+version = "2021.1.1"
 
 [package.dependencies]
 pyyaml = "*"
@@ -149,7 +162,7 @@ description = "Distributed scheduler for Dask"
 name = "distributed"
 optional = false
 python-versions = ">=3.6"
-version = "2021.1.0"
+version = "2021.1.1"
 
 [package.dependencies]
 click = ">=6.6"
@@ -516,7 +529,7 @@ description = "HTTP library with thread-safe connection pooling, file post, and 
 name = "urllib3"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
-version = "1.26.2"
+version = "1.26.3"
 
 [package.extras]
 brotli = ["brotlipy (>=0.6.0)"]
@@ -543,7 +556,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "33cac261454e4b370a65c8d56c65e9cc380ae15980bd02f97236c984e4745b77"
+content-hash = "89f1b6b42b8b4ca35e158c6350bb1b7d5d6eaca7c6584455237950413744a8b5"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -622,6 +635,10 @@ boost-histogram = [
     {file = "boost_histogram-0.11.1-pp37-pypy37_pp73-win32.whl", hash = "sha256:28f97f4ca8f69641cfe7ac0adaf40219f3bcb8baf4900c76bb8247f0bb8b207a"},
     {file = "boost_histogram-0.11.1.tar.gz", hash = "sha256:eb2205e7cac21c3742b19ea147359c588e07a4f3b719d58c6ad6009fee423fce"},
 ]
+bootstraphistogram = [
+    {file = "bootstraphistogram-0.6.0-py3-none-any.whl", hash = "sha256:ac6fa81c1a47af75a50ab93593977d54db662112d91691a4307a43ae28b49eb5"},
+    {file = "bootstraphistogram-0.6.0.tar.gz", hash = "sha256:db354eed792d275781ea1f0a3480d3ca5d1cee0b41fd2393856c2a6d88f13721"},
+]
 certifi = [
     {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
     {file = "certifi-2020.12.5.tar.gz", hash = "sha256:1a4995114262bffbc2413b159f2a1a480c969de6e6eb13ee966d470af86af59c"},
@@ -647,16 +664,16 @@ cycler = [
     {file = "cycler-0.10.0.tar.gz", hash = "sha256:cd7b2d1018258d7247a71425e9f26463dfb444d411c39569972f4ce586b0c9d8"},
 ]
 dask = [
-    {file = "dask-2021.1.0-py3-none-any.whl", hash = "sha256:40a68275e9e407a07fd0a8f49b8825572be1f2a5dd2a004696650b36986c9c26"},
-    {file = "dask-2021.1.0.tar.gz", hash = "sha256:b9426ad6bbf04a8d61579b7e0177daeb87a9cb6e79dfdbdadded2d61f3f5f7b6"},
+    {file = "dask-2021.1.1-py3-none-any.whl", hash = "sha256:cd98d44bc01071b5ee30262a5bcf40cd55d75df58c36bab79778d7c248b5ce16"},
+    {file = "dask-2021.1.1.tar.gz", hash = "sha256:c5afb690306ce80ba6c57f0b5bc8c44c2bcebffd0cc6b7471ba352e77e90045d"},
 ]
 dask-jobqueue = [
     {file = "dask-jobqueue-0.7.2.tar.gz", hash = "sha256:1767f4146b2663d9d2eaef62b882a86e1df0bccdb8ae68ae3e5e546aa6796d35"},
     {file = "dask_jobqueue-0.7.2-py2.py3-none-any.whl", hash = "sha256:214f34a64794044ae52b42959740356ce97302768df4416447cf6e2d28e986a2"},
 ]
 distributed = [
-    {file = "distributed-2021.1.0-py3-none-any.whl", hash = "sha256:1b2ece4550377b6892e927d4eb7761e982097de3f77de02b4db48e750a220bb6"},
-    {file = "distributed-2021.1.0.tar.gz", hash = "sha256:a9be18981a40031c6cb8aa7a01c7ef23aa20708e28e1c7aaf6c1e958d79586ec"},
+    {file = "distributed-2021.1.1-py3-none-any.whl", hash = "sha256:bb7163727e3ade4d7e8edb48c5113718b207c183e157ad18697d1316b158d6e4"},
+    {file = "distributed-2021.1.1.tar.gz", hash = "sha256:423dda6fd8d263d6e988700721e7269d588c1bc368026a0a6ae8f2fde108be39"},
 ]
 fsspec = [
     {file = "fsspec-0.8.5-py3-none-any.whl", hash = "sha256:5629dc945800873cb2092df806c854e74c2799f4854247bce37ca7171000a7ec"},
@@ -1039,8 +1056,8 @@ tornado = [
     {file = "tornado-6.1.tar.gz", hash = "sha256:33c6e81d7bd55b468d2e793517c909b139960b6c790a60b7991b9b6b76fb9791"},
 ]
 urllib3 = [
-    {file = "urllib3-1.26.2-py2.py3-none-any.whl", hash = "sha256:d8ff90d979214d7b4f8ce956e80f4028fc6860e4431f731ea4a8c08f23f99473"},
-    {file = "urllib3-1.26.2.tar.gz", hash = "sha256:19188f96923873c92ccb987120ec4acaa12f0461fa9ce5d3d0772bc965a39e08"},
+    {file = "urllib3-1.26.3-py2.py3-none-any.whl", hash = "sha256:1b465e494e3e0d8939b50680403e3aedaa2bc434b7d5af64dfd3c958d7f5ae80"},
+    {file = "urllib3-1.26.3.tar.gz", hash = "sha256:de3eedaad74a2683334e282005cd8d7f22f4d55fa690a2a1020a416cb0a47e73"},
 ]
 wcwidth = [
     {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},
