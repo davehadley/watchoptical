@@ -2,22 +2,16 @@ from enum import Enum
 from functools import partial
 from typing import Optional
 
-from watchopticalanalysis.internal.plot.dumpselectiontables import (
-    dumpselectiontables,
-)
 from watchopticalanalysis.internal.plot.plotattenuation import plotattenuation
 from watchopticalanalysis.internal.plot.plothist import plothist
 from watchopticalanalysis.internal.plot.plotscatter import plotscatter
-from watchopticalanalysis.internal.runopticsanalysis import (
-    OpticsAnalysisResult,
-)
+from watchopticalanalysis.internal.runopticsanalysis import OpticsAnalysisResult
 
 
 class PlotMode(Enum):
     hist = partial(plothist)
     scatter = partial(plotscatter)
     attenuation = partial(plotattenuation)
-    dumpselectionstats = partial(dumpselectiontables)
 
 
 def plot(data: OpticsAnalysisResult, dest: str, mode: Optional[PlotMode] = None):
