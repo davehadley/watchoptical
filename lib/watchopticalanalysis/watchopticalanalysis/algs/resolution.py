@@ -1,10 +1,12 @@
 import itertools
 from pathlib import Path
-from typing import Any, Callable, Dict, NamedTuple, Optional
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple
 
 import bootstraphistogram
 import numpy as np
+from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 from pandas.core.frame import DataFrame
+from tabulate import tabulate
 from watchopticalanalysis.algorithm import Algorithm
 from watchopticalanalysis.category import Category
 from watchopticalanalysis.internal.selectiondefs import SelectionDefs
@@ -49,6 +51,7 @@ class Resolution(Algorithm["Resolution.Result", None]):
         return self.Result(_make_resolution(data))
 
     def finish(self, result: "Resolution.Result") -> None:
+        _dumpresolutiontables(result, dest=self._output)
         return
 
 
@@ -81,3 +84,65 @@ def _makebonsaibootstraphistogram(
     wv = None if not w else np.asarray(w(data))
     histo.fill(category, xv, weight=wv)
     return histo
+
+
+def _dumpresolutiontables(result: Resolution.Result, dest: Path) -> None:
+    dest = dest / "resolution"
+    for k, v in result.hist.items():
+        _make_resolution_table(k, v, dest)
+    return
+
+
+def _make_resolution_table(key: _Key, hist: CategoryBootstrapHistogram, dest: Path):
+    table = _make_resolution_table_str(hist)
+    path = dest / "_".join(map(str, key))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w") as f:
+        f.write(table)
+
+
+def _make_resolution_table_str(hist: CategoryBootstrapHistogram) -> str:
+    table = [
+        [
+            "Event type",
+            "Attenuation",
+            "Scattering",
+            "mean",
+            "mear err.",
+            "std. dev.",
+            "std. dev. err.",
+        ]
+    ]
+    table += _make_resolution_table_rows(hist)
+    return tabulate(table)
+
+
+def _make_resolution_table_rows(hist: CategoryBootstrapHistogram) -> List[List[Any]]:
+    return [_calcrow(item.category, item.histogram) for item in sorted(hist)]
+
+
+def _calcrow(category: Category, histogram: BootstrapHistogram) -> List[Any]:
+    mean, meanerr = _calcmu(histogram)
+    sigma, sigmaerr = _calcsigma(histogram)
+    return [*category, mean, meanerr, sigma, sigmaerr]
+
+
+def _calcmu(histogram: BootstrapHistogram) -> Tuple[float, float]:
+    def binnedavg(h):
+        try:
+            return np.average(h.axes[0].centers, weights=h.view())
+        except ZeroDivisionError:
+            return np.NaN
+
+    mu = binnedavg(histogram.nominal)
+    err = np.std(
+        [
+            binnedavg(histogram.samples[:, sample])
+            for sample in range(histogram.numsamples)
+        ]
+    )
+    return (mu, err)
+
+
+def _calcsigma(histogram: BootstrapHistogram) -> Tuple[float, float]:
+    return _calcmu(histogram)
