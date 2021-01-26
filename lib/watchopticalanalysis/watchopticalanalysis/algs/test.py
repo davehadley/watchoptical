@@ -8,6 +8,9 @@ class Test(Algorithm["Test.Result", "Test.Result"]):
     """Test algorithm does nothing.
     Intended to test machinary around processing data."""
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__()
+
     class Result:
         def __add__(self, rhs: "Test.Result") -> "Test.Result":
             return Test.Result()

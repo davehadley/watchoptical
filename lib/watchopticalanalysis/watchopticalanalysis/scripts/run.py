@@ -58,7 +58,8 @@ def _csalgsnames_to_list(csv: Optional[str]) -> Iterable[Algorithm]:
     if csv is None:
         return list(alg.value for alg in AlgDefs)
     try:
-        return [AlgDefs[algname].value for algname in csv.split(",")]
+        kwargs = {"output": Path("./plots")}
+        return [AlgDefs[algname].value(**kwargs) for algname in csv.split(",")]
     except KeyError as ex:
         validnames = [a.name for a in AlgDefs]
         _log.error(f'Unknown algorithm: "{ex}". Must be one of: "{validnames}"')
