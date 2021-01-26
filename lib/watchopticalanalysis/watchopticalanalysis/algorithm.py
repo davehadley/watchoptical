@@ -1,3 +1,4 @@
+import logging
 from abc import ABC, abstractmethod
 from typing import Generic, Iterable, Optional, Tuple, TypeVar
 
@@ -7,6 +8,8 @@ from watchopticalutils.cache import Cache
 
 T = TypeVar("T")
 U = TypeVar("U")
+
+_log = logging.getLogger(__name__)
 
 
 class Algorithm(ABC, Generic[T, U]):
@@ -43,7 +46,11 @@ def _run_apply(algorithms: Iterable[Algorithm], dataset: Bag) -> Tuple:
 
 
 def _run_finish(algorithms: Iterable[Algorithm], reduced: Tuple) -> Tuple:
-    result = tuple(a.finish(r) for r, a in zip(reduced, algorithms))
+    def logfinish(r, a):
+        _log.info(f"finalizing {a}")
+        return a.finish(r)
+
+    result = tuple(logfinish(r, a) for r, a in zip(reduced, algorithms))
     return result
 
 
@@ -59,8 +66,10 @@ def cached_apply_algorithms(
         for k, v in algmap.items():
             try:
                 result[k] = db[v.key()]
+                _log.info(f"using cached results for {v}")
             except KeyError:
                 notcached[k] = v
+                _log.info(f"scheduling computation for {v}")
     notcached = tuple(notcached.items())
     # compute results that have not cached value
     newresults = _run_apply((v for _, v in notcached), dataset)
@@ -70,4 +79,5 @@ def cached_apply_algorithms(
             cache[v.key()] = r
             result[k] = r
     # return the result in the correct format
+    _log.info("finalizing results")
     return _run_finish(algorithms, tuple(v for _, v in sorted(result.items())))

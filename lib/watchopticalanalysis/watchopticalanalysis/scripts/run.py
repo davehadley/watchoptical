@@ -13,13 +13,14 @@ _log = logging.getLogger(__name__)
 
 
 def main():
+    logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
     args = parsecml()
     _validateargs(args)
     dataset = _build_dataset(args.dataset)
+    _log.info("running: {}".format(args.alg if args.alg else "all"))
+    alg = _csalgsnames_to_list(args.alg)
     with client(args.client):
-        cached_apply_algorithms(
-            args.alg, AnalysisEventTuple.fromAnalysisDataset(dataset)
-        )
+        cached_apply_algorithms(alg, AnalysisEventTuple.fromAnalysisDataset(dataset))
 
 
 def parsecml() -> Namespace:
@@ -31,7 +32,7 @@ def parsecml() -> Namespace:
             "Comma separated list of algorithms to run. "
             "If not set, all algorithms will be run."
         ),
-        type=_csalgsnames_to_list,
+        type=str,
         default=None,
     )
     parser.add_argument(
@@ -55,10 +56,10 @@ def parsecml() -> Namespace:
 
 
 def _csalgsnames_to_list(csv: Optional[str]) -> Iterable[Algorithm]:
+    kwargs = {"output": Path("./plots")}
     if csv is None:
-        return list(alg.value for alg in AlgDefs)
+        return list(alg.value(**kwargs) for alg in AlgDefs)
     try:
-        kwargs = {"output": Path("./plots")}
         return [AlgDefs[algname].value(**kwargs) for algname in csv.split(",")]
     except KeyError as ex:
         validnames = [a.name for a in AlgDefs]
@@ -77,5 +78,4 @@ def _build_dataset(path: Path):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
     main()
