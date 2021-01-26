@@ -1,8 +1,9 @@
-from argparse import ArgumentParser, Namespace
-from watchopticalutils.client import ClientType
-from subprocess import run
-from pathlib import Path
 import os
+from argparse import ArgumentParser, Namespace
+from pathlib import Path
+from subprocess import run
+
+from watchopticalutils.client import ClientType
 
 
 def _parsecml() -> Namespace:
@@ -83,7 +84,7 @@ def main():
                 "-m",
                 "watchopticalmc.scripts.runsensitivityanalysis",
                 f"--client={args.client.value}",
-                directory,
+                str(directory),
             ],
             check=True,
         )
@@ -95,7 +96,7 @@ def main():
             "watchopticalmc.scripts.mctoanalysis",
             f"--directory={args.directory}",
             f"--client={args.client.value}",
-            args.directory,
+            str(args.directory),
         ],
         check=True,
     )
