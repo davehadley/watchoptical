@@ -76,7 +76,7 @@ def cached_apply_algorithms(
     # write the new results back to the cache
     with cache as db:
         for ((k, v), r) in zip(notcached, newresults):
-            cache[v.key()] = r
+            db[v.key()] = r
             result[k] = r
     # return the result in the correct format
     _log.info("finalizing results")

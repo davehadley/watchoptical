@@ -1,5 +1,5 @@
 from contextlib import AbstractContextManager
-from typing import Any, Callable, Iterator, MutableMapping
+from typing import Any, Callable, MutableMapping
 
 import cloudpickle
 from sqlitedict import SqliteDict
@@ -42,33 +42,20 @@ def cachedcallable(keyfunc: Callable, dbname: str = DEFAULT_DBNAME) -> Callable:
     return g
 
 
-class Cache(MutableMapping[str, Any], AbstractContextManager):
+class Cache(AbstractContextManager):
     def __init__(self, dbname=DEFAULT_DBNAME):
+        self._dbname = dbname
+        self._backing = None
+
+    def __enter__(self) -> MutableMapping[str, Any]:
         self._backing = SqliteDict(
-            dbname,
+            self._dbname,
             autocommit=True,
             encode=cloudpickle.dumps,
             decode=cloudpickle.loads,
         )
-
-    def __setitem__(self, k: str, v: Any) -> None:
-        self._backing[k] = v
-
-    def __delitem__(self, k: str) -> None:
-        del self._backing[k]
-
-    def __getitem__(self, k: str) -> Any:
-        return self._backing[k]
-
-    def __len__(self) -> int:
-        return len(self._backing)
-
-    def __iter__(self) -> Iterator[str]:
-        return iter(self._backing)
-
-    def __enter__(self):
-        self._backing.__enter__()
-        return self
+        return self._backing.__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self._backing.__exit__()
+        self._backing.__exit__(exc_type, exc_value, traceback)
+        del self._backing

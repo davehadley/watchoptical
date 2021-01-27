@@ -1,7 +1,7 @@
 #!/usr/bin/env python
+import multiprocessing
 from pathlib import Path
 from subprocess import check_call
-import multiprocessing
 
 
 def run(cmd, title=None, cwd=None):
@@ -17,7 +17,14 @@ Path("build").mkdir(exist_ok=True)
 
 
 def buildratpac():
-    run(["sed", "-i", "s/CMAKE_CXX_STANDARD 11/CMAKE_CXX_STANDARD 17/g", "external/rat-pac/CMakeLists.txt"])
+    run(
+        [
+            "sed",
+            "-i",
+            "s/CMAKE_CXX_STANDARD 11/CMAKE_CXX_STANDARD 17/g",
+            "external/rat-pac/CMakeLists.txt",
+        ]
+    )
     run(
         [
             "cmake",
@@ -26,12 +33,27 @@ def buildratpac():
         ],
         "CMake rat-pac",
     )
-    run(["cmake", "--build", "build/rat-pac", "--parallel", str(multiprocessing.cpu_count())])
+    run(
+        [
+            "cmake",
+            "--build",
+            "build/rat-pac",
+            "--parallel",
+            str(multiprocessing.cpu_count()),
+        ]
+    )
     return
 
 
 def buildbonsai():
-    run(["sed", "-i", "s/CMAKE_CXX_STANDARD 11/CMAKE_CXX_STANDARD 17/g", "external/bonsai/CMakeLists.txt"])
+    run(
+        [
+            "sed",
+            "-i",
+            "s/CMAKE_CXX_STANDARD 11/CMAKE_CXX_STANDARD 17/g",
+            "external/bonsai/CMakeLists.txt",
+        ]
+    )
     run(
         [
             "cmake",
@@ -41,15 +63,38 @@ def buildbonsai():
         ],
         "CMake bonsai",
     )
-    run(["cmake", "--build", "build/bonsai", "--parallel", str(multiprocessing.cpu_count())])
+    run(
+        [
+            "cmake",
+            "--build",
+            "build/bonsai",
+            "--parallel",
+            str(multiprocessing.cpu_count()),
+        ]
+    )
     return
 
 
 def buildwatchoptical():
-    run(["pip", "install", "--no-input", "-e", "./lib/watchopticalcpp"], title="Install watchopticalcpp")
-    run(["poetry", "install"], title="Install watchopticalutils", cwd="./lib/watchopticalutils")
-    run(["poetry", "install"], title="Install watchopticalmc", cwd="./lib/watchopticalmc")
-    run(["poetry", "install"], title="Install watchopticalanalysis", cwd="./lib/watchopticalanalysis")
+    run(
+        ["pip", "install", "--no-input", "-e", "./lib/watchopticalcpp"],
+        title="Install watchopticalcpp",
+    )
+    run(
+        ["poetry", "install"],
+        title="Install watchopticalutils",
+        cwd="./lib/watchopticalutils",
+    )
+    run(
+        ["poetry", "install"],
+        title="Install watchopticalmc",
+        cwd="./lib/watchopticalmc",
+    )
+    run(
+        ["poetry", "install"],
+        title="Install watchopticalanalysis",
+        cwd="./lib/watchopticalanalysis",
+    )
 
 
 def main():

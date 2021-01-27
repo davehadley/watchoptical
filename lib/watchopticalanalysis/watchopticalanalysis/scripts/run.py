@@ -18,7 +18,7 @@ def main():
     _validateargs(args)
     dataset = _build_dataset(args.dataset)
     _log.info("running: {}".format(args.alg if args.alg else "all"))
-    alg = _csalgsnames_to_list(args.alg)
+    alg = _csalgsnames_to_list(args.alg, args.output)
     with client(args.client):
         cached_apply_algorithms(alg, AnalysisEventTuple.fromAnalysisDataset(dataset))
 
@@ -47,16 +47,17 @@ def parsecml() -> Namespace:
         "dataset",
         help='A directory to process or the path to an "analysisdataset.pickle" file.',
         type=Path,
-        default="./",
+        default=Path("./"),
     )
+    parser.add_argument("-o", "--output", type=Path, default=Path("./"))
     args = parser.parse_args()
     if args.dataset is None:
         args.dataset = Path(".")
     return args
 
 
-def _csalgsnames_to_list(csv: Optional[str]) -> Iterable[Algorithm]:
-    kwargs = {"output": Path("./plots")}
+def _csalgsnames_to_list(csv: Optional[str], output: Path) -> Iterable[Algorithm]:
+    kwargs = {"output": output / "plots"}
     if csv is None:
         return list(alg.value(**kwargs) for alg in AlgDefs)
     try:

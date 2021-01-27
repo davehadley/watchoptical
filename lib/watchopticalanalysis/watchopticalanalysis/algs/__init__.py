@@ -5,11 +5,11 @@ from watchopticalanalysis.algs.resolution import Resolution
 # from watchopticalanalysis.algs.basichist import BasicHist
 from watchopticalanalysis.algs.selectiontables import SelectionTables
 
-from .test import Test
+from .timestamp import Timestamp
 
 
 class AlgDefs(Enum):
-    test = Test
+    timestamp = Timestamp
     selectiontables = SelectionTables
     resolution = Resolution
     # basichist = BasicHist
