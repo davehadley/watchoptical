@@ -5,7 +5,6 @@ import hashlib
 import os
 import re
 import subprocess
-import uuid
 from collections import OrderedDict
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -15,17 +14,13 @@ from typing import Any, Callable, Iterator, Optional, Tuple
 import cloudpickle
 import dask.bag
 from dask.bag import Bag
-
 from watchopticalmc.internal.generatemc.makeratdb import RatDb
 from watchopticalmc.internal.generatemc.runwatchmakers import (
     WatchMakersConfig,
     generatejobscripts,
 )
 from watchopticalmc.internal.generatemc.wmdataset import RatPacBonsaiPair
-from watchopticalutils.filepathutils import (
-    expandpath,
-    temporaryworkingdirectory,
-)
+from watchopticalutils.filepathutils import expandpath, temporaryworkingdirectory
 from watchopticalutils.retry import retry
 
 
@@ -83,23 +78,23 @@ def _write_config_to_disk(config: GenerateMCConfig):
 
 
 def _rungeant4(
-    watchmakersscript: str, cwd: str, config: GenerateMCConfig
+    jobnum: int, watchmakersscript: str, cwd: str, config: GenerateMCConfig
 ) -> Tuple[str, ...]:
+    eventtype = re.match(".*/script_(.*).sh", watchmakersscript).group(1)
+    expectedfilename = f"run_{config.configid}_{eventtype}_{jobnum}.root"
     with open(watchmakersscript, "r") as script:
         scripttext = script.read()
-        uid = str(uuid.uuid1())
         with _inject_macros_and_ratdb_into_script(scripttext, config) as scripttext:
+            scripttext = scripttext.replace("run$TMPNAME.root", expectedfilename)
             scripttext = scripttext.replace(
-                "run$TMPNAME.root", f"run_{config.configid}_{uid}.root"
+                "run$TMPNAME.log", f"run_{config.configid}_{eventtype}_{jobnum}.log"
             )
-            scripttext = scripttext.replace(
-                "run$TMPNAME.log", f"run_{config.configid}_{uid}.log"
-            )
-            match = re.search(f".* -o (root_.*{uid}.root) .*", scripttext)
+            match = re.search(f".* -o (root_.*{jobnum}.root) .*", scripttext)
             assert match is not None
             filename = os.sep.join((cwd, match.group(1)))
-            subprocess.call(scripttext, shell=True, cwd=cwd)
-    return tuple(glob.glob(filename))
+            if len(tuple(glob.glob(filename))) == 0:
+                subprocess.call(scripttext, shell=True, cwd=cwd)
+            return tuple(glob.glob(filename))
 
 
 def _dump_text_to_temp_file(tempdir: str, fname: str, content: Optional[str]) -> str:
@@ -184,8 +179,8 @@ def generatemc(config: GenerateMCConfig) -> Bag:
     return (
         dask.bag.from_sequence(
             (
-                (s, cwd, config)
-                for _ in range(config.numjobs)
+                (jobnum, s, cwd, config)
+                for jobnum in range(config.numjobs)
                 for s in scripts.scripts
                 if config.filenamefilter is None or config.filenamefilter(s)
             ),
