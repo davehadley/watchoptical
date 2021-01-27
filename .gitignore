@@ -1,3 +1,4 @@
+.env
 *.pickle
 .mypy_cache/
 .pytest_cache/

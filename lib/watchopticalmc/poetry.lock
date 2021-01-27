@@ -87,11 +87,24 @@ test = ["pytest", "pytest-benchmark"]
 
 [[package]]
 category = "main"
+description = "Poisson bootstrap histogram."
+name = "bootstraphistogram"
+optional = false
+python-versions = ">=3.6.1,<4.0.0"
+version = "0.6.0"
+
+[package.dependencies]
+boost-histogram = ">=0.7.0"
+matplotlib = ">=3.1,<4.0"
+numpy = ">=1.19.0,<2.0.0"
+
+[[package]]
+category = "main"
 description = "Extensible memoizing collections and decorators"
 name = "cachetools"
 optional = false
 python-versions = "~=3.5"
-version = "4.2.0"
+version = "4.2.1"
 
 [[package]]
 category = "main"
@@ -151,10 +164,30 @@ description = "Parallel PyData with Task Scheduling"
 name = "dask"
 optional = false
 python-versions = ">=3.6"
-version = "2021.1.0"
+version = "2021.1.1"
 
 [package.dependencies]
 pyyaml = "*"
+
+[package.dependencies.cloudpickle]
+optional = true
+version = ">=0.2.2"
+
+[package.dependencies.distributed]
+optional = true
+version = ">=2.0"
+
+[package.dependencies.fsspec]
+optional = true
+version = ">=0.6.0"
+
+[package.dependencies.partd]
+optional = true
+version = ">=0.3.10"
+
+[package.dependencies.toolz]
+optional = true
+version = ">=0.8.2"
 
 [package.extras]
 array = ["numpy (>=1.15.1)", "toolz (>=0.8.2)"]
@@ -191,7 +224,7 @@ description = "Distributed scheduler for Dask"
 name = "distributed"
 optional = false
 python-versions = ">=3.6"
-version = "2021.1.0"
+version = "2021.1.1"
 
 [package.dependencies]
 click = ">=6.6"
@@ -345,6 +378,14 @@ version = "1.3.1"
 
 [[package]]
 category = "main"
+description = "File-based locks for Python for Linux and Windows"
+name = "locket"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.2.1"
+
+[[package]]
+category = "main"
 description = "Safely add untrusted strings to HTML/XML markup."
 name = "markupsafe"
 optional = false
@@ -444,6 +485,21 @@ testing = ["docopt", "pytest (<6.0.0)"]
 
 [[package]]
 category = "main"
+description = "Appendable key-value storage"
+name = "partd"
+optional = false
+python-versions = ">=3.5"
+version = "1.1.0"
+
+[package.dependencies]
+locket = "*"
+toolz = "*"
+
+[package.extras]
+complete = ["numpy (>=1.9.0)", "pandas (>=0.19.0)", "pyzmq", "blosc"]
+
+[[package]]
+category = "main"
 description = "A python-based command line tool to peruse ROOT files."
 name = "peroose"
 optional = false
@@ -499,7 +555,7 @@ description = "Library for building powerful interactive command lines in Python
 name = "prompt-toolkit"
 optional = false
 python-versions = ">=3.6.1"
-version = "3.0.13"
+version = "3.0.14"
 
 [package.dependencies]
 wcwidth = "*"
@@ -554,7 +610,7 @@ description = "pytest: simple powerful testing with Python"
 name = "pytest"
 optional = false
 python-versions = ">=3.6"
-version = "6.2.1"
+version = "6.2.2"
 
 [package.dependencies]
 atomicwrites = ">=1.0"
@@ -750,7 +806,7 @@ description = "HTTP library with thread-safe connection pooling, file post, and 
 name = "urllib3"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
-version = "1.26.2"
+version = "1.26.3"
 
 [package.extras]
 brotli = ["brotlipy (>=0.6.0)"]
@@ -784,7 +840,8 @@ python-versions = "^3.8"
 version = "0.1.0"
 
 [package.dependencies]
-boost_histogram = "^0.11.1"
+boost_histogram = ">=0.11.1"
+bootstraphistogram = ">=0.6.0"
 cloudpickle = "^1.6.0"
 dask_jobqueue = "^0.7.2"
 distributed = "^2021.1.0"
@@ -825,7 +882,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "bbf3b90a41b52b49bfc3aa0c45dbc64a1e1c41a1dc4deaf1cee11f358509cce0"
+content-hash = "a6b2d3b495e60ade4bc143264d88fef8c7d2a71238a9b2a5d819e7e032f0f5d2"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -919,9 +976,13 @@ boost-histogram = [
     {file = "boost_histogram-0.11.1-pp37-pypy37_pp73-win32.whl", hash = "sha256:28f97f4ca8f69641cfe7ac0adaf40219f3bcb8baf4900c76bb8247f0bb8b207a"},
     {file = "boost_histogram-0.11.1.tar.gz", hash = "sha256:eb2205e7cac21c3742b19ea147359c588e07a4f3b719d58c6ad6009fee423fce"},
 ]
+bootstraphistogram = [
+    {file = "bootstraphistogram-0.6.0-py3-none-any.whl", hash = "sha256:ac6fa81c1a47af75a50ab93593977d54db662112d91691a4307a43ae28b49eb5"},
+    {file = "bootstraphistogram-0.6.0.tar.gz", hash = "sha256:db354eed792d275781ea1f0a3480d3ca5d1cee0b41fd2393856c2a6d88f13721"},
+]
 cachetools = [
-    {file = "cachetools-4.2.0-py3-none-any.whl", hash = "sha256:c6b07a6ded8c78bf36730b3dc452dfff7d95f2a12a2fed856b1a0cb13ca78c61"},
-    {file = "cachetools-4.2.0.tar.gz", hash = "sha256:3796e1de094f0eaca982441c92ce96c68c89cced4cd97721ab297ea4b16db90e"},
+    {file = "cachetools-4.2.1-py3-none-any.whl", hash = "sha256:1d9d5f567be80f7c07d765e21b814326d78c61eb0c3a637dffc0e5d1796cb2e2"},
+    {file = "cachetools-4.2.1.tar.gz", hash = "sha256:f469e29e7aa4cff64d8de4aad95ce76de8ea1125a16c68e0d93f65c3c3dc92e9"},
 ]
 certifi = [
     {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
@@ -948,8 +1009,8 @@ cycler = [
     {file = "cycler-0.10.0.tar.gz", hash = "sha256:cd7b2d1018258d7247a71425e9f26463dfb444d411c39569972f4ce586b0c9d8"},
 ]
 dask = [
-    {file = "dask-2021.1.0-py3-none-any.whl", hash = "sha256:40a68275e9e407a07fd0a8f49b8825572be1f2a5dd2a004696650b36986c9c26"},
-    {file = "dask-2021.1.0.tar.gz", hash = "sha256:b9426ad6bbf04a8d61579b7e0177daeb87a9cb6e79dfdbdadded2d61f3f5f7b6"},
+    {file = "dask-2021.1.1-py3-none-any.whl", hash = "sha256:cd98d44bc01071b5ee30262a5bcf40cd55d75df58c36bab79778d7c248b5ce16"},
+    {file = "dask-2021.1.1.tar.gz", hash = "sha256:c5afb690306ce80ba6c57f0b5bc8c44c2bcebffd0cc6b7471ba352e77e90045d"},
 ]
 dask-jobqueue = [
     {file = "dask-jobqueue-0.7.2.tar.gz", hash = "sha256:1767f4146b2663d9d2eaef62b882a86e1df0bccdb8ae68ae3e5e546aa6796d35"},
@@ -960,8 +1021,8 @@ decorator = [
     {file = "decorator-4.4.2.tar.gz", hash = "sha256:e3a62f0520172440ca0dcc823749319382e377f37f140a0b99ef45fecb84bfe7"},
 ]
 distributed = [
-    {file = "distributed-2021.1.0-py3-none-any.whl", hash = "sha256:1b2ece4550377b6892e927d4eb7761e982097de3f77de02b4db48e750a220bb6"},
-    {file = "distributed-2021.1.0.tar.gz", hash = "sha256:a9be18981a40031c6cb8aa7a01c7ef23aa20708e28e1c7aaf6c1e958d79586ec"},
+    {file = "distributed-2021.1.1-py3-none-any.whl", hash = "sha256:bb7163727e3ade4d7e8edb48c5113718b207c183e157ad18697d1316b158d6e4"},
+    {file = "distributed-2021.1.1.tar.gz", hash = "sha256:423dda6fd8d263d6e988700721e7269d588c1bc368026a0a6ae8f2fde108be39"},
 ]
 docopt = [
     {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
@@ -1031,6 +1092,10 @@ kiwisolver = [
     {file = "kiwisolver-1.3.1-pp36-pypy36_pp73-manylinux2010_x86_64.whl", hash = "sha256:33449715e0101e4d34f64990352bce4095c8bf13bed1b390773fc0a7295967b3"},
     {file = "kiwisolver-1.3.1-pp36-pypy36_pp73-win32.whl", hash = "sha256:401a2e9afa8588589775fe34fc22d918ae839aaaf0c0e96441c0fdbce6d8ebe6"},
     {file = "kiwisolver-1.3.1.tar.gz", hash = "sha256:950a199911a8d94683a6b10321f9345d5a3a8433ec58b217ace979e18f16e248"},
+]
+locket = [
+    {file = "locket-0.2.1-py2.py3-none-any.whl", hash = "sha256:12b6ada59d1f50710bca9704dbadd3f447dbf8dac6664575c1281cadab8e6449"},
+    {file = "locket-0.2.1.tar.gz", hash = "sha256:3e1faba403619fe201552f083f1ecbf23f550941bc51985ac6ed4d02d25056dd"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
@@ -1191,6 +1256,10 @@ parso = [
     {file = "parso-0.8.1-py2.py3-none-any.whl", hash = "sha256:15b00182f472319383252c18d5913b69269590616c947747bc50bf4ac768f410"},
     {file = "parso-0.8.1.tar.gz", hash = "sha256:8519430ad07087d4c997fda3a7918f7cfa27cb58972a8c89c2a0295a1c940e9e"},
 ]
+partd = [
+    {file = "partd-1.1.0-py3-none-any.whl", hash = "sha256:7a491cf254e5ab09e9e6a40d80195e5e0e5e169115bfb8287225cb0c207536d2"},
+    {file = "partd-1.1.0.tar.gz", hash = "sha256:6e258bf0810701407ad1410d63d1a15cfd7b773fd9efe555dac6bb82cc8832b0"},
+]
 peroose = [
     {file = "peroose-0.4.1-py3-none-any.whl", hash = "sha256:1027d79e42a99f1efac5c482dd25d7732730ba5df45e05d0c442f35a71da4a9a"},
     {file = "peroose-0.4.1.tar.gz", hash = "sha256:fee111fb4c0930079a8088094ec8ba2c8d4e67c1cdb8131dd2f1201af768fd04"},
@@ -1242,8 +1311,8 @@ pluggy = [
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
 prompt-toolkit = [
-    {file = "prompt_toolkit-3.0.13-py3-none-any.whl", hash = "sha256:d2b91517488f1478ee30f938303a3d60b04cc0b7c2253e7c83f1b9b7635274b4"},
-    {file = "prompt_toolkit-3.0.13.tar.gz", hash = "sha256:e2d04e0e4de0c0a8b67db89a5be6dcf81fed6ca7e8c4affca8b7a5b8595c19dd"},
+    {file = "prompt_toolkit-3.0.14-py3-none-any.whl", hash = "sha256:c96b30925025a7635471dc083ffb6af0cc67482a00611bd81aeaeeeb7e5a5e12"},
+    {file = "prompt_toolkit-3.0.14.tar.gz", hash = "sha256:7e966747c18ececaec785699626b771c1ba8344c8d31759a1915d6b12fad6525"},
 ]
 psutil = [
     {file = "psutil-5.8.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:0066a82f7b1b37d334e68697faba68e5ad5e858279fd6351c8ca6024e8d6ba64"},
@@ -1292,8 +1361,8 @@ pyparsing = [
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
 ]
 pytest = [
-    {file = "pytest-6.2.1-py3-none-any.whl", hash = "sha256:1969f797a1a0dbd8ccf0fecc80262312729afea9c17f1d70ebf85c5e76c6f7c8"},
-    {file = "pytest-6.2.1.tar.gz", hash = "sha256:66e419b1899bc27346cb2c993e12c5e5e8daba9073c1fbce33b9807abc95c306"},
+    {file = "pytest-6.2.2-py3-none-any.whl", hash = "sha256:b574b57423e818210672e07ca1fa90aaf194a4f63f3ab909a2c67ebb22913839"},
+    {file = "pytest-6.2.2.tar.gz", hash = "sha256:9d1edf9e7d0b84d72ea3dbcdfd22b35fb543a5e8f2a60092dd578936bf63d7f9"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
@@ -1439,8 +1508,8 @@ uproot-methods = [
     {file = "uproot_methods-0.8.0-py2.py3-none-any.whl", hash = "sha256:e1d9ce96e30d725a91323df2a0e0d335d71d9ffc320a253df67d52f6cda69eeb"},
 ]
 urllib3 = [
-    {file = "urllib3-1.26.2-py2.py3-none-any.whl", hash = "sha256:d8ff90d979214d7b4f8ce956e80f4028fc6860e4431f731ea4a8c08f23f99473"},
-    {file = "urllib3-1.26.2.tar.gz", hash = "sha256:19188f96923873c92ccb987120ec4acaa12f0461fa9ce5d3d0772bc965a39e08"},
+    {file = "urllib3-1.26.3-py2.py3-none-any.whl", hash = "sha256:1b465e494e3e0d8939b50680403e3aedaa2bc434b7d5af64dfd3c958d7f5ae80"},
+    {file = "urllib3-1.26.3.tar.gz", hash = "sha256:de3eedaad74a2683334e282005cd8d7f22f4d55fa690a2a1020a416cb0a47e73"},
 ]
 watchopticalcpp = []
 watchopticalutils = []
