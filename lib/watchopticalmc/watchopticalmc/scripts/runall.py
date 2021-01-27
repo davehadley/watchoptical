@@ -83,7 +83,7 @@ def main():
                 "python",
                 "-m",
                 "watchopticalmc.scripts.runsensitivityanalysis",
-                f"--client={args.client.value}",
+                f"--client=single", # this script fails when distributed
                 str(directory),
             ],
             check=True,
