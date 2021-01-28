@@ -170,7 +170,8 @@ def _removezombierootfile(rootfile: str) -> Optional[str]:
     if not os.path.exists(rootfile):
         _log.error(f"Expected ROOT file does exist: {rootfile}")
         return None
-    isfailed = ROOT.TFile(rootfile).IsZombie()
+    tfile = ROOT.TFile(rootfile)
+    isfailed = tfile.IsZombie() or tfile.TestBit(ROOT.TFile.kRecovered)
     if isfailed:
         _log.error(f"Discovered zombie ROOT file. Deleting it: {rootfile}")
         os.remove(rootfile)
