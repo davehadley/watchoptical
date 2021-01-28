@@ -10,7 +10,7 @@ elif eval '[[ -n ${.sh.file} ]]' 2>/dev/null; then
 else
   script=./
 fi
-scriptdir=$(dirname ${script})
+scriptdir=$(realpath $(dirname ${script}))
 
 if [ -z "${WORKSPACE}" ];
 then
