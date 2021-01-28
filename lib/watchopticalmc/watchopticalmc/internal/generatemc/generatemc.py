@@ -13,6 +13,7 @@ from typing import Any, Callable, Iterator, Optional, Tuple
 
 import cloudpickle
 import dask.bag
+import ROOT
 from dask.bag import Bag
 from watchopticalmc.internal.generatemc.makeratdb import RatDb
 from watchopticalmc.internal.generatemc.runwatchmakers import (
@@ -21,7 +22,10 @@ from watchopticalmc.internal.generatemc.runwatchmakers import (
 )
 from watchopticalmc.internal.generatemc.wmdataset import RatPacBonsaiPair
 from watchopticalutils.filepathutils import expandpath, temporaryworkingdirectory
+from watchopticalutils.log import getlog
 from watchopticalutils.retry import retry
+
+_log = getlog()
 
 
 @dataclass(frozen=True)
@@ -93,7 +97,11 @@ def _rungeant4(
             assert match is not None
             filename = os.sep.join((cwd, match.group(1)))
             if len(tuple(glob.glob(filename))) == 0:
-                subprocess.call(scripttext, shell=True, cwd=cwd)
+                _log.info(f"Running RAT/GEANT4 to generate {filename}")
+                try:
+                    subprocess.check_call(scripttext, shell=True, cwd=cwd)
+                except subprocess.SubprocessError:
+                    _log.error(f"RAT failed on {filename}")
             return tuple(glob.glob(filename))
 
 
@@ -158,6 +166,18 @@ def _inject_macros_and_ratdb_into_script(
         yield scripttext
 
 
+def _removezombierootfile(rootfile: str) -> Optional[str]:
+    if not os.path.exists(rootfile):
+        _log.error(f"Expected ROOT file does exist: {rootfile}")
+        return None
+    isfailed = ROOT.TFile(rootfile).IsZombie()
+    if isfailed:
+        _log.error(f"Discovered zombie ROOT file. Deleting it: {rootfile}")
+        os.remove(rootfile)
+        return None
+    return rootfile
+
+
 @retry(3)
 def _runbonsai(g4file: str, config: GenerateMCConfig) -> str:
     bonsai_name = f"{g4file.replace('root_files', 'bonsai_root_files')}"
@@ -166,9 +186,13 @@ def _runbonsai(g4file: str, config: GenerateMCConfig) -> str:
             expandpath(config.bonsailikelihood), f"{os.getcwd()}{os.sep}like.bin"
         )
         if (not os.path.exists(bonsai_name)) and (g4file != bonsai_name):
-            subprocess.check_call(
-                [expandpath(config.bonsaiexecutable), g4file, bonsai_name]
-            )
+            try:
+                _log.info(f"Running bonsai to generate {bonsai_name}")
+                subprocess.check_call(
+                    [expandpath(config.bonsaiexecutable), g4file, bonsai_name]
+                )
+            except subprocess.CalledProcessError:
+                _log.error(f"bonsai failed to generate {bonsai_name}")
     return bonsai_name
 
 
@@ -189,5 +213,13 @@ def generatemc(config: GenerateMCConfig) -> Bag:
         )
         .starmap(_rungeant4)
         .flatten()
+        .map(_removezombierootfile)
+        .filter(lambda g4file: (g4file is not None) and os.path.exists(g4file))
         .map(lambda g4file: RatPacBonsaiPair(g4file, _runbonsai(g4file, config=config)))
+        .map(
+            lambda pair: RatPacBonsaiPair(
+                pair.g4file, _removezombierootfile(pair.bonsaifile)
+            )
+        )
+        .filter(RatPacBonsaiPair.isvalid)
     )
