@@ -25,7 +25,7 @@ from watchopticalutils.filepathutils import expandpath, temporaryworkingdirector
 from watchopticalutils.log import getlog
 from watchopticalutils.retry import retry
 
-_log = getlog()
+_log = getlog(__name__)
 
 
 @dataclass(frozen=True)
