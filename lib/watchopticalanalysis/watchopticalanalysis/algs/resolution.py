@@ -95,13 +95,19 @@ def _dumpresolutiontables(result: Resolution.Result, dest: Path) -> None:
 
 def _make_resolution_table(key: _Key, hist: CategoryBootstrapHistogram, dest: Path):
     table = _make_resolution_table_str(hist)
-    path = dest / "_".join(map(str, key))
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w") as f:
-        f.write(table)
+    for (tablefmt, ext) in [
+        ("simple", ".md"),
+        ("csv", "csv"),
+        ("html", "html"),
+        ("plain", "txt"),
+    ]:
+        path = dest / tablefmt / ("_".join(map(str, key)) + "." + ext)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "w") as f:
+            f.write(tabulate(table, tablefmt=tablefmt))
 
 
-def _make_resolution_table_str(hist: CategoryBootstrapHistogram) -> str:
+def _make_resolution_table_str(hist: CategoryBootstrapHistogram) -> List[List[Any]]:
     table = [
         [
             "Event type",
@@ -114,7 +120,7 @@ def _make_resolution_table_str(hist: CategoryBootstrapHistogram) -> str:
         ]
     ]
     table += _make_resolution_table_rows(hist)
-    return tabulate(table)
+    return table
 
 
 def _make_resolution_table_rows(hist: CategoryBootstrapHistogram) -> List[List[Any]]:
