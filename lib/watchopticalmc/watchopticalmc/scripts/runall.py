@@ -56,7 +56,7 @@ def main():
     configurations = [
         (att, scat)
         for att in args.attenuation.split(",")
-        for scat in args.attenuation.split(",")
+        for scat in args.scattering.split(",")
     ]
     # generate MC
     for (attenuation, scattering) in configurations:
@@ -83,7 +83,7 @@ def main():
                 "python",
                 "-m",
                 "watchopticalmc.scripts.runsensitivityanalysis",
-                f"--client=single", # this script fails when distributed
+                "--client=single",  # this script fails when distributed
                 str(directory),
             ],
             check=True,

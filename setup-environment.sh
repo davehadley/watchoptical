@@ -80,4 +80,6 @@ export WATCHENV=${WATCHOPTICALWORKSPACE}/external/watchmakers
 
 # stop pip asking for a password 
 # see: https://github.com/jaraco/keyring#disabling-keyring
-PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+
+# end setup-environment.

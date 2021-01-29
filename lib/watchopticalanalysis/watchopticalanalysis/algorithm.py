@@ -55,7 +55,10 @@ def _run_finish(algorithms: Iterable[Algorithm], reduced: Tuple) -> Tuple:
 
 
 def cached_apply_algorithms(
-    algorithms: Iterable[Algorithm], dataset: Bag, cache: Optional[Cache] = None
+    algorithms: Iterable[Algorithm],
+    dataset: Bag,
+    cache: Optional[Cache] = None,
+    force: bool = False,
 ) -> Tuple:
     algmap = {k: v for k, v in enumerate(algorithms)}
     result = {}
@@ -65,6 +68,8 @@ def cached_apply_algorithms(
     with cache as db:
         for k, v in algmap.items():
             try:
+                if force:
+                    raise KeyError
                 result[k] = db[v.key()]
                 _log.info(f"using cached results for {v}")
             except KeyError:

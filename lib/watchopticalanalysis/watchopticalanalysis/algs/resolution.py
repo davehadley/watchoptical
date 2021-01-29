@@ -28,6 +28,7 @@ _BONSAIVARIABLES = [
 
 _ANALYSISVARIABLES = [
     AnalysisVariableDefs.totalcharge,
+    AnalysisVariableDefs.totalcharge_over_mcenergy,
 ]
 
 

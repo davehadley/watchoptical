@@ -20,7 +20,9 @@ def main():
     _log.info("running: {}".format(args.alg if args.alg else "all"))
     alg = _csalgsnames_to_list(args.alg, args.output)
     with client(args.client):
-        cached_apply_algorithms(alg, AnalysisEventTuple.fromAnalysisDataset(dataset))
+        cached_apply_algorithms(
+            alg, AnalysisEventTuple.fromAnalysisDataset(dataset), force=args.force
+        )
 
 
 def parsecml() -> Namespace:
@@ -50,6 +52,12 @@ def parsecml() -> Namespace:
         default=Path("./"),
     )
     parser.add_argument("-o", "--output", type=Path, default=Path("./"))
+    parser.add_argument(
+        "--force",
+        "-f",
+        help="Do not use cached results. Force data processing.",
+        action="store_true",
+    )
     args = parser.parse_args()
     if args.dataset is None:
         args.dataset = Path(".")
