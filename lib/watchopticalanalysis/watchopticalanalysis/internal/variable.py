@@ -37,6 +37,10 @@ class BonsaiVariable(NamedTuple):
         )
 
 
+def _total_charge(data: AnalysisEventTuple) -> np.ndarray:
+    return data.anal.total.total_charge.groupby("entry").nth(0).array
+
+
 class BonsaiVariableDefs(Enum):
     eventcount = BonsaiVariable(
         "eventcount", Regular(1, 0.0, 1.0), lambda x: np.zeros(len(x))
@@ -83,6 +87,6 @@ class BonsaiVariableDefs(Enum):
 class AnalysisVariableDefs(Enum):
     totalcharge = AnalysisVariable(
         "totalcharge",
-        Regular(1, 0.0, 1.0),
-        lambda x: x.anal.pmt.pmt_q.groupby("entry").sum().array,
+        Regular(100, 0.0, 100.0),
+        _total_charge,
     )
