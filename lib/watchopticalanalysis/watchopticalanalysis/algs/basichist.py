@@ -13,7 +13,7 @@ from tabulate import tabulate
 from watchopticalanalysis.algorithm import Algorithm
 from watchopticalanalysis.category import Category
 from watchopticalanalysis.internal.selectiondefs import SelectionDefs
-from watchopticalanalysis.internal.variable import VariableDefs
+from watchopticalanalysis.internal.variable import BonsaiVariableDefs
 from watchopticalmc.internal.opticsanalysis.analysiseventtuple import AnalysisEventTuple
 from watchopticalutils import timeconstants
 from watchopticalutils.collectionutils import summap
@@ -110,7 +110,7 @@ def _makebasichistograms(
     tree: AnalysisEventTuple, hist: MutableMapping[str, ExposureWeightedHistogram]
 ):
     for (selection, variable, subevent) in itertools.product(
-        SelectionDefs, VariableDefs, (None, 0, 1)
+        SelectionDefs, BonsaiVariableDefs, (None, 0, 1)
     ):
         name = "_".join((variable.name, selection.name, "subevent" + str(subevent)))
         hist[name] = _makebonsaihistogram(
@@ -123,7 +123,7 @@ def _makebasicscatter(
     tree: AnalysisEventTuple, scatter: MutableMapping[str, CategoryMean]
 ):
     for (selection, variable, subevent) in itertools.product(
-        SelectionDefs, VariableDefs, (None, 0, 1)
+        SelectionDefs, BonsaiVariableDefs, (None, 0, 1)
     ):
         name = "_".join((variable.name, selection.name, "subevent" + str(subevent)))
         scatter[name] = _makebonsaiscatter(

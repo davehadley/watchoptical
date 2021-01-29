@@ -10,7 +10,10 @@ from tabulate import tabulate
 from watchopticalanalysis.algorithm import Algorithm
 from watchopticalanalysis.category import Category
 from watchopticalanalysis.internal.selectiondefs import SelectionDefs
-from watchopticalanalysis.internal.variable import VariableDefs
+from watchopticalanalysis.internal.variable import (
+    AnalysisVariableDefs,
+    BonsaiVariableDefs,
+)
 from watchopticalmc import AnalysisEventTuple
 from watchopticalutils.collectionutils import summap
 from watchopticalutils.histoutils.categorybootstraphistogram import (
@@ -18,9 +21,13 @@ from watchopticalutils.histoutils.categorybootstraphistogram import (
 )
 from watchopticalutils.histoutils.selection import Selection
 
-_VARIABLES = [
-    VariableDefs.innerPE_over_mcenergy,
-    VariableDefs.deltar,
+_BONSAIVARIABLES = [
+    BonsaiVariableDefs.innerPE_over_mcenergy,
+    BonsaiVariableDefs.deltar,
+]
+
+_ANALYSISVARIABLES = [
+    AnalysisVariableDefs.totalcharge,
 ]
 
 
@@ -58,12 +65,33 @@ class Resolution(Algorithm["Resolution.Result", None]):
 def _make_resolution(
     tree: AnalysisEventTuple,
 ) -> Dict[_Key, CategoryBootstrapHistogram]:
-    hist = {}
+    hist: Dict[_Key, CategoryBootstrapHistogram] = {}
+    _make_bonsai_hists(tree, hist)
+    _make_analysisvar_hists(tree, hist)
+    return hist
+
+
+def _make_bonsai_hists(
+    tree: AnalysisEventTuple, hist: Dict[_Key, CategoryBootstrapHistogram]
+):
     for (selection, variable, subevent) in itertools.product(
-        SelectionDefs, VariableDefs, (None, 0, 1)
+        SelectionDefs, _BONSAIVARIABLES, (None, 0, 1)
     ):
         key = _Key(variable.name, selection.name, subevent)
         hist[key] = _makebonsaibootstraphistogram(
+            tree, variable.value.binning, variable.value, selection=selection.value
+        )
+    return
+
+
+def _make_analysisvar_hists(
+    tree: AnalysisEventTuple, hist: Dict[_Key, CategoryBootstrapHistogram]
+):
+    for (selection, variable, subevent) in itertools.product(
+        SelectionDefs, _ANALYSISVARIABLES, (None, 0, 1)
+    ):
+        key = _Key(variable.name, selection.name, subevent)
+        hist[key] = _makeanalysisvarbootstraphistogram(
             tree, variable.value.binning, variable.value, selection=selection.value
         )
     return hist
@@ -82,6 +110,22 @@ def _makebonsaibootstraphistogram(
     data = selection(tree.bonsai).groupby("mcid").nth(subevent)
     xv = np.asarray(x(data))
     wv = None if not w else np.asarray(w(data))
+    histo.fill(category, xv, weight=wv)
+    return histo
+
+
+def _makeanalysisvarbootstraphistogram(
+    tree: AnalysisEventTuple,
+    binning: bootstraphistogram.axis.Axis,
+    x: Callable[[AnalysisEventTuple], Any],
+    w: Optional[Callable[[AnalysisEventTuple], Any]] = None,
+    selection: Selection = SelectionDefs.nominal.value,
+    subevent: int = 0,
+) -> CategoryBootstrapHistogram:
+    histo = CategoryBootstrapHistogram(binning)
+    category = Category.fromAnalysisEventTuple(tree)
+    xv = np.asarray(x(tree))
+    wv = None if not w else np.asarray(w(tree))
     histo.fill(category, xv, weight=wv)
     return histo
 
