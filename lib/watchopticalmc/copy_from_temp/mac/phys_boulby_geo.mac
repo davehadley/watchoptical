@@ -1,0 +1,4 @@
+
+/generator/add combo ibd:regexfill:poisson
+/generator/ibd/spectrum boulby_geo
+/generator/vtx/set IBD 1 0 0
