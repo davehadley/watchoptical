@@ -12,5 +12,6 @@ dependencies:
   - pip==20.3.3=pyhd8ed1ab_0
   - scikit-build==0.11.1=py38h950e882_2
   - pybind11=2.6.1=py38h82cb98a_0
+  - cmake==3.18.4=h1f3970d_0
 prefix: /home/epp/phskaj/.conda/envs/watchoptical
 
