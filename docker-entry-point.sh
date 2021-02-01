@@ -1,3 +1,3 @@
 #!usr/bin/env bash
 
-source /app/setup-environment.sh && python -m $1
+source /app/setup-environment.sh && python -m "$@"
