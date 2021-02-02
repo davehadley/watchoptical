@@ -29,7 +29,18 @@ def makeratdbjson(config: RatDbConfig) -> Optional[str]:
     if config.scattering is not None:
         snippets.append(_scatteringjson(config.scattering))
     if len(snippets) > 0:
-        return "\n".join(snippets)
+        snippets = "\n".join(snippets)
+        result = inspect.cleandoc(f"""
+        {{
+        "name": "OPTICS",
+        "index": "doped_water",
+        {snippets}
+        "run_range": [-1,-1]
+        }}
+        """)
+        print("DEBUG", result)
+        assert json.loads(result)
+        return result
     else:
         return None
 
@@ -272,14 +283,9 @@ def _attenuationjson(attenuation: float) -> str:
     )
     return inspect.cleandoc(
         f"""
-    {{
-      name: "OPTICS",
-      index: "doped_water",
-      ABSLENGTH_option: "wavelength",
-      ABSLENGTH_value1: {abslength1},
-      ABSLENGTH_value2: {abslength2},
-      run_range: [-1,-1]
-    }}
+      "ABSLENGTH_option": "wavelength",
+      "ABSLENGTH_value1": {abslength1},
+      "ABSLENGTH_value2": {abslength2},
     """
     )
 
@@ -291,13 +297,8 @@ def _scatteringjson(scatteringlength: float) -> str:
     )
     return inspect.cleandoc(
         f"""
-    {{
-      name: "OPTICS",
-      index: "doped_water",
-      RSLENGTH_option: "wavelength",
-      RSLENGTH_value1: {rslength1},
-      RSLENGTH_value2: {rslength2},
-      run_range: [-1,-1]
-    }}
+      "RSLENGTH_option": "wavelength",
+      "RSLENGTH_value1": {rslength1},
+      "RSLENGTH_value2": {rslength2},
     """
     )
