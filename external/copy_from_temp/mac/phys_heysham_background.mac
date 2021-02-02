@@ -1,4 +1,0 @@
-
-/generator/add combo ibd:regexfill:poisson
-/generator/ibd/spectrum heysham_background
-/generator/vtx/set IBD 1 0 0

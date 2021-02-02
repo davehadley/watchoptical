@@ -1,4 +1,0 @@
-
-/generator/add combo ibd:regexfill:poisson
-/generator/ibd/spectrum boulby_world
-/generator/vtx/set IBD 1 0 0
