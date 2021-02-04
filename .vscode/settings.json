@@ -1,0 +1,9 @@
+{
+"files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "${workspaceFolder}/env/**": true,
+    "${workspaceFolder}/miniconda/**": true,
+    "${workspaceFolder}/run/*": true,
+  }
+}
