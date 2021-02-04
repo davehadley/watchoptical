@@ -1,12 +1,11 @@
 FROM centos:centos7
 
+# Install build requirements
+RUN yum -y update && yum -y install wget make
+
 # Move source to app directory
 RUN mkdir -p /app
 COPY . /app
-
-
-# Install build requirements
-RUN yum -y check-update && yum -y install wget
 
 # Build application
 RUN source /app/setup-environment.sh && /app/build.py && /app/test-environment.py
@@ -14,5 +13,5 @@ RUN source /app/setup-environment.sh && /app/build.py && /app/test-environment.p
 VOLUME /data
 WORKDIR /data
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/app/docker-entry-point.sh"]
 CMD ["watchopticalmc", "--help"]

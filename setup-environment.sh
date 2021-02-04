@@ -14,7 +14,7 @@ scriptdir=$(realpath $(dirname ${script}))
 
 if [ -z "${WORKSPACE}" ];
 then
-    export WATCHOPTICALWORKSPACE=$(CDPATH= cd -- "${scriptdir}" && pwd -P)
+    export WATCHOPTICALWORKSPACE=${scriptdir}
 else
     export WATCHOPTICALWORKSPACE=${WORKSPACE}
 fi
@@ -54,7 +54,7 @@ fi
 WATCHOPTICALCONDAENV=${WATCHOPTICALWORKSPACE}/env/watchoptical
 if [ ! -d "${WATCHOPTICALCONDAENV}" ]
 then 
-    ${CONDA} env create -f environment.yml --prefix ${WATCHOPTICALCONDAENV}
+    ${CONDA} env create -f ${WATCHOPTICALWORKSPACE}/environment.yml --prefix ${WATCHOPTICALCONDAENV}
 fi
 
 # Activate the environment

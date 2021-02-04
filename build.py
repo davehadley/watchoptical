@@ -1,12 +1,17 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import multiprocessing
+import os
 from pathlib import Path
 from subprocess import check_call
 
+_WORKSPACE = os.environ["WATCHOPTICALWORKSPACE"]
+
 
 def run(cmd, title=None, cwd=None):
+    if cwd is None:
+        cwd = _WORKSPACE
     if title is None:
-        title = "Running:" + " ".join(cmd)
+        title = "Running:" + " ".join(cmd) + "in" + cwd
     print("--- {}".format(title))
     print(" ".join(cmd))
     check_call(cmd, cwd=cwd)
@@ -83,17 +88,17 @@ def buildwatchoptical():
     run(
         ["poetry", "install"],
         title="Install watchopticalutils",
-        cwd="./lib/watchopticalutils",
+        cwd=f"{_WORKSPACE}/lib/watchopticalutils",
     )
     run(
         ["poetry", "install"],
         title="Install watchopticalmc",
-        cwd="./lib/watchopticalmc",
+        cwd=f"{_WORKSPACE}/lib/watchopticalmc",
     )
     run(
         ["poetry", "install"],
         title="Install watchopticalanalysis",
-        cwd="./lib/watchopticalanalysis",
+        cwd=f"{_WORKSPACE}/lib/watchopticalanalysis",
     )
 
 
