@@ -1,6 +1,6 @@
 import glob
 import re
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 import uproot
 from cloudpickle import cloudpickle
@@ -71,13 +71,20 @@ class AnalysisEventTuple(NamedTuple):
         )
 
     @classmethod
+    def tryload(cls, analysisfile: AnalysisFile) -> "Optional[AnalysisEventTuple]":
+        try:
+            return cls.load(analysisfile)
+        except:
+            return None
+
+    @classmethod
     def fromWatchmanDataset(cls, dataset: WatchmanDataset) -> Bag:
         return mctoanalysis(dataset).map(AnalysisEventTuple.load)
 
     @classmethod
     def fromAnalysisDataset(cls, dataset: AnalysisDataset) -> Bag:
         return dask.bag.from_sequence(dataset.analysisfiles).map(
-            AnalysisEventTuple.load
+            AnalysisEventTuple.tryload
         )
 
     @property
