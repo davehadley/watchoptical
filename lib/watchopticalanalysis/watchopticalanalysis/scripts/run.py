@@ -21,7 +21,11 @@ def main():
     alg = _csalgsnames_to_list(args.alg, args.output)
     with client(args.client):
         cached_apply_algorithms(
-            alg, AnalysisEventTuple.fromAnalysisDataset(dataset).filter(lambda x: x is not None), force=args.force
+            alg,
+            AnalysisEventTuple.fromAnalysisDataset(dataset).filter(
+                lambda x: x is not None
+            ),
+            force=args.force,
         )
 
 

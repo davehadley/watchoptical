@@ -1,6 +1,6 @@
 import inspect
 import json
-from typing import NamedTuple, Optional
+from typing import Any, NamedTuple, Optional
 
 import numpy as np
 
@@ -23,21 +23,23 @@ def makeratdb(
 
 
 def makeratdbjson(config: RatDbConfig) -> Optional[str]:
-    snippets = []
+    snippets: Any = []
     if config.attenuation is not None:
         snippets.append(_attenuationjson(config.attenuation))
     if config.scattering is not None:
         snippets.append(_scatteringjson(config.scattering))
     if len(snippets) > 0:
         snippets = "\n".join(snippets)
-        result = inspect.cleandoc(f"""
+        result = inspect.cleandoc(
+            f"""
         {{
         "name": "OPTICS",
         "index": "doped_water",
         {snippets}
         "run_range": [-1,-1]
         }}
-        """)
+        """
+        )
         print("DEBUG", result)
         assert json.loads(result)
         return result

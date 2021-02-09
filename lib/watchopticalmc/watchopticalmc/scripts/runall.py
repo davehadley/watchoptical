@@ -86,7 +86,7 @@ def main():
                 "--client=single",  # this script fails when distributed
                 str(directory),
             ],
-            check=False, # fails too often!
+            check=False,  # fails too often!
         )
     # create analysis files
     run(

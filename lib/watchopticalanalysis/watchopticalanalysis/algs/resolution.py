@@ -1,8 +1,19 @@
 import itertools
 from pathlib import Path
-from typing import Any, Callable, Dict, Generator, Iterable, List, NamedTuple, Optional, Tuple
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    NamedTuple,
+    Optional,
+    Tuple,
+)
 
 import bootstraphistogram
+import matplotlib.pyplot as plt
 import numpy as np
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 from pandas.core.frame import DataFrame
@@ -21,8 +32,6 @@ from watchopticalutils.histoutils.categorybootstraphistogram import (
     CategoryBootstrapHistogram,
 )
 from watchopticalutils.histoutils.selection import Selection
-
-import matplotlib.pyplot as plt
 
 _BONSAIVARIABLES = [
     BonsaiVariableDefs.innerPE_over_mcenergy,
@@ -219,23 +228,35 @@ def _calcsigma(histogram: BootstrapHistogram) -> Tuple[float, float]:
     )
     return (std, err)
 
+
 def _summaryplot(result: Resolution.Result, dest: Path) -> None:
     dest = dest / "resolution"
     for k, v in result.hist.items():
-        if (k.subevent is not None and k.subevent == 0):
+        if k.subevent is not None and k.subevent == 0:
             _make_resolution_plot(k, v, dest)
     return
 
+
 def _make_resolution_plot(key: _Key, hist: CategoryBootstrapHistogram, dest: Path):
-    for xattr, groupbyattr in [("attenuation", "scattering"), ("scattering", "attenuation")]:
+    for xattr, groupbyattr in [
+        ("attenuation", "scattering"),
+        ("scattering", "attenuation"),
+    ]:
         subplotdata = list(_iter_subplots(hist, xattr=xattr, groupbyattr=groupbyattr))
         assert len(subplotdata) > 0
-        subplotcombos = [("all", "all", subplotdata)] + [("single", f"{p.groupname}_{p.groupvalue}", [p]) for p in subplotdata]
+        subplotcombos = [("all", "all", subplotdata)] + [
+            ("single", f"{p.groupname}_{p.groupvalue}", [p]) for p in subplotdata
+        ]
         for prefix, label, subplotdata in subplotcombos:
-            _make_resolution_summary_plot(subplotdata, 
-            dest / "summary" / prefix / f"{key.variable}_{key.selection}_resolution_by_{xattr}_{label}"
+            _make_resolution_summary_plot(
+                subplotdata,
+                dest
+                / "summary"
+                / prefix
+                / f"{key.variable}_{key.selection}_resolution_by_{xattr}_{label}",
             )
     return
+
 
 class _SubplotData(NamedTuple):
     groupname: str
@@ -247,17 +268,31 @@ class _SubplotData(NamedTuple):
     sigma: np.ndarray
     sigmaerr: np.ndarray
 
-def _iter_subplots(hist: CategoryBootstrapHistogram, xattr: str="attenuation", groupbyattr: str="scattering") -> Generator[_SubplotData, None, None]:
+
+def _iter_subplots(
+    hist: CategoryBootstrapHistogram,
+    xattr: str = "attenuation",
+    groupbyattr: str = "scattering",
+) -> Generator[_SubplotData, None, None]:
     signalonly = filter(lambda item: "ibd" in item.category.eventtype.lower(), hist)
-    groupedbyattr = groupby(lambda item: getattr(item.category, groupbyattr), signalonly)
+    groupedbyattr = groupby(
+        lambda item: getattr(item.category, groupbyattr), signalonly
+    )
     for attrvalue, items in groupedbyattr.items():
         X = [getattr(it.category, xattr) for it in items]
         mean, meanerr = zip(*[_calcmu(it.histogram) for it in items])
         sigma, sigmaerr = zip(*[_calcsigma(it.histogram) for it in items])
-        (X, mean, meanerr, sigma, sigmaerr) = (np.array(it) for it in (X, mean, meanerr, sigma, sigmaerr))
-        yield _SubplotData(groupbyattr, attrvalue, xattr, X, mean, meanerr, sigma, sigmaerr)
+        (X, mean, meanerr, sigma, sigmaerr) = (
+            np.array(it) for it in (X, mean, meanerr, sigma, sigmaerr)
+        )
+        yield _SubplotData(
+            groupbyattr, attrvalue, xattr, X, mean, meanerr, sigma, sigmaerr
+        )
 
-def _make_resolution_summary_plot(data: Iterable[_SubplotData], dest: Path, ext: str=".svg"):
+
+def _make_resolution_summary_plot(
+    data: Iterable[_SubplotData], dest: Path, ext: str = ".svg"
+):
     data = list(data)
     assert len(data) > 0
     plotcombos = [
