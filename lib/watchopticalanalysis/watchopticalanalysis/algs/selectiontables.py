@@ -158,7 +158,7 @@ def _make_efficiency_plot(
         for prefix, label, subplotdata in subplotcombos:
             _make_efficiency_summary_plot(
                 subplotdata,
-                dest / prefix / f"{selection.value.name}_resolution_by_{xattr}_{label}",
+                dest / prefix / f"{selection.value.name}_{xattr}_{label}",
             )
     return
 
@@ -256,17 +256,25 @@ def _make_efficiency_summary_plot(
     ]
     for fname, yval, yerr, ylabel in plotcombos:
         fig = plt.figure()
-        fig.tight_layout()
         ax = fig.add_subplot(111)
         for d in data:
             xvalues = d.x
             yvalues = getattr(d, yval)
             yerrs = getattr(d, yerr)
             label = f"{d.groupname}={d.groupvalue}"
-            ax.errorbar(xvalues, yvalues, yerr=yerrs, label=label)
+            ax.errorbar(
+                xvalues,
+                yvalues,
+                yerr=yerrs,
+                label=label,
+                marker="o",
+                capsize=10.0,
+                alpha=0.9,
+            )
             ax.set_xlabel(d.xvarname)
             ax.set_ylabel(ylabel)
-        ax.legend()
+        ax.legend(fontsize="small")
         fname.parent.mkdir(exist_ok=True, parents=True)
+        fig.tight_layout()
         fig.savefig(fname)
         plt.close(fig)
