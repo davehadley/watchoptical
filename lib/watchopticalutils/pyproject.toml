@@ -12,12 +12,13 @@ dask = {extras = ["distributed", "bag"], version = "^2021.1.0"}
 dask_jobqueue = "^0.7.2"
 distributed = "^2021.1.0"
 toolz = "^0.11.1"
-boost_histogram = "^0.11.1"
+boost_histogram = ">=0.11.1"
 numpy = "^1.19.5"
 mplhep = "^0.2.12"
 matplotlib = "^3.3.3"
 tabulate = "^0.8.7"
 pandas = "^1.2.1"
+bootstraphistogram = ">=0.6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

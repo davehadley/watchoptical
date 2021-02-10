@@ -10,11 +10,11 @@ elif eval '[[ -n ${.sh.file} ]]' 2>/dev/null; then
 else
   script=./
 fi
-scriptdir=$(dirname ${script})
+scriptdir=$(realpath $(dirname ${script}))
 
 if [ -z "${WORKSPACE}" ];
 then
-    export WATCHOPTICALWORKSPACE=$(CDPATH= cd -- "${scriptdir}" && pwd -P)
+    export WATCHOPTICALWORKSPACE=${scriptdir}
 else
     export WATCHOPTICALWORKSPACE=${WORKSPACE}
 fi
@@ -54,7 +54,7 @@ fi
 WATCHOPTICALCONDAENV=${WATCHOPTICALWORKSPACE}/env/watchoptical
 if [ ! -d "${WATCHOPTICALCONDAENV}" ]
 then 
-    ${CONDA} env create -f environment.yml --prefix ${WATCHOPTICALCONDAENV}
+    ${CONDA} env create -f ${WATCHOPTICALWORKSPACE}/environment.yml --prefix ${WATCHOPTICALCONDAENV}
 fi
 
 # Activate the environment
@@ -66,7 +66,7 @@ source activate ${WATCHOPTICALCONDAENV}
 if ! command -v poetry &> /dev/null
 then
     # struggled to get poetry to work in the environment file so get it from pip
-    pip install poetry
+    pip install poetry black mypy flake8 pytest pytest-xdist
 fi
 
 
@@ -80,4 +80,6 @@ export WATCHENV=${WATCHOPTICALWORKSPACE}/external/watchmakers
 
 # stop pip asking for a password 
 # see: https://github.com/jaraco/keyring#disabling-keyring
-PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+
+# end setup-environment.

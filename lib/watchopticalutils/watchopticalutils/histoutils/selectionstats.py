@@ -1,3 +1,4 @@
+import math
 from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Iterable, Iterator, List, Optional, Union
@@ -5,7 +6,6 @@ from typing import Any, Iterable, Iterator, List, Optional, Union
 import numpy as np
 from pandas import DataFrame
 from tabulate import tabulate
-
 from watchopticalutils.histoutils.cut import Cut
 from watchopticalutils.histoutils.selection import Selection
 
@@ -14,18 +14,37 @@ from watchopticalutils.histoutils.selection import Selection
 class CutStats:
     numtotal: float
     numpassed: float
+    sumw2total: float
+    sumw2passed: float
 
     @property
     def efficiency(self) -> float:
         return self.numpassed / self.numtotal
 
     @property
+    def binomial_efficiency_error(self) -> float:
+        efficiency = self.efficiency
+        denominator = self.numtotaleffective
+        return math.sqrt(efficiency * (1 - efficiency) / denominator)
+
+    @property
     def numfailed(self) -> float:
         return self.numtotal - self.numpassed
 
+    @property
+    def numtotaleffective(self) -> float:
+        return self.numtotal ** 2 / self.sumw2total
+
+    @property
+    def numpassedeffective(self) -> float:
+        return self.numpassed ** 2 / self.sumw2passed
+
     def __add__(self, other):
         return CutStats(
-            self.numtotal + other.numtotal, self.numpassed + other.numpassed
+            self.numtotal + other.numtotal,
+            self.numpassed + other.numpassed,
+            self.sumw2total + other.sumw2total,
+            self.sumw2passed + other.sumw2passed,
         )
 
 
@@ -96,6 +115,8 @@ class _Counter:
     def __init__(self):
         self.total = 0.0
         self.selected = 0.0
+        self._sumw2total = 0.0
+        self._sumw2selected = 0.0
 
     def __call__(
         self, isselected: np.ndarray, weight: Optional[Union[float, np.ndarray]] = None
@@ -104,14 +125,23 @@ class _Counter:
             weight = 1.0
         self.total += np.sum(np.broadcast_to(weight, isselected.shape))
         self.selected += np.sum(isselected * weight)
+        self._sumw2total += np.sum(np.broadcast_to(weight, isselected.shape) ** 2)
+        self._sumw2selected += np.sum((isselected * weight) ** 2)
 
     def tocutstats(self):
-        return CutStats(numtotal=self.total, numpassed=self.selected)
+        return CutStats(
+            numtotal=self.total,
+            numpassed=self.selected,
+            sumw2total=self._sumw2total,
+            sumw2passed=self._sumw2selected,
+        )
 
     def __add__(self, other: "_Counter") -> "_Counter":
         result = _Counter()
         result.total = self.total + other.total
         result.selected = self.selected + other.selected
+        result._sumw2total = self._sumw2total + other._sumw2total
+        result._sumw2selected = self._sumw2selected + other._sumw2selected
         return result
 
 

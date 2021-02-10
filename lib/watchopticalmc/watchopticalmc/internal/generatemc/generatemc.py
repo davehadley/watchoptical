@@ -5,7 +5,6 @@ import hashlib
 import os
 import re
 import subprocess
-import uuid
 from collections import OrderedDict
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -14,19 +13,19 @@ from typing import Any, Callable, Iterator, Optional, Tuple
 
 import cloudpickle
 import dask.bag
+import ROOT
 from dask.bag import Bag
-
 from watchopticalmc.internal.generatemc.makeratdb import RatDb
 from watchopticalmc.internal.generatemc.runwatchmakers import (
     WatchMakersConfig,
     generatejobscripts,
 )
 from watchopticalmc.internal.generatemc.wmdataset import RatPacBonsaiPair
-from watchopticalutils.filepathutils import (
-    expandpath,
-    temporaryworkingdirectory,
-)
+from watchopticalutils.filepathutils import expandpath, temporaryworkingdirectory
+from watchopticalutils.log import getlog
 from watchopticalutils.retry import retry
+
+_log = getlog(__name__)
 
 
 @dataclass(frozen=True)
@@ -83,23 +82,27 @@ def _write_config_to_disk(config: GenerateMCConfig):
 
 
 def _rungeant4(
-    watchmakersscript: str, cwd: str, config: GenerateMCConfig
+    jobnum: int, watchmakersscript: str, cwd: str, config: GenerateMCConfig
 ) -> Tuple[str, ...]:
+    eventtype = re.match(".*/script_(.*).sh", watchmakersscript).group(1)
+    expectedfilename = f"run_{config.configid}_{eventtype}_{jobnum}.root"
     with open(watchmakersscript, "r") as script:
         scripttext = script.read()
-        uid = str(uuid.uuid1())
         with _inject_macros_and_ratdb_into_script(scripttext, config) as scripttext:
+            scripttext = scripttext.replace("run$TMPNAME.root", expectedfilename)
             scripttext = scripttext.replace(
-                "run$TMPNAME.root", f"run_{config.configid}_{uid}.root"
+                "run$TMPNAME.log", f"run_{config.configid}_{eventtype}_{jobnum}.log"
             )
-            scripttext = scripttext.replace(
-                "run$TMPNAME.log", f"run_{config.configid}_{uid}.log"
-            )
-            match = re.search(f".* -o (root_.*{uid}.root) .*", scripttext)
+            match = re.search(f".* -o (root_.*{jobnum}.root) .*", scripttext)
             assert match is not None
             filename = os.sep.join((cwd, match.group(1)))
-            subprocess.call(scripttext, shell=True, cwd=cwd)
-    return tuple(glob.glob(filename))
+            if len(tuple(glob.glob(filename))) == 0:
+                _log.info(f"Running RAT/GEANT4 to generate {filename}")
+                try:
+                    subprocess.check_call(scripttext, shell=True, cwd=cwd)
+                except subprocess.SubprocessError:
+                    _log.error(f"RAT failed on {filename}")
+            return tuple(glob.glob(filename))
 
 
 def _dump_text_to_temp_file(tempdir: str, fname: str, content: Optional[str]) -> str:
@@ -163,6 +166,19 @@ def _inject_macros_and_ratdb_into_script(
         yield scripttext
 
 
+def _removezombierootfile(rootfile: str) -> Optional[str]:
+    if not os.path.exists(rootfile):
+        _log.error(f"Expected ROOT file does exist: {rootfile}")
+        return None
+    tfile = ROOT.TFile(rootfile)
+    isfailed = tfile.IsZombie() or tfile.TestBit(ROOT.TFile.kRecovered)
+    if isfailed:
+        _log.error(f"Discovered zombie ROOT file. Deleting it: {rootfile}")
+        os.remove(rootfile)
+        return None
+    return rootfile
+
+
 @retry(3)
 def _runbonsai(g4file: str, config: GenerateMCConfig) -> str:
     bonsai_name = f"{g4file.replace('root_files', 'bonsai_root_files')}"
@@ -171,9 +187,13 @@ def _runbonsai(g4file: str, config: GenerateMCConfig) -> str:
             expandpath(config.bonsailikelihood), f"{os.getcwd()}{os.sep}like.bin"
         )
         if (not os.path.exists(bonsai_name)) and (g4file != bonsai_name):
-            subprocess.check_call(
-                [expandpath(config.bonsaiexecutable), g4file, bonsai_name]
-            )
+            try:
+                _log.info(f"Running bonsai to generate {bonsai_name}")
+                subprocess.check_call(
+                    [expandpath(config.bonsaiexecutable), g4file, bonsai_name]
+                )
+            except subprocess.CalledProcessError:
+                _log.error(f"bonsai failed to generate {bonsai_name}")
     return bonsai_name
 
 
@@ -184,8 +204,8 @@ def generatemc(config: GenerateMCConfig) -> Bag:
     return (
         dask.bag.from_sequence(
             (
-                (s, cwd, config)
-                for _ in range(config.numjobs)
+                (jobnum, s, cwd, config)
+                for jobnum in range(config.numjobs)
                 for s in scripts.scripts
                 if config.filenamefilter is None or config.filenamefilter(s)
             ),
@@ -194,5 +214,13 @@ def generatemc(config: GenerateMCConfig) -> Bag:
         )
         .starmap(_rungeant4)
         .flatten()
+        .map(_removezombierootfile)
+        .filter(lambda g4file: (g4file is not None) and os.path.exists(g4file))
         .map(lambda g4file: RatPacBonsaiPair(g4file, _runbonsai(g4file, config=config)))
+        .map(
+            lambda pair: RatPacBonsaiPair(
+                pair.g4file, _removezombierootfile(pair.bonsaifile)
+            )
+        )
+        .filter(RatPacBonsaiPair.isvalid)
     )

@@ -4,7 +4,6 @@ import re
 from typing import Dict, Iterable, Iterator, NamedTuple, Optional, Tuple, Union
 
 from toolz import groupby, pipe
-
 from watchopticalutils.filepathutils import findfiles
 from watchopticalutils.stringutils import hashfromstrcol
 
@@ -22,6 +21,14 @@ class RatPacBonsaiPair(NamedTuple):
     @property
     def rootdirectory(self):
         return os.path.commonpath((self.g4file, self.bonsaifile))
+
+    def isvalid(self):
+        return (
+            bool(self.g4file)
+            and bool(self.bonsaifile)
+            and os.path.exists(self.g4file)
+            and os.path.exists(self.bonsaifile)
+        )
 
 
 class WatchmanDataset:
